@@ -22,6 +22,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 >
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.maven.plugins.jlink.its</groupId>
+    <artifactId>mjlink-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
   <groupId>org.apache.maven.plugins</groupId>
   <artifactId>maven-jlink-plugin-cli-options-no-man-pages</artifactId>
   <version>99.0</version>
@@ -29,11 +34,6 @@
   <name>Maven</name>
   <url>http://maven.apache.org</url>
   <description>Test JLink CLI Options --no-man-pages.</description>
-  <properties>
-    <maven.compiler.source>1.9</maven.compiler.source>
-    <maven.compiler.target>1.9</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>localhost</groupId>
@@ -43,15 +43,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
-        <configuration>
-          <source>1.9</source>
-          <target>1.9</target>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jlink-plugin</artifactId>
