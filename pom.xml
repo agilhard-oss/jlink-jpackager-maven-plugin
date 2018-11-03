@@ -203,7 +203,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
-            <version>3.0.1</version>
             <configuration>
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               <environmentVariables>
@@ -217,8 +216,8 @@
               <projectsDirectory>src/it/projects</projectsDirectory>
               <setupIncludes>
                 <setupInclude>setup-01/pom.xml</setupInclude>
-                <setupInclude>setup-jar/pom.xml</setupInclude>
-                <setupInclude>setup-jar-module-info/pom.xml</setupInclude>
+                <setupInclude>setup-02-jar/pom.xml</setupInclude>
+                <setupInclude>setup-03-jar-module-info/pom.xml</setupInclude>
               </setupIncludes>
               <pomIncludes>
                 <pomInclude>**/pom.xml</pomInclude>
