@@ -22,15 +22,9 @@ package net.agilhard.maven.plugins.jlink;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -38,16 +32,9 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.toolchain.Toolchain;
-import org.apache.maven.toolchain.java.DefaultJavaToolChain;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
-import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
-import org.codehaus.plexus.languages.java.jpms.LocationManager;
-import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
-import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
@@ -62,22 +49,8 @@ import org.codehaus.plexus.util.cli.Commandline;
 @Mojo( name = "jlink", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true )
 // CHECKSTYLE_ON: LineLength
 public class JLinkMojo
-    extends AbstractJLinkMojo
+    extends AbstractPackageToolMojo
 {
-    private static final String JMODS = "jmods";
-
-    @Component
-    private LocationManager locationManager;
-
-    /**
-     * <p>
-     * Specify the requirements for this jdk toolchain. This overrules the toolchain selected by the
-     * maven-toolchain-plugin.
-     * </p>
-     * <strong>note:</strong> requires at least Maven 3.3.1
-     */
-    @Parameter
-    private Map<String, String> jdkToolchain;
 
     /**
      * This is intended to strip debug information out. The command line equivalent of <code>jlink</code> is:
@@ -101,47 +74,6 @@ public class JLinkMojo
     @Parameter
     private String launcher;
 
-    /**
-     * Limit the universe of observable modules. The following gives an example of the configuration which can be used
-     * in the <code>pom.xml</code> file.
-     * 
-     * <pre>
-     *   &lt;limitModules&gt;
-     *     &lt;limitModule&gt;mod1&lt;/limitModule&gt;
-     *     &lt;limitModule&gt;xyz&lt;/limitModule&gt;
-     *     .
-     *     .
-     *   &lt;/limitModules&gt;
-     * </pre>
-     * 
-     * This configuration is the equivalent of the command line option:
-     * <code>--limit-modules &lt;mod&gt;[,&lt;mod&gt;...]</code>
-     */
-    @Parameter
-    private List<String> limitModules;
-
-    /**
-     * <p>
-     * Usually this is not necessary, cause this is handled automatically by the given dependencies.
-     * </p>
-     * <p>
-     * By using the --add-modules you can define the root modules to be resolved. The configuration in
-     * <code>pom.xml</code> file can look like this:
-     * </p>
-     * 
-     * <pre>
-     * &lt;addModules&gt;
-     *   &lt;addModule&gt;mod1&lt;/addModule&gt;
-     *   &lt;addModule&gt;first&lt;/addModule&gt;
-     *   .
-     *   .
-     * &lt;/addModules&gt;
-     * </pre>
-     * 
-     * The command line equivalent for jlink is: <code>--add-modules &lt;mod&gt;[,&lt;mod&gt;...]</code>.
-     */
-    @Parameter
-    private List<String> addModules;
 
     /**
      * Define the plugin module path to be used. There can be defined multiple entries separated by either {@code ;} or
@@ -158,12 +90,6 @@ public class JLinkMojo
     @Parameter( defaultValue = "${project.build.directory}/maven-jlink", required = true, readonly = true )
     private File outputDirectoryImage;
 
-    @Parameter( defaultValue = "${project.build.directory}", required = true, readonly = true )
-    private File buildDirectory;
-
-    @Parameter( defaultValue = "${project.build.outputDirectory}", required = true, readonly = true )
-    private File outputDirectory;
-
     /**
      * The byte order of the generated Java Run Time image. <code>--endian &lt;little|big&gt;</code>. If the endian is
      * not given the default is: <code>native</code>.
@@ -172,12 +98,6 @@ public class JLinkMojo
     @Parameter
     private String endian;
 
-    /**
-     * Include additional paths on the <code>--module-path</code> option. Project dedependencies and JDK modules are
-     * automatically added.
-     */
-    @Parameter
-    private List<String> modulePaths;
 
     /**
      * Add the option <code>--bind-services</code> or not.
@@ -223,16 +143,10 @@ public class JLinkMojo
      * &lt;/suggestProviders&gt;
      * </pre>
      * 
-     * The jlink command linke equivalent: <code>--suggest-providers [&lt;name&gt;,...]</code>
+     * The jlink command line equivalent: <code>--suggest-providers [&lt;name&gt;,...]</code>
      */
     @Parameter
     private List<String> suggestProviders;
-
-    /**
-     * This will turn on verbose mode. The jlink command line equivalent is: <code>--verbose</code>
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean verbose;
 
     /**
      * The JAR archiver needed for archiving the environments.
@@ -247,13 +161,19 @@ public class JLinkMojo
     @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
     private String finalName;
 
+    protected String getJLinkExecutable()
+        throws IOException
+    {
+        return getToolExecutable( "jlink" );
+    }
+
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
 
         String jLinkExec = getExecutable();
 
-        getLog().info( "Toolchain in maven-jlink-plugin: jlink [ " + jLinkExec + " ]" );
+        getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jlink [ " + jLinkExec + " ]" );
 
         // TODO: Find a more better and cleaner way?
         File jLinkExecuteable = new File( jLinkExec );
@@ -267,32 +187,10 @@ public class JLinkMojo
 
         failIfParametersAreNotInTheirValidValueRanges();
 
-        ifOutputDirectoryExistsDelteIt();
+        ifOutputDirectoryExistsDeleteIt();
 
-        Collection<String> modulesToAdd = new ArrayList<>();
-        if ( addModules != null )
-        {
-            modulesToAdd.addAll( addModules );
-        }
-
-        Collection<String> pathsOfModules = new ArrayList<>();
-        if ( modulePaths != null )
-        {
-            pathsOfModules.addAll( modulePaths );
-        }
-
-        for ( Entry<String, File> item : getModulePathElements().entrySet() )
-        {
-            getLog().info( " -> module: " + item.getKey() + " ( " + item.getValue().getPath() + " )" );
-
-            // We use the real module name and not the artifact Id...
-            modulesToAdd.add( item.getKey() );
-            pathsOfModules.add( item.getValue().getPath() );
-        }
-
-        // The jmods directory of the JDK
-        pathsOfModules.add( jmodsFolder.getAbsolutePath() );
-
+        prepareModules( jmodsFolder );
+        
         Commandline cmd;
         try
         {
@@ -317,96 +215,7 @@ public class JLinkMojo
         getProject().getArtifact().setFile( createZipArchiveFromImage );
     }
 
-    private List<File> getCompileClasspathElements( MavenProject project )
-    {
-        List<File> list = new ArrayList<File>( project.getArtifacts().size() + 1 );
 
-        for ( Artifact a : project.getArtifacts() )
-        {
-            getLog().debug( "Artifact: " + a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion() );
-            list.add( a.getFile() );
-        }
-        return list;
-    }
-
-    private Map<String, File> getModulePathElements()
-        throws MojoFailureException
-    {
-        // For now only allow named modules. Once we can create a graph with ASM we can specify exactly the modules
-        // and we can detect if auto modules are used. In that case, MavenProject.setFile() should not be used, so
-        // you cannot depend on this project and so it won't be distributed.
-
-        Map<String, File> modulepathElements = new HashMap<>();
-
-        try
-        {
-            Collection<File> dependencyArtifacts = getCompileClasspathElements( getProject() );
-
-            ResolvePathsRequest<File> request = ResolvePathsRequest.ofFiles( dependencyArtifacts );
-
-            Toolchain toolchain = getToolchain();
-            if ( toolchain != null && toolchain instanceof DefaultJavaToolChain )
-            {
-                request.setJdkHome( new File( ( (DefaultJavaToolChain) toolchain ).getJavaHome() ) );
-            }
-
-            ResolvePathsResult<File> resolvePathsResult = locationManager.resolvePaths( request );
-
-            for ( Map.Entry<File, JavaModuleDescriptor> entry : resolvePathsResult.getPathElements().entrySet() )
-            {
-                if ( entry.getValue() == null )
-                {
-                    String message = "The given dependency " + entry.getKey()
-                        + " does not have a module-info.java file. So it can't be linked.";
-                    getLog().error( message );
-                    throw new MojoFailureException( message );
-                }
-
-                // Don't warn for automatic modules, let the jlink tool do that
-                getLog().debug( " module: " + entry.getValue().name() + " automatic: "
-                    + entry.getValue().isAutomatic() );
-                if ( modulepathElements.containsKey( entry.getValue().name() ) )
-                {
-                    getLog().warn( "The module name " + entry.getValue().name() + " does already exists." );
-                }
-                modulepathElements.put( entry.getValue().name(), entry.getKey() );
-            }
-
-            // This part is for the module in target/classes ? (Hacky..)
-            // FIXME: Is there a better way to identify that code exists?
-            if ( outputDirectory.exists() )
-            {
-                List<File> singletonList = Collections.singletonList( outputDirectory );
-
-                ResolvePathsRequest<File> singleModuls = ResolvePathsRequest.ofFiles( singletonList );
-
-                ResolvePathsResult<File> resolvePaths = locationManager.resolvePaths( singleModuls );
-                for ( Entry<File, JavaModuleDescriptor> entry : resolvePaths.getPathElements().entrySet() )
-                {
-                    if ( entry.getValue() == null )
-                    {
-                        String message = "The given project " + entry.getKey()
-                            + " does not contain a module-info.java file. So it can't be linked.";
-                        getLog().error( message );
-                        throw new MojoFailureException( message );
-                    }
-                    if ( modulepathElements.containsKey( entry.getValue().name() ) )
-                    {
-                        getLog().warn( "The module name " + entry.getValue().name() + " does already exists." );
-                    }
-                    modulepathElements.put( entry.getValue().name(), entry.getKey() );
-                }
-            }
-
-        }   
-        catch ( IOException e )
-        {
-            getLog().error( e.getMessage() );
-            throw new MojoFailureException( e.getMessage() );
-        }
-
-        return modulepathElements;
-    }
 
     private String getExecutable()
         throws MojoFailureException
@@ -481,7 +290,7 @@ public class JLinkMojo
         }
     }
 
-    private void ifOutputDirectoryExistsDelteIt()
+    private void ifOutputDirectoryExistsDeleteIt()
         throws MojoExecutionException
     {
         if ( outputDirectoryImage.exists() )
@@ -628,4 +437,5 @@ public class JLinkMojo
     {
         return limitModules != null && !limitModules.isEmpty();
     }
+
 }

@@ -35,14 +35,14 @@ import org.mockito.Mockito;
 /**
  * @author Karl Heinz Marbaise <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>
  */
-public class AbstractJLinkMojoTest
+public class AbstractPackageToolMojoTest
 {
-    private AbstractJLinkMojo mojoMock;
+    private AbstractPackageToolMojo mojoMock;
 
     @Before
     public void before()
     {
-        this.mojoMock = mock( AbstractJLinkMojo.class, Mockito.CALLS_REAL_METHODS );
+        this.mojoMock = mock( AbstractPackageToolMojo.class, Mockito.CALLS_REAL_METHODS );
         when( mojoMock.getLog() ).thenReturn( mock( Log.class ) );
     }
 
