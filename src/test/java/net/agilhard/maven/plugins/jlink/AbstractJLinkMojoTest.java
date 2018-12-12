@@ -1,4 +1,4 @@
-package org.apache.maven.plugins.jlink;
+package net.agilhard.maven.plugins.jlink;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -23,7 +23,7 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-jlink-plugin-cli-options-endian</artifactId>
+  <artifactId>jlink-cli-options-endian</artifactId>
   <version>99.0</version>
   <packaging>jlink</packaging>
   <name>Maven</name>
@@ -53,8 +53,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jlink-plugin</artifactId>
+	<groupId>net.agilhard.maven.plugins</groupId>
+	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>

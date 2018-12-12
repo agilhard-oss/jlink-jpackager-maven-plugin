@@ -71,7 +71,7 @@
                 org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test
               </test>
               <package>
-                org.apache.maven.plugins:maven-jlink-plugin:${project.version}:jlink
+                net.agilhard.maven.plugins:jlink-jpackager-maven-plugin::${project.version}:jlink
               </package>
               <install>
                 org.apache.maven.plugins:maven-install-plugin:2.5.2:install

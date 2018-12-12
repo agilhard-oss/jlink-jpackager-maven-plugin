@@ -33,10 +33,10 @@ try
         System.err.println( "target file is missing or not a directory." );
         return false;
     }
-    File artifact = new File( target, "maven-jlink-plugin-cli-options-no-man-pages-99.0.zip" );
+    File artifact = new File( target, "jlink-cli-options-no-man-pages-99.0.zip" );
     if ( !artifact.exists() || artifact.isDirectory() )
     {
-        System.err.println( "maven-jlink-plugin-cli-options-no-man-pages-99.0.zip file is missing or is a directory." );
+        System.err.println( "jlink-cli-options-no-man-pages-99.0.zip file is missing or is a directory." );
         return false;
     }
 

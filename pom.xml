@@ -29,40 +29,18 @@
     <relativePath>../maven-plugins/pom.xml</relativePath>
   </parent>
 
-  <artifactId>maven-jlink-plugin</artifactId>
-  <version>3.0.0-alpha-2-SNAPSHOT</version>
+  <groupId>net.agilhard.maven.plugins</groupId>
+  <artifactId>jlink-jpackager-maven-plugin</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>Apache Maven JLink Plugin</name>
-  <description>The Maven JLink Plugin is intended to create Modular Run-Time Images.
-   http://openjdk.java.net/jeps/282, http://openjdk.java.net/jeps/220</description>
-  <inceptionYear>2016</inceptionYear>
+  <name>JLink-JPackager Maven Plugin</name>
+  <description>JLink-JPackager Maven Plugin</description>
+  <inceptionYear>2018</inceptionYear>
 
   <prerequisites>
     <maven>${mavenVersion}</maven>
   </prerequisites>
-
-  <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-jlink-plugin.git</connection>
-    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-jlink-plugin.git</developerConnection>
-    <url>https://github.com/apache/maven-jlink-plugin/tree/${project.scm.tag}</url>
-    <tag>HEAD</tag>
-  </scm>
-
-  <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/browse/MJLINK</url>
-  </issueManagement>
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-box/job/maven-jlink-plugin/</url>
-  </ciManagement>
-  <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scm:svn:https://svn.apache.org/repos/asf/maven/website/components/${maven.site.path}</url>
-    </site>
-  </distributionManagement>
 
   <properties>
     <mavenVersion>3.0</mavenVersion>
@@ -173,6 +151,7 @@
       </plugin>
     </plugins>
   </reporting>
+
   <profiles>
     <profile>
       <id>run-its</id>
@@ -252,5 +231,20 @@
       </build>
     </profile>
   </profiles>
+
+  <distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Nexus Release Repository</name>
+      <url>http://hamapp5.fms.local:8081/nexus/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>Nexus Snapshot Repository</name>
+      <url>http://hamapp5.fms.local:8081/nexus/content/repositories/snapshots</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
 
 </project>
