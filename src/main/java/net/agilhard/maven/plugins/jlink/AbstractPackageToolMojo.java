@@ -517,7 +517,10 @@ public abstract class AbstractPackageToolMojo
 
             // This part is for the module in target/classes ? (Hacky..)
             // FIXME: Is there a better way to identify that code exists?
-            if ( outputDirectory.exists() )
+
+            File[] files = outputDirectory.listFiles( ( d, name ) -> name.endsWith( ".class" ) );
+
+            if ( ( files != null ) && ( ! ( files.length == 0 ) ) )
             {
                 List<File> singletonList = Collections.singletonList( outputDirectory );
 
@@ -578,4 +581,30 @@ public abstract class AbstractPackageToolMojo
 
     }
 
+
+    protected void failIfProjectHasAlreadySetAnArtifact() throws MojoExecutionException
+    {
+        if ( projectHasAlreadySetAnArtifact() )
+        {
+            throw new MojoExecutionException( "You have to use a classifier "
+                + "to attach supplemental artifacts to the project instead of replacing them." );
+        }
+    }
+
+    protected boolean projectHasAlreadySetAnArtifact()
+    {
+        if ( getProject().getArtifact().getFile() != null )
+        {
+            return getProject().getArtifact().getFile().isFile();
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected boolean hasLimitModules()
+    {
+        return limitModules != null && !limitModules.isEmpty();
+    }
 }

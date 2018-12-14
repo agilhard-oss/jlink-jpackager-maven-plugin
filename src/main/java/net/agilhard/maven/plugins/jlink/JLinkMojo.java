@@ -206,11 +206,7 @@ public class JLinkMojo
 
         File createZipArchiveFromImage = createZipArchiveFromImage( buildDirectory, outputDirectoryImage );
 
-        if ( projectHasAlreadySetAnArtifact() )
-        {
-            throw new MojoExecutionException( "You have to use a classifier "
-                + "to attach supplemental artifacts to the project instead of replacing them." );
-        }
+        failIfProjectHasAlreadySetAnArtifact();
 
         getProject().getArtifact().setFile( createZipArchiveFromImage );
     }
@@ -230,18 +226,6 @@ public class JLinkMojo
             throw new MojoFailureException( "Unable to find jlink command: " + e.getMessage(), e );
         }
         return jLinkExec;
-    }
-
-    private boolean projectHasAlreadySetAnArtifact()
-    {
-        if ( getProject().getArtifact().getFile() != null )
-        {
-            return getProject().getArtifact().getFile().isFile();
-        }
-        else
-        {
-            return false;
-        }
     }
 
     private File createZipArchiveFromImage( File outputDirectory, File outputDirectoryImage )
@@ -433,9 +417,6 @@ public class JLinkMojo
         return suggestProviders != null && !suggestProviders.isEmpty();
     }
 
-    private boolean hasLimitModules()
-    {
-        return limitModules != null && !limitModules.isEmpty();
-    }
+
 
 }
