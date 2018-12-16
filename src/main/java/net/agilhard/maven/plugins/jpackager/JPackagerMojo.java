@@ -63,7 +63,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     
     /**
      * Mode of JPackager operation. 
-     * One of <code>create-image</code>, <code>create-installer</code>, <create-jre-installer>.
+     * One of <code>create-image</code>, <code>create-installer</code>, <code>create-jre-installer</code>.
      * Default is <code>create-installer</code>.
      */
     @Parameter( defaultValue = "create-installer", required = true, readonly = false )
@@ -199,7 +199,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * <p>
      * Defaults to ${project.groupId}.${project.artifactId}
      * </p>
-     * <code>--identifier &lt;<identifier>&gt;</code>
+     * <code>--identifier &lt;identifier&gt;</code>
      */
     @Parameter( defaultValue = "${project.groupId}.${project.artifactId}", required = false, readonly = false )
     private String identifier;

@@ -561,7 +561,9 @@ public abstract class AbstractPackageToolMojo
             // FIXME: Is there a better way to identify that code exists?            
             final AtomicBoolean b = new AtomicBoolean();
             
-            BiPredicate<Path, BasicFileAttributes> predicate =
+            if ( outputDirectory.exists() ) 
+            {
+                BiPredicate<Path, BasicFileAttributes> predicate =
                 ( path, attrs ) -> 
                 {
                         return path.toString().endsWith( ".class" );
@@ -579,7 +581,7 @@ public abstract class AbstractPackageToolMojo
                 {
                     e.printStackTrace();
                 }
-                
+            }
             if ( b.get() )
             {
                 List<File> singletonList = Collections.singletonList( outputDirectory );
