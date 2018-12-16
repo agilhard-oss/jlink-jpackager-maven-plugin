@@ -24,8 +24,8 @@ Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugi
 ## jlink goal
 
 The JLink goal is intended to create a Java Run Time Image file based on
-[http://openjdk.java.net/jeps/282"](http://openjdk.java.net/jeps/282),
-[http://openjdk.java.net/jeps/220"](http://openjdk.java.net/jeps/220).
+[http://openjdk.java.net/jeps/282](http://openjdk.java.net/jeps/282),
+[http://openjdk.java.net/jeps/220](http://openjdk.java.net/jeps/220).
   
 
 You need at least Java-9 to use this goal.
