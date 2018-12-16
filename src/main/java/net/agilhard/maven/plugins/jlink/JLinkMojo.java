@@ -27,14 +27,10 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.codehaus.plexus.archiver.Archiver;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
@@ -148,19 +144,6 @@ public class JLinkMojo
     @Parameter
     private List<String> suggestProviders;
 
-    /**
-     * The JAR archiver needed for archiving the environments.
-     */
-    @Component( role = Archiver.class, hint = "zip" )
-    private ZipArchiver zipArchiver;
-
-    /**
-     * Name of the generated ZIP file in the <code>target</code> directory. This will not change the name of the
-     * installed/deployed file.
-     */
-    @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
-    private String finalName;
-
     protected String getJLinkExecutable()
         throws IOException
     {
@@ -228,32 +211,6 @@ public class JLinkMojo
         return jLinkExec;
     }
 
-    private File createZipArchiveFromImage( File outputDirectory, File outputDirectoryImage )
-        throws MojoExecutionException
-    {
-        zipArchiver.addDirectory( outputDirectoryImage );
-
-        File resultArchive = getArchiveFile( outputDirectory, finalName, null, "zip" );
-
-        zipArchiver.setDestFile( resultArchive );
-        try
-        {
-            zipArchiver.createArchive();
-        }
-        catch ( ArchiverException e )
-        {
-            getLog().error( e.getMessage(), e );
-            throw new MojoExecutionException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            getLog().error( e.getMessage(), e );
-            throw new MojoExecutionException( e.getMessage(), e );
-        }
-
-        return resultArchive;
-
-    }
 
     private void failIfParametersAreNotInTheirValidValueRanges()
         throws MojoFailureException

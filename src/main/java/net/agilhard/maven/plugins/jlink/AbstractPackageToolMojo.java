@@ -22,6 +22,10 @@ package net.agilhard.maven.plugins.jlink;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -30,7 +34,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.HashMap;
+import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
@@ -49,6 +56,9 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.languages.java.jpms.LocationManager;
+import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
@@ -68,11 +78,23 @@ public abstract class AbstractPackageToolMojo
     @Component
     protected ToolchainManager toolchainManager;
 
-    
+    /**
+     * The JAR archiver needed for archiving the environments.
+     */
+    @Component( role = Archiver.class, hint = "zip" )
+    private ZipArchiver zipArchiver;
+
+    /**
+     * Name of the generated ZIP file in the <code>target</code> directory. This will not change the name of the
+     * installed/deployed file.
+     */
+    @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
+    private String finalName;
+
     @Parameter( defaultValue = "${project}", readonly = true, required = true )
     protected MavenProject project;
 
-    @Parameter( defaultValue = "${session}", readonly = true, required = true )
+    @Parameter ( defaultValue = "${session}", readonly = true, required = true )
     protected MavenSession session;
 
     /**
@@ -459,6 +481,26 @@ public abstract class AbstractPackageToolMojo
     }
 
 
+    /**
+     * Convert a list into a 
+     * @param modules The list of modules.
+     * @return The string with the module list which is separated by {@code ,}.
+     */
+    protected String getColonSeparatedList( Collection<String> modules )
+    {
+        StringBuilder sb = new StringBuilder();
+        for ( String module : modules )
+        {
+            if ( sb.length() > 0 )
+            {
+                sb.append( ':' );
+            }
+            sb.append( module );
+        }
+        return sb.toString();
+    }
+
+    
     private List<File> getCompileClasspathElements( MavenProject project )
     {
         List<File> list = new ArrayList<File>( project.getArtifacts().size() + 1 );
@@ -516,11 +558,29 @@ public abstract class AbstractPackageToolMojo
             }
 
             // This part is for the module in target/classes ? (Hacky..)
-            // FIXME: Is there a better way to identify that code exists?
+            // FIXME: Is there a better way to identify that code exists?            
+            final AtomicBoolean b = new AtomicBoolean();
+            
+            BiPredicate<Path, BasicFileAttributes> predicate =
+                ( path, attrs ) -> 
+                {
+                        return path.toString().endsWith( ".class" );
+                };
 
-            File[] files = outputDirectory.listFiles( ( d, name ) -> name.endsWith( ".class" ) );
-
-            if ( ( files != null ) && ( ! ( files.length == 0 ) ) )
+                try ( Stream<Path> stream =
+                        Files.find( Paths.get( outputDirectory.toURI() ),
+                                    Integer.MAX_VALUE, predicate ) )
+                {
+                    stream.forEach( name -> 
+                    {
+                        b.set( true );
+                    } );
+                } catch ( IOException e )
+                {
+                    e.printStackTrace();
+                }
+                
+            if ( b.get() )
             {
                 List<File> singletonList = Collections.singletonList( outputDirectory );
 
@@ -554,6 +614,12 @@ public abstract class AbstractPackageToolMojo
         return modulepathElements;
     }
 
+    
+    protected void prepareModules() throws MojoFailureException
+    {
+        prepareModules( null );
+    }
+    
     protected void prepareModules( File jmodsFolder ) throws MojoFailureException
     {
 
@@ -576,11 +642,39 @@ public abstract class AbstractPackageToolMojo
             pathsOfModules.add( item.getValue().getPath() );
         }
 
-        // The jmods directory of the JDK
-        pathsOfModules.add( jmodsFolder.getAbsolutePath() );
-
+        if ( jmodsFolder != null )
+        {
+            // The jmods directory of the JDK
+            pathsOfModules.add( jmodsFolder.getAbsolutePath() );
+        }
     }
 
+    protected File createZipArchiveFromImage( File outputDirectory, File outputDirectoryImage )
+            throws MojoExecutionException
+        {
+            zipArchiver.addDirectory( outputDirectoryImage );
+
+            File resultArchive = getArchiveFile( outputDirectory, finalName, null, "zip" );
+
+            zipArchiver.setDestFile( resultArchive );
+            try
+            {
+                zipArchiver.createArchive();
+            }
+            catch ( ArchiverException e )
+            {
+                getLog().error( e.getMessage(), e );
+                throw new MojoExecutionException( e.getMessage(), e );
+            }
+            catch ( IOException e )
+            {
+                getLog().error( e.getMessage(), e );
+                throw new MojoExecutionException( e.getMessage(), e );
+            }
+
+            return resultArchive;
+
+        }
 
     protected void failIfProjectHasAlreadySetAnArtifact() throws MojoExecutionException
     {
