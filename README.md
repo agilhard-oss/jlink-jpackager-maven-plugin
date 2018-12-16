@@ -14,3 +14,34 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+
+# jlink-jpackager-maven-plugin
+
+Combined maven plugin to call the new jlink and jpackager tools from maven.
+
+Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugin)
+
+## jlink goal
+
+The JLink goal is intended to create a Java Run Time Image file based on
+[http://openjdk.java.net/jeps/282"](http://openjdk.java.net/jeps/282),
+[http://openjdk.java.net/jeps/220"](http://openjdk.java.net/jeps/220).
+  
+
+You need at least Java-9 to use this goal.
+
+ 
+## jpackager goal
+
+The JPackager goal is intended to create a native installer package file based on
+[http://openjdk.java.net/jeps/343](http://openjdk.java.net/jeps/343).
+
+You need to use the special JDK-12 Early Access build that includes JPackager support to use this goal.
+
+This JPackager JDK-12 Early Access build can be downloaded from 
+[https://jdk.java.net/jpackage/](https://jdk.java.net/jpackage/)
+
+This goal does currently NOT work together with the JDK-11 ported Jpackager tool wich is mentioned in
+[Filling the Packager gap - OpenJDK mailing list - Java.net](http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html)
+
+

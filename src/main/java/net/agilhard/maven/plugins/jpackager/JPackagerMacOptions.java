@@ -24,7 +24,7 @@ import java.io.File;
 
 /**
  * Mac Options for JPackager.
- * @author bei
+ * @author Bernd Eilers
  *
  */
 public class JPackagerMacOptions 

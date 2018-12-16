@@ -23,7 +23,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Linux Options for JPackager.
- * @author bei
+ * @author Bernd Eilers
  *
  */
 public class JPackagerLinuxOptions 

@@ -46,7 +46,10 @@ import org.codehaus.plexus.util.cli.Commandline;
 import net.agilhard.maven.plugins.jlink.AbstractPackageToolMojo;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-/**
+/** 
+ * The JPackager goal is intended to create a native installer package file based on
+ * <a href="http://openjdk.java.net/jeps/343">http://openjdk.java.net/jeps/343</a>.
+ * 
  * @author Bernd Eilers
  */
 // CHECKSTYLE_OFF: LineLength
