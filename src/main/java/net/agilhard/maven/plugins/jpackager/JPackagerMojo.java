@@ -537,7 +537,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             {
                 getLog().error( "Exception", e );
                 throw new MojoExecutionException(
-                        "Failure during creation of " + buildRootPackage.getAbsolutePath() + " occured." );
+                        "FargsFileailure during creation of " + buildRootPackage.getAbsolutePath() + " occured." );
             }
         }
     }
@@ -615,16 +615,42 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( buildDirectory != null )
         {
             argsFile.println( "--output" );
-            argsFile.println( outputDirectoryPackage.getCanonicalPath() );
+            String s = outputDirectoryPackage.getCanonicalPath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            }        
 
             if ( inputDirectoryPackage.exists() )
             {
                 argsFile.println( "--input" );
-                argsFile.println( inputDirectoryPackage.getCanonicalPath() );
+                s = inputDirectoryPackage.getCanonicalPath();
+                if ( s.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( s ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( s );
+                }        
+
             }
 
             argsFile.println( "--build-root" );
-            argsFile.println( buildRootPackage.getCanonicalPath() );
+            s = buildRootPackage.getCanonicalPath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            }        
+
         }
         
         
@@ -634,13 +660,20 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             String sb = getColonSeparatedList( files );
             StringBuffer sb2 = new StringBuffer();
             sb2.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).append( '"' );
-            argsFile.println( sb.toString() ); 
+            argsFile.println( sb2.toString() ); 
         }
        
         if ( name != null ) 
         {
             argsFile.println( "--name" );
-            argsFile.println(  name );
+            if ( name.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( name ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( name );
+            }        
         }
         
         if ( appVersion != null ) 
@@ -652,7 +685,15 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( modulePath != null )
         {
             argsFile.println( "--module-path" );
-            argsFile.println( modulePath );
+            String s = modulePath.getCanonicalPath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            }        
         }
         
         if ( mainClass != null ) 
@@ -664,7 +705,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( mainJar != null ) 
         {
             argsFile.println( "--main-jar" );
-            argsFile.println(  mainJar );
+            if ( mainJar.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( mainJar.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( mainJar );
+            }
         }
 
         if ( module != null ) 
@@ -678,14 +726,29 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             for ( String arg : arguments )
             {
                 argsFile.println( "--arguments" );
-                argsFile.println( arg );
+                if ( arg.indexOf( " " ) > -1 )
+                {
+                    argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( arg );
+                }
             }
         }
         
         if ( icon != null ) 
         {
             argsFile.println( "--icon" );
-            argsFile.println( icon.getAbsolutePath() );
+            String s = icon.getCanonicalPath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            }        
         }
         
         if ( singleton )
@@ -697,7 +760,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( identifier != null ) 
         {
             argsFile.println( "--identifier" );
-            argsFile.println(  identifier );
+            if ( identifier.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( identifier.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( identifier );
+            }         
         }
         
         if ( stripNativeCommands )
@@ -722,62 +792,136 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( fileAssociations != null ) 
         {
             argsFile.println( "--file-associations" );
-            argsFile.println(  fileAssociations.getAbsolutePath() );
+            String s = fileAssociations.getCanonicalPath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            } 
         }
         
         if ( secondaryLauncher != null ) 
         {
             argsFile.println( "--file-associations" );
-            argsFile.println(  fileAssociations.getAbsolutePath() );
+            String s = fileAssociations.getCanonicalPath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            } 
         }
         
         if ( runtimeImage != null ) 
         {
             argsFile.println( "--runtime-image" );
-            argsFile.println(  runtimeImage.getAbsolutePath() );
+            String s = runtimeImage.getAbsolutePath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            } 
         }
         
         if ( appImage != null ) 
         {
             argsFile.println( "--app-image" );
-            argsFile.println(  appImage.getAbsolutePath() );
+            String s = appImage.getAbsolutePath();
+            if ( s.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( s );
+            } 
         }
         
         if ( installDir != null ) 
         {
             argsFile.println( "--install-dir" );
-            argsFile.println(  installDir );
+            if ( installDir.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( installDir.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( installDir );
+            } 
         }
         
         if ( licenseFile != null ) 
         {
             argsFile.println( "--license-file" );
-            argsFile.println(  licenseFile );
+            if ( licenseFile.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( licenseFile.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( licenseFile );
+            }        
         }
         
         if ( copyright != null ) 
         {
             argsFile.println( "--copyright" );
-            argsFile.println(  copyright );
+            if ( copyright.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( copyright.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( copyright );
+            }       
         }
         
         if ( description != null ) 
         {
             argsFile.println( "--description" );
-            argsFile.println(  description );
+            if ( description.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( description.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( description );
+            }
         }
         
         if ( category != null ) 
         {
             argsFile.println( "--category" );
-            argsFile.println(  category );
+            if ( category.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( category.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( category );
+            }        
         }
        
         if ( vendor != null ) 
         {
             argsFile.println( "--vendor" );
-            argsFile.println(  vendor );
-        }
+            if ( vendor.indexOf( " " ) > -1 )
+            {
+              argsFile.append( "\"" ).append( vendor.replace( "\\", "\\\\" ) ).println( "\"" );
+            }
+            else
+            {
+                argsFile.println( vendor );
+            }
+         }
         
         if ( hasLimitModules() )
         {
@@ -797,22 +941,50 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             if ( linuxOptions.bundleName != null )
             {
                 argsFile.println( "--linux-bundle-name" );
-                argsFile.println( linuxOptions.bundleName );
+                if ( linuxOptions.bundleName.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( linuxOptions.bundleName.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( linuxOptions.bundleName );
+                }            
             }
             if ( linuxOptions.packageDeps != null )
             {
                 argsFile.println( "--linux-package-deps" );
-                argsFile.println( linuxOptions.packageDeps );
+                if ( linuxOptions.packageDeps.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( linuxOptions.packageDeps.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( linuxOptions.packageDeps );
+                }      
             }
             if ( linuxOptions.rpmLicenseType != null )
             {
                 argsFile.println( "--linux-rpm-license-type" );
-                argsFile.println( linuxOptions.rpmLicenseType );
+                if ( linuxOptions.rpmLicenseType.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( linuxOptions.rpmLicenseType.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( linuxOptions.rpmLicenseType );
+                }             
             }
             if ( linuxOptions.debMaintainer != null )
             {
                 argsFile.println( "--linux-deb-maintainer" );
-                argsFile.println( linuxOptions.debMaintainer );
+                if ( linuxOptions.rpmLicenseType.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( linuxOptions.rpmLicenseType.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( linuxOptions.rpmLicenseType );
+                }
             }
         }
         
@@ -838,7 +1010,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             if ( windowsOptions.registryName != null )
             {
                 argsFile.println( "--win-registry-name" );
-                argsFile.println( windowsOptions.registryName );
+                if ( windowsOptions.registryName.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( windowsOptions.registryName.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( windowsOptions.registryName );
+                }
             }
             if ( windowsOptions.shortcut ) 
             {
@@ -860,37 +1039,92 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             if ( macOptions.bundleName != null )
             {
                 argsFile.println( "--mac-bundle-name" );
-                argsFile.println( macOptions.bundleName );
+                if ( macOptions.bundleName.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( macOptions.bundleName.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( macOptions.bundleName );
+                }
             }
             if ( macOptions.bundleIdentifier != null )
             {
                 argsFile.println( "--mac-bundle-identifier" );
-                argsFile.println( macOptions.bundleIdentifier );
+                if ( macOptions.bundleIdentifier.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( macOptions.bundleIdentifier.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( macOptions.bundleIdentifier );
+                }
             }
             if ( macOptions.appStoreCategory != null )
             {
                 argsFile.println( "--mac-app-store-category" );
-                argsFile.println( macOptions.appStoreCategory );
+                if ( macOptions.appStoreCategory.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( macOptions.appStoreCategory.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( macOptions.appStoreCategory );
+                }
             }
             if ( macOptions.appStoreEntitlements != null )
             {
                 argsFile.println( "--mac-app-store-entitlements" );
-                argsFile.println( macOptions.appStoreEntitlements.getAbsolutePath() );
+                String s = macOptions.appStoreEntitlements.getCanonicalPath();
+                if ( s.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( s );
+                }
             }
             if ( macOptions.bundleSigningPrefix != null )
             {
                 argsFile.println( "--mac-bundle-signing-prefix" );
-                argsFile.println( macOptions.bundleSigningPrefix );
+                if ( macOptions.bundleSigningPrefix.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" )
+                  .append( macOptions.bundleSigningPrefix
+                          .replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( macOptions.bundleSigningPrefix );
+                }
             }
             if ( macOptions.sigingKeyUserName != null )
             {
                 argsFile.println( "--mac-signing-key-username" );
-                argsFile.println( macOptions.sigingKeyUserName );
+                if ( macOptions.sigingKeyUserName.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" )
+                  .append( macOptions.sigingKeyUserName
+                          .replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( macOptions.sigingKeyUserName );
+                }
             }
             if ( macOptions.signingKeychain != null )
             {
                 argsFile.println( "--mac-signing-keychain" );
-                argsFile.println( macOptions.signingKeychain.getAbsolutePath() );
+                String s = macOptions.signingKeychain.getCanonicalPath();
+                if ( s.indexOf( " " ) > -1 )
+                {
+                  argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( s );
+                }
             }
         }
         
