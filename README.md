@@ -44,4 +44,5 @@ This JPackager JDK-12 Early Access build can be downloaded from
 This goal does currently NOT work together with the JDK-11 ported Jpackager tool wich is mentioned in
 [Filling the Packager gap - OpenJDK mailing list - Java.net](http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html)
 
+Note: This is just a first SNAPSHOT not all jpackager goal Configuration Options are fully working yet.
 
