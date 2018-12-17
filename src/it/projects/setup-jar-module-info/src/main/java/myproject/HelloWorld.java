@@ -32,5 +32,14 @@ public class HelloWorld {
     public static void main( String[] args )
     {
         System.out.println( "Hello World from base jar file." );
+        if ( ( args!=null ) && ( args.length > 0 ) )
+        {
+            
+            System.out.println("Arguments:");
+            for ( String arg : args )
+            {
+                System.out.println(arg);
+            }
+        }
     } 
 }

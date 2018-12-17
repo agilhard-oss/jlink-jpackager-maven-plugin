@@ -255,7 +255,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     private File runtimeImage;
 
     /**
-     * Location of the predefined application image that is used to build
+     * Location of tfirst-1.2.3he predefined application image that is used to build
      * an installable package.
      * 
      * <code>--app-image &lt;path&gt;</code>
@@ -407,11 +407,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         executeCommand( cmd, outputDirectoryPackage );
 
-        //File createZipArchiveFromPackage = createZipArchiveFromImage( buildDirectory, outputDirectoryPackage );
+        if ( "create-image".equals( mode ) ) 
+        {
+            File createZipArchiveFromPackage = createZipArchiveFromImage( buildDirectory, outputDirectoryPackage );
 
-        failIfProjectHasAlreadySetAnArtifact();
+            failIfProjectHasAlreadySetAnArtifact();
 
-        //getProject().getArtifact().setFile( createZipArchiveFromPackage );
+            getProject().getArtifact().setFile( createZipArchiveFromPackage );
+        }
         
         publishClassifierArtifacts();
 
@@ -672,11 +675,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( ! ( ( arguments == null ) || arguments.isEmpty() ) )
         {
-            argsFile.println( "--arguments" );
-            String sb = getColonSeparatedList( arguments );
-            StringBuffer sb2 = new StringBuffer();
-            sb2.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).append( '"' );
-            argsFile.println( sb.toString() ); 
+            for ( String arg : arguments )
+            {
+                argsFile.println( "--arguments" );
+                argsFile.println( arg );
+            }
         }
         
         if ( icon != null ) 
@@ -748,7 +751,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         
         if ( licenseFile != null ) 
         {
-            argsFile.println( "--licenseFile" );
+            argsFile.println( "--license-file" );
             argsFile.println(  licenseFile );
         }
         

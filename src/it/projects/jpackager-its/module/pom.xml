@@ -44,13 +44,13 @@
   <build>
     <plugins>
       <plugin>
-	<groupId>net.agilhard.maven.plugins</groupId>
-	<artifactId>jlink-jpackager-maven-plugin</artifactId>
+		<groupId>net.agilhard.maven.plugins</groupId>
+		<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-	  <verbose>true</verbose>
-	  <module>first.jar.module.info/myproject.HelloWorld</module>
+			<verbose>true</verbose>
+			<module>first.jar.module.info/myproject.HelloWorld</module>
         </configuration>
       </plugin>
     </plugins>
