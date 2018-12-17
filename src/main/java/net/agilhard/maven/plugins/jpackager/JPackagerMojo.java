@@ -44,7 +44,6 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import net.agilhard.maven.plugins.jlink.AbstractPackageToolMojo;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /** 
  * The JPackager goal is intended to create a native installer package file based on
@@ -334,22 +333,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     private String module;
     
     /**
-     * Path JPackager looks in for modules when packaging the Java Runtime.
-     * <p>
-     * Currently jpackage can not use a PATH with several directories separated
-     * by a colon or semicolon like jlink can.
-     * <br/>
-     * Thus we only use a single directory and copy the dependencies into that directory.
-     * </p>
-     * 
-     * <p>
-     * <code>--module-path &lt;module directory&gt;</code>
-     * </p>
-     */
-    @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-jmods", required = true, readonly = false )
-    private File modulePath;
-    
-    /**
      * Linux Options
      */
     @Parameter( required = false, readonly = false )
@@ -382,17 +365,20 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jpackager [ " + jPackagerExec + " ]" );
 
+        // TODO: Find a more better and cleaner way?
+        File jPackagerExecuteable = new File( jPackagerExec );
+
+        // Really Hacky...do we have a better solution to find the jmods directory of the JDK?
+        File jLinkParent = jPackagerExecuteable.getParentFile().getParentFile();
+        File jmodsFolder = new File( jLinkParent, JMODS );
+
         failIfParametersAreNotValid();
         
         ifBuildRootDirectoryDoesNotExistcreateIt();
-        
-        ifModulePathDirectoryDoesNotExistcreateIt();
-        
+                
         ifOutputDirectoryExistsDeleteIt();
         
-        prepareModules();
-
-        copyModulesToModulePath();
+        prepareModules( jmodsFolder, true );
 
         Commandline cmd;
         try
@@ -483,32 +469,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         return result.getFile();
     }
     
-    private void copyModulesToModulePath() throws MojoExecutionException
-    {
-        if ( pathsOfModules != null )
-        {
-            for ( String path : pathsOfModules ) 
-            {
-               Path file = new File( path ).toPath();
-               if ( Files.isRegularFile( file ) )
-               {
-                   getLog().info( "copy module " + path );
-                   try 
-                   {
-                       Path target = modulePath.toPath().resolve( file.getFileName() );
-                       Files.copy( file, target, REPLACE_EXISTING );
-                   }
-                   catch ( IOException e )
-                   {
-                       getLog().error( "IOException", e );
-                       throw new MojoExecutionException(
-                            "Failure during copying of " + path + " occured." );
-                   }
-               }
-           }
-        }
-    }
-    
+   
     private String getExecutable() throws MojoFailureException 
     {
         String jPackagerExec;
@@ -542,23 +503,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
     
-    private void ifModulePathDirectoryDoesNotExistcreateIt() throws MojoExecutionException 
-    {
-        if ( ! modulePath.exists() )
-        {
-            try
-            {
-                getLog().debug( "Create directory " + modulePath.getAbsolutePath() );
-                modulePath.mkdirs();
-            }
-            catch ( Exception e )
-            {
-                getLog().error( "Exception", e );
-                throw new MojoExecutionException(
-                        "Failure during creation of " + modulePath.getAbsolutePath() + " occured." );
-            }
-        }
-    }
     
     private void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException 
     {
@@ -682,19 +626,21 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             argsFile.println(  appVersion.replaceAll( "-SNAPSHOT", "" ).replaceAll( ".SNAPSHOT", "" ) );
         }
         
-        if ( modulePath != null )
+        if ( pathsOfModules != null )
         {
             argsFile.println( "--module-path" );
-            String s = modulePath.getCanonicalPath();
+            String s = getPlatformDependSeparateList( pathsOfModules );
             if ( s.indexOf( " " ) > -1 )
             {
-              argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
+                argsFile.append( "\"" ).append( s.replace( "\\", "\\\\" ) ).println( "\"" );
             }
             else
             {
                 argsFile.println( s );
             }        
+            
         }
+        
         
         if ( mainClass != null ) 
         {

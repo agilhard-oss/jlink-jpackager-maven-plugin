@@ -616,13 +616,8 @@ public abstract class AbstractPackageToolMojo
         return modulepathElements;
     }
 
-    
-    protected void prepareModules() throws MojoFailureException
-    {
-        prepareModules( null );
-    }
-    
-    protected void prepareModules( File jmodsFolder ) throws MojoFailureException
+
+    protected void prepareModules( File jmodsFolder, boolean useDirectory ) throws MojoFailureException
     {
 
         if ( addModules != null )
@@ -641,7 +636,14 @@ public abstract class AbstractPackageToolMojo
 
             // We use the real module name and not the artifact Id...
             modulesToAdd.add( item.getKey() );
-            pathsOfModules.add( item.getValue().getPath() );
+            if ( useDirectory )
+            {
+                pathsOfModules.add( item.getValue().getParentFile().getPath() );
+            }
+            else
+            {
+                pathsOfModules.add( item.getValue().getPath() );
+            }
         }
 
         if ( jmodsFolder != null )

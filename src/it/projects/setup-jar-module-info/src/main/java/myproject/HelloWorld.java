@@ -20,7 +20,7 @@ package myproject;
  */
 
 /**
- * The classic Hello World App.
+ *  Just another Hello World App.
  */
 public class HelloWorld {
 
