@@ -85,7 +85,7 @@ public class JPackagerMacOptions
      * <code>--mac-signing-key-user-name &lt;user name&gt;</code>
      */
     @Parameter( required = false, readonly = false )
-    String sigingKeyUserName;
+    String signingKeyUserName;
     
     /**
      * Location of the keychain to use. If not specified, the standard keychains are used.
