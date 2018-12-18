@@ -44,6 +44,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import net.agilhard.maven.plugins.jlink.AbstractPackageToolMojo;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /** 
  * The JPackager goal is intended to create a native installer package file based on
@@ -121,6 +122,26 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-build", required = true, readonly = false )
     private File buildRootPackage;
 
+    
+    /**
+     * TempDirectory where artifact modules are temporarily copied too.
+     */
+    @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-jmods", required = true, readonly = false )
+    private File moduleTempDirectory;
+    
+    
+    /**
+     * Flag whether to copy artifact modules to the moduleTempDirectory.
+     * 
+     * <p>
+     * The default value is true. Setting this to false only works if there are no modules whith classes
+     * in the module hierachy.
+     * </p>
+     * 
+     */
+    @Parameter( defaultValue = "true", required = true, readonly = false )
+    private boolean copyArtifacts;
+    
     /**
      * List of files in the base directory. If omitted, all files from "input"
      * directory (which is a mandatory argument in this case) will be packaged.
@@ -391,8 +412,8 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         File jPackagerExecuteable = new File( jPackagerExec );
 
         // Really Hacky...do we have a better solution to find the jmods directory of the JDK?
-        File jLinkParent = jPackagerExecuteable.getParentFile().getParentFile();
-        File jmodsFolder = new File( jLinkParent, JMODS );
+        File jPackagerParent = jPackagerExecuteable.getParentFile().getParentFile();
+        File jmodsFolder = new File( jPackagerParent, JMODS );
 
         failIfParametersAreNotValid();
         
@@ -400,7 +421,13 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                 
         ifOutputDirectoryExistsDeleteIt();
         
-        prepareModules( jmodsFolder, true );
+        prepareModules( jmodsFolder, true, copyArtifacts, moduleTempDirectory );
+
+        if ( copyArtifacts )
+        {
+            ifModuleTempDirectoryDoesNotExistCreateIt();
+            copyArtifactsToModuleTempDirectory();
+        }
 
         Commandline cmd;
         try
@@ -499,6 +526,32 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
     
    
+    private void copyArtifactsToModuleTempDirectory() throws MojoExecutionException
+    {
+        if ( pathsOfArtifacts != null )
+        {
+            for ( String path : pathsOfArtifacts ) 
+            {
+               Path file = new File( path ).toPath();
+               if ( Files.isRegularFile( file ) )
+               {
+                   getLog().info( "copy module " + path );
+                   try 
+                   {
+                       Path target = moduleTempDirectory.toPath().resolve( file.getFileName() );
+                       Files.copy( file, target, REPLACE_EXISTING );
+                   }
+                   catch ( IOException e )
+                   {
+                       getLog().error( "IOException", e );
+                       throw new MojoExecutionException(
+                            "Failure during copying of " + path + " occured." );
+                   }
+               }
+           }
+        }
+    }
+    
     private String getExecutable() throws MojoFailureException 
     {
         String jPackagerExec;
@@ -540,6 +593,23 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
     
+    private void ifModuleTempDirectoryDoesNotExistCreateIt() throws MojoExecutionException 
+    {
+        if ( ! moduleTempDirectory.exists() )
+        {
+            try
+            {
+                getLog().debug( "Create directory " + moduleTempDirectory.getAbsolutePath() );
+                moduleTempDirectory.mkdirs();
+            }
+            catch ( Exception e )
+            {
+                getLog().error( "Exception", e );
+                throw new MojoExecutionException(
+                        "Failure during creation of " + moduleTempDirectory.getAbsolutePath() + " occured." );
+            }
+        }
+    }
     
     private void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException 
     {
@@ -574,7 +644,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         throws IOException
     {
 
-        File file = new File( outputDirectoryPackage.getParentFile(), "jlinkArgs" );
+        File file = new File( outputDirectoryPackage.getParentFile(), "jpackageArgs" );
         
         if ( !getLog().isDebugEnabled() )
         {

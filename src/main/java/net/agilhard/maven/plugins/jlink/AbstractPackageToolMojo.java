@@ -143,6 +143,7 @@ public abstract class AbstractPackageToolMojo
 
     protected Collection<String> modulesToAdd = new ArrayList<>();
     protected Collection<String> pathsOfModules = new ArrayList<>();
+    protected Collection<String> pathsOfArtifacts = new ArrayList<>();
 
     @Parameter( defaultValue = "${project.build.directory}", required = true, readonly = true )
     protected File buildDirectory;
@@ -617,7 +618,13 @@ public abstract class AbstractPackageToolMojo
     }
 
 
-    protected void prepareModules( File jmodsFolder, boolean useDirectory ) throws MojoFailureException
+    protected void prepareModules( File jmodsFolder ) throws MojoFailureException
+    {
+        prepareModules( jmodsFolder, false, false, null );
+    }
+
+    protected void prepareModules( File jmodsFolder, boolean useDirectory,
+            boolean copyArtifacts, File moduleTempDirectory ) throws MojoFailureException
     {
 
         if ( addModules != null )
@@ -630,22 +637,35 @@ public abstract class AbstractPackageToolMojo
             pathsOfModules.addAll( modulePaths );
         }
 
+        if ( copyArtifacts )
+        {
+            if ( moduleTempDirectory != null )
+            {
+                pathsOfModules.add( moduleTempDirectory.getAbsolutePath() ); 
+            }
+        }
         for ( Entry<String, File> item : getModulePathElements().entrySet() )
         {
             getLog().info( " -> module: " + item.getKey() + " ( " + item.getValue().getPath() + " )" );
 
             // We use the real module name and not the artifact Id...
-            modulesToAdd.add( item.getKey() );
-            if ( useDirectory )
-            {
-                pathsOfModules.add( item.getValue().getParentFile().getPath() );
-            }
-            else
-            {
-                pathsOfModules.add( item.getValue().getPath() );
+             modulesToAdd.add( item.getKey() );
+             if ( copyArtifacts )
+             {
+                 pathsOfArtifacts.add( item.getValue().getPath() );
+             }
+             else
+             {
+                 if ( useDirectory )
+                 {
+                    pathsOfModules.add( item.getValue().getParentFile().getPath() );
+                }
+                else
+                {
+                    pathsOfModules.add( item.getValue().getPath() );
+                }
             }
         }
-
         if ( jmodsFolder != null )
         {
             // The jmods directory of the JDK

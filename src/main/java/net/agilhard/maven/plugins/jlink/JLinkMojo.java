@@ -172,7 +172,7 @@ public class JLinkMojo
 
         ifOutputDirectoryExistsDeleteIt();
 
-        prepareModules( jmodsFolder, false );
+        prepareModules( jmodsFolder );
         
         Commandline cmd;
         try
