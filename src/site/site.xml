@@ -22,23 +22,28 @@
 <project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd"
 >
-  <custom>
-    <fluidoSkin>
-      <profile>pre-release</profile>
-    </fluidoSkin>
-  </custom>
+  <bannerLeft>
+    <name>agilhard.net</name>
+    <src>images/AgilhardBannerRight.png</src>
+  </bannerLeft>
+  <bannerRight>
+    <name>agilhard.net</name>
+    <src>images/AgilhardBannerRight.png</src>
+  </bannerRight>
+  <poweredBy>
+    <logo name="Agilhard" href="https://github.com/agilhard-oss" img="images/AgilhardSignet.png" title="Agilhard" />
+  </poweredBy>
+
   <body>
     <menu name="Overview">
       <item name="Introduction" href="index.html" />
       <item name="Goals" href="plugin-info.html" />
       <item name="Usage" href="usage.html" />
       <!-- <item name="FAQ" href="faq.html"/> -->
-      <!-- According to https://issues.apache.org/jira/browse/MNGSITE-152 -->
       <item name="License" href="http://www.apache.org/licenses/" />
-      <item name="Download" href="download.html" />
     </menu>
-    <!-- <menu name="Examples"> -->
-    <!-- <item name="Basic multi module setup" href="examples/base-jlink-example.html"/> -->
-    <!-- </menu> -->
+    <!-- Menus that every project will inherit -->
+    <menu ref="reports" inherit="bottom" />
+
   </body>
 </project>

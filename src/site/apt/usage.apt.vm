@@ -1,10 +1,3 @@
-  ------
-  Usage
-  ------
-  Karl Heinz Marbaise <khmarbaise@apache.org>
-  ------
-  2017-09-01
-
 ~~ Copyright 2006 The Apache Software Foundation.
 ~~
 ~~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,17 +20,17 @@ Usage
 
 * Introduction
 
-  The Maven JLink plugin is used to create {{{http://openjdk.java.net/jeps/220}Modular Run-Time Images}} with
-  JDK 9.
-  
+  The JLink plugin is used to create {{{http://openjdk.java.net/jeps/220}Modular Run-Time Images}} with JDK 9
+  or an installable package via {{{http://openjdk.java.net/jeps/343}jpackage}} with JDK12
+
   The intended artifacts to be linked together into a Modular Run-Time Image 
   are the <<jmod>> and <<jar>> files. JMod files can be created by using the
   {{{../maven-jmod-plugin/}Maven JMod Plugin}} and <<jar>> files can be
   created by using the {{{../maven-jar-plugin/}Maven JAR Plugin}}.
    
-* Configuration of the Maven JLink Plugin
+* Configuration of the JLink-JPackager Maven Plugin
 
-  To use the Maven JLink Plugin you have to configure it as an <<<extensions>>> which means
+  To use the JLink-JPackager Maven Plugin you have to configure it as an <<<extensions>>> which means
   the configuration in your pom file has to look like this:
   
 +-----
@@ -48,7 +41,8 @@ Usage
     <plugins>
       [...]
       <plugin>
-        <artifactId>maven-jlink-plugin</artifactId>
+	<groupId>net.agilhard.maven.plugins</groupId>
+	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>${project.version}</version>
         <extensions>true</extensions>
         <configuration>
@@ -66,19 +60,23 @@ Usage
 
 * Requirements
 
-  Based on the foundation of the plugin it is required to have JDK 9 installed. This means
-  either you have it configured via <<JAVA_HOME>> which means to run the whole
-  Maven build with JDK 9 or via <<Toolchains>>.
+  Based on the foundation of the plugin it is required to have at least JDK 9
+  installed to use the jlink goal and at least JDK12 installed to use the
+  jpackager goal.  This means either you have it configured via <<JAVA_HOME>> 
+  which means to run the whole
+  Maven build with JDK 9/12 or via <<Toolchains>>.
 
   Howto configure Maven related to Toolchains can be read in the
   {{{https://maven.apache.org/guides/mini/guide-using-toolchains.html}Toolchains documentation}}.
 
  
-* Usage of the Maven JLink Plugin
+* Usage of the JLink-JPackager Maven Plugin
 
-  Usually you will use the Maven JLink Plugin to create a Run Time Image from one or more modules within 
-  a multi module build.
-  In other words it is not possible to create a Run Time Image from a single Maven
+  Usually you will use the Maven JLink-JPackager Plugin to create
+  a Run Time Image or an installable Package from one or more modules within 
+  a multi module build 
+  In other words it is not possible to create a Run Time Image or Package
+  from a single Maven
   Project within the same single Maven Project.
   Let us assume you have a multi module structure which contains two modules <<mod-1>> and <<mod-2>> 
   which you like to put into the resulting Run Time Image.
@@ -176,11 +174,41 @@ Usage
     └── src
 +-----
 
+  Or if you like to create a installable package of your modules you have to create a 
+  separate module <<mod-jpackager>> which contains the configuration to create the Run 
+  Time Image which looks similar like this:
+
++-----
+<project ...>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.corporate.project</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <packaging>jpackager</packaging>
+  <artifactId>mod-jlink</artifactId>
+   [...]
+</project>
++-----
+
+  The directory structure than looks like this:
+  
++-----
+.
+├── mod-1
+│   └── src
+├── mod-2
+│   └── src
+└── mod-jpackager
+    └── src
++-----
+
   Before you can do this you have to add the configuration to the parent like shown 
-  in {{{Configuration_of_the_Maven_JLink_Plugin}Configuration of the Maven JLink Plugin}}.
+  in {{{Configuration_of_the_JLink-JPackager_Maven_Plugin}Configuration of the JLink-JPackager Maven Plugin}}.
 
   Now you need to define which modules should be linked into the resulting Java Run Time Image which simply
-  can be done by defining the modules as dependencies to your <<mod-jlink>> module like this:
+  can be done by defining the modules as dependencies to your <<mod-jlink>> or <<mod-jpackager>> module like this:
   
 +-----
 <project ...>
@@ -207,9 +235,55 @@ Usage
    [...]
 </project>
 +-----
+
+  When you use the <<jpackager>> goal you also have to at least
+  specify some minimal configuration with a <<module>> element
+  specifying the main module and the main class like this:
+
++-----
+<project ...>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.corporate.project</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <packaging>jpackager</packaging>
+  <artifactId>mod-jpackager</artifactId>
+
+  <build>
+    <plugins>
+
+      <plugin>
+	<groupId>net.agilhard.maven.plugins</groupId>
+	<artifactId>jlink-jpackager-maven-plugin</artifactId>
+	<extensions>true</extensions>
+	<configuration>
+	  <verbose>true</verbose>
+	  <module>com.corporate.project.mod-1/MainClass</module>
+	</configuration>
+      </plugin>
+
+    </plugins>
+
+ <dependencies>
+    <dependency>
+      <groupId>com.corporate.project</groupId>
+      <artifactId>mod-1</artifactId>
+      <version>\${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.corporate.project</groupId>
+      <artifactId>mod-2</artifactId>
+      <version>\${project.version}</version>
+    </dependency>
+  </dependencies>  
+   [...]
+</project>
++-----
   
   
-  After you have added the appropriate configuration you can simply create the Java Run Time Image by
+  After you have added the appropriate configuration you can simply create the Java Run Time Image or Installable Package by
   calling from the root of your multi module project like this:
   
 +----
@@ -220,8 +294,8 @@ mvn clean package
 
 +----
 [INFO]
-[INFO] --- maven-jlink-plugin:${project.version}:jlink (default-jlink) @ mod-jlink ---
-[INFO] Toolchain in maven-jlink-plugin: jlink [ /.../jdk1.9.0_ea+181.jdk/Contents/Home/bin/jlink ]
+[INFO] --- jlink-jpacker-plugin:${project.version}:jlink (default-jlink) @ mod-jlink ---
+[INFO] Toolchain in jlink-jpackager-maven-plugin: jlink [ /.../jdk1.9.0_ea+181.jdk/Contents/Home/bin/jlink ]
 [INFO] The following dependencies will be linked into the runtime image:
 [INFO]  -> module: com.soebes.nine.one.jar ( /.../mod-1/target/mod-1-1.0-SNAPSHOT.jar )
 [INFO]  -> module: com.soebes.nine.two.jar ( /.../mod-2/target/mod-2-1.0-SNAPSHOT.jar )
@@ -259,5 +333,6 @@ jlink/
 └── release
 +---
 
-  
+  Packages build with the <<jpackager>> goal are deployed into the repository with a maven classifier based
+on the package type and the extension for the package format, eg. .rpm .msi  
 

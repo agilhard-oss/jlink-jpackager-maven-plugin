@@ -21,6 +21,9 @@ Combined maven plugin to call the new jlink and jpackager tools from maven.
 
 Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugin)
 
+[Maven Plugin Documentation](https://agilhard-oss.github.io/jlink-jpackager-maven-plugin/site/index.html)
+
+
 ## jlink goal
 
 The JLink goal is intended to create a Java Run Time Image file based on

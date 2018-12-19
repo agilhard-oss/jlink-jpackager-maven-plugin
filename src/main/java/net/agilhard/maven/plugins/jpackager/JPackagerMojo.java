@@ -291,13 +291,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     private String installDir;
     
     /**
-     * Removes native executables from the custom run-time images.
-     * <code>--strip-native-commands</code>
-     */
-    @Parameter( required = false, readonly = false )
-    private boolean echoMode;
-    
-    /**
      * The license file, relative to the base directory.
      *
      * <code>--license-file &lt;path&gt;</code>
@@ -354,19 +347,39 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     private String module;
     
     /**
-     * Linux Options
+     * Linux Options.
+     * 
+     * <p>
+     * Available subelements of &lt;LinuxOptions&gt; are:
+     * bundleName, packageDeps, rpmLicenseType and debMaintainer.
+     * 
+     * <p>
      */
     @Parameter( required = false, readonly = false )
     JPackagerLinuxOptions linuxOptions;
     
     /**
      * Windows Options
+     * <p>
+     * Available subelements of &lt;WindowsOptions&gt; are:
+     * menu, menuGroup, perUserInstall, dirChooser, registryName, upgradeUUID,
+     * shortcut and console.
+     * 
+     * <p>
      */
     @Parameter( required = false, readonly = false )
     JPackagerWindowsOptions windowsOptions;
     
     /**
      * Mac Options
+	 *
+     * <p>
+     * Available subelements of &lt;MacOptions&gt; are:
+     * sign, bundleName, bundleIdentifier, appStoreCategory,
+     * appStoreEntitlements, bundleSigningPrefix, 
+     * signingKeyUserName and signingKeychain.
+     * 
+     * <p>
      */
     @Parameter( required = false, readonly = false )
     JPackagerMacOptions macOptions;

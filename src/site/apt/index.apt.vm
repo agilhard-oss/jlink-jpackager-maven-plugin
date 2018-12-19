@@ -1,11 +1,3 @@
-  ------
-  Introduction
-  ------
-  Karl Heinz Marbaise
-  ------
-  2017-08-17
-  ------
-
 ~~ Licensed to the Apache Software Foundation (ASF) under one
 ~~ or more contributor license agreements.  See the NOTICE file
 ~~ distributed with this work for additional information
@@ -28,43 +20,33 @@
 
 ${project.name}
 
-  The JLink Plugin is intended to create a {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
-  via {{{http://openjdk.java.net/jeps/282}jlink}}.
+  The JLink-JPackager Plugin is intended to create a {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
+  via {{{http://openjdk.java.net/jeps/282}jlink}} 
+  or an installable package via {{{http://openjdk.java.net/jeps/343}jpackage}} 
     
   NOTE: This is an alpha release which means everything can change until we reach the first
   milestone release.
 
 * Goals Overview
 
-  The JLink Plugin has two goals:
+  The JLink Plugin has three goals:
 
-  * {{{./jlink-mojo.html}jlink:jlink}} create a Java Run Time Image from <<jar>>/<<jmod>> files.
+  * {{{./jlink-mojo.html}jlink-jpackager:jlink}} create a Java Run Time Image from <<jar>>/<<jmod>> files.
 
-  * {{{./help-mojo.html}jlink:help}} displays help information on maven-jlink-plugin.
+  * {{{./jpackager-mojo.html}jlink-jpackager:}} create a native installer package with the <<jpackage>> tool.
+
+  * {{{./help-mojo.html}jlink-jpackager:help}} displays help information on maven-jlink-plugin.
 
   []
 
 * Usage
 
-  General instructions on how to use the JLink Plugin can be found on the {{{./usage.html}usage page}}. Some more
+  General instructions on how to use the JLink-JPackager Plugin can be found on the {{{./usage.html}usage page}}. Some more
   specific use cases are described in the examples given below.
-
-  In case you still have questions regarding the plugin's usage, please have a look at the {{{./faq.html}FAQ}} and feel
-  free to contact the {{{./mail-lists.html}user mailing list}}. The posts to the mailing list are archived and could
-  already contain the answer to your question as part of an older thread. Hence, it is also worth browsing/searching
-  the {{{./mail-lists.html}mail archive}}.
-
-  If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our
-  {{{./issue-tracking.html}issue tracker}}. When creating a new issue, please provide a comprehensive description of your
-  concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason,
-  entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated.
-  Of course, patches are welcome, too. Contributors can check out the project from our
-  {{{./source-repository.html}source repository}} and will find supplementary information in the
-  {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}.
 
 * Examples
 
-  To provide you with better understanding on some usages of the Maven JLink Plugin,
+  To provide you with better understanding on some usages of the JLink-JPackager Maven Plugin,
   you can take a look into the following examples:
 
   TODO: Add examples.
