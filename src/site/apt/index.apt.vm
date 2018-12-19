@@ -20,9 +20,9 @@
 
 ${project.name}
 
-  The JLink-JPackager Maven Plugin is intended to create a {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
+  The JLink-JPackager Maven Plugin is intended to create {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
   via {{{http://openjdk.java.net/jeps/282}jlink}} 
-  or an installable package via {{{http://openjdk.java.net/jeps/343}jpackage}} 
+  or native installable packages via {{{http://openjdk.java.net/jeps/343}jpackage}} 
     
   NOTE: This is an alpha release which means everything can change until we reach the first
   milestone release.
