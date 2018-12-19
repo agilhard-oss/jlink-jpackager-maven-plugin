@@ -31,7 +31,7 @@ ${project.name}
 
 * Goals Overview
 
-  The JLink Plugin has three goals:
+  The JLink-JPackager Maven Plugin has three goals:
 
   * {{{./jlink-mojo.html}jlink-jpackager:jlink}} create a Java Run Time Image from <<jar>>/<<jmod>> files.
 
