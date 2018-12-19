@@ -23,6 +23,14 @@ Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugi
 
 [Maven Plugin Documentation](https://agilhard-oss.github.io/jlink-jpackager-maven-plugin/site/index.html)
 
+## Usage of the JLink-JPackager Maven Plugin
+
+Usually you will use the Maven JLink-JPackager Maven Plugin to create
+a Run Time Image or an installable Package from one or more modules within 
+a multi module build.
+In other words it is not possible to create a Run Time Image or Installation Package
+from a single Maven Project within the same single Maven Project.
+
 
 ## jlink goal
 
@@ -44,9 +52,18 @@ You need to use the special JDK-12 Early Access build that includes JPackager su
 This JPackager JDK-12 Early Access build can be downloaded from 
 [https://jdk.java.net/jpackage/](https://jdk.java.net/jpackage/)
 
-Alternatively you can also use the JDK-11 backported Jpackager tool wich is mentioned in
+Alternatively you can also use the JDK-11 backported JPackager tool wich is mentioned in
 [Filling the Packager gap - OpenJDK mailing list - Java.net](http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html)
 
 Note: This is just a first SNAPSHOT not all jpackager goal Configuration Options are fully working yet.
 
+## Examples
 
+Example for jlink-jpackager-maven-plugin how to build a distroless docker image using the Java jlink tool:
+
+[jlink-distroless-maven-example](https://github.com/agilhard-oss/jlink-distroless-maven-example)
+
+
+Minimalistic Example for jlink-jpackager-maven-plugin how to build a installable package using the Java jpackage tool:
+
+[jpackager-maven-example](https://github.com/agilhard-oss/jpackager-maven-example)

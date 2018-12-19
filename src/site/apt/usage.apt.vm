@@ -20,14 +20,19 @@ Usage
 
 * Introduction
 
-  The JLink plugin is used to create {{{http://openjdk.java.net/jeps/220}Modular Run-Time Images}} with JDK 9
+  The JLink-JPackager Maven plugin is used to create {{{http://openjdk.java.net/jeps/220}Modular Run-Time Images}} with JDK 9
   or an installable package via {{{http://openjdk.java.net/jeps/343}jpackage}} with JDK12
+
+  The JLink-JPackager Maven Plugin is available on GitHub: {{{https://github.com/agilhard-oss/jlink-jpackager-maven-plugin}jlink-jpackager-maven-plugin}}
+
+  It is based on the Apache {{{https://github.com/apache/maven-jlink-plugin}maven-jlink-plugin}}
 
   The intended artifacts to be linked together into a Modular Run-Time Image 
   are the <<jmod>> and <<jar>> files. JMod files can be created by using the
   {{{../maven-jmod-plugin/}Maven JMod Plugin}} and <<jar>> files can be
   created by using the {{{../maven-jar-plugin/}Maven JAR Plugin}}.
-   
+
+
 * Configuration of the JLink-JPackager Maven Plugin
 
   To use the JLink-JPackager Maven Plugin you have to configure it as an <<<extensions>>> which means
@@ -61,7 +66,7 @@ Usage
 * Requirements
 
   Based on the foundation of the plugin it is required to have at least JDK 9
-  installed to use the jlink goal and at least JDK12 installed to use the
+  installed to use the jlink goal and at least JDK11/12 installed to use the
   jpackager goal.  This means either you have it configured via <<JAVA_HOME>> 
   which means to run the whole
   Maven build with JDK 9/12 or via <<Toolchains>>.
@@ -69,15 +74,23 @@ Usage
   Howto configure Maven related to Toolchains can be read in the
   {{{https://maven.apache.org/guides/mini/guide-using-toolchains.html}Toolchains documentation}}.
 
+  You need to use the special JDK-12 Early Access build that includes JPackager support to use the <<jpackager>> goal.
+
+  This JPackager JDK-12 Early Access build can be downloaded from 
+  {{{https://jdk.java.net/jpackage/}https://jdk.java.net/jpackage/}}.
+
+  Alternatively you can also use the JDK-11 backported JPackager tool wich is mentioned in
+  {{{http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html}Filling the Packager gap - OpenJDK mailing list - Java.net}}
  
+
 * Usage of the JLink-JPackager Maven Plugin
 
-  Usually you will use the Maven JLink-JPackager Plugin to create
+  Usually you will use the Maven JLink-JPackager Maven Plugin to create
   a Run Time Image or an installable Package from one or more modules within 
   a multi module build 
-  In other words it is not possible to create a Run Time Image or Package
-  from a single Maven
-  Project within the same single Maven Project.
+  In other words it is not possible to create a Run Time Image or Installation Package
+  from a single Maven Project within the same single Maven Project.
+
   Let us assume you have a multi module structure which contains two modules <<mod-1>> and <<mod-2>> 
   which you like to put into the resulting Run Time Image.
 
