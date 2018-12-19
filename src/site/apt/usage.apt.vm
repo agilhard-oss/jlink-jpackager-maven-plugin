@@ -187,7 +187,7 @@ Usage
     <version>1.0-SNAPSHOT</version>
   </parent>
   <packaging>jpackager</packaging>
-  <artifactId>mod-jlink</artifactId>
+  <artifactId>mod-jpackager</artifactId>
    [...]
 </project>
 +-----
