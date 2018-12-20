@@ -117,16 +117,12 @@ public class JPackagerMacOptions
      *  
      *  If &lt;macType&gt; is omitted a .dmg Installer Package will be generated.
      * 
-     *  
-     *  If &lt;macType&gt; is empty, all supported types of installable
-     *  packages for Mac will be generated.
-     *  
      *  If both &lt;macType&gt; and  &lt;type&gt; are being 
      *  set the value of the &lt;type&gt;
      *  parameter is being used.
      *  </p>
      */
     @Parameter( defaultValue = "dmg", required = false, readonly = false )
-    public String macType;
+    public String macType = "dmg";
 
 }

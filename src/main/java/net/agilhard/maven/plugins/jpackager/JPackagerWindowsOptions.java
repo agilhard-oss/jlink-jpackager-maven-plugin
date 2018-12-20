@@ -111,16 +111,12 @@ public class JPackagerWindowsOptions
      *  
      *  If &lt;windowsType&gt; is omitted a .msi Installer Package will be generated.
      * 
-     *  
-     *  If &lt;windowsType&gt; is empty, all supported types of installable
-     *  packages for Windows will be generated.
-     *  
      *  If both &lt;windowsType&gt; and  &lt;type&gt; are being 
      *  set the value of the &lt;type&gt;
      *  parameter is being used.
      *  </p>
      */
     @Parameter( defaultValue = "msi", required = false, readonly = false )
-    public String windowsType;
+    public String windowsType = "msi";
 
 }

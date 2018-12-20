@@ -523,12 +523,13 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             if ( SystemUtils.IS_OS_LINUX && ( linuxOptions != null ) ) {
             	type = linuxOptions.linuxType;
             }
-            else if ( SystemUtils.IS_OS_WINDOWS && ( windowsOptions != null ) ) {
-            	type = windowsOptions.windowsType;
+            else if ( SystemUtils.IS_OS_WINDOWS ) {
+            	type = ( ( windowsOptions == null )  || ( windowsOptions.windowsType == null ) ) ? "msi" : windowsOptions.windowsType;
             }
-            else if ( SystemUtils.IS_OS_MAC && ( macOptions != null ) ) {
-            	type = macOptions.macType;
+            else if ( SystemUtils.IS_OS_MAC  ) {
+            	type = ( ( macOptions == null ) || ( macOptions.macType == null ) ) ? "dmg" : macOptions.macType;
             }
+	    getLog().info("<type> is not set using platform default (" + ( type == null ? "" : type ) + ")" );
         }
     }
     
