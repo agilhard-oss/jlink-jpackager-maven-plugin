@@ -393,7 +393,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * 
      * <p>
      * Available subelements of &lt;LinuxOptions&gt; are:
-     * bundleName, packageDeps, rpmLicenseType and debMaintainer.
+     * bundleName, packageDeps, rpmLicenseType, debMaintainer and linuxType.
      * </p>
      */
     @Parameter( required = false, readonly = false )
@@ -404,7 +404,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * <p>
      * Available subelements of &lt;WindowsOptions&gt; are:
      * menu, menuGroup, perUserInstall, dirChooser, registryName, upgradeUUID,
-     * shortcut and console.
+     * shortcut, console and windowsType.
      * </p>
      */
     @Parameter( required = false, readonly = false )
@@ -417,7 +417,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Available subelements of &lt;MacOptions&gt; are:
      * sign, bundleName, bundleIdentifier, appStoreCategory,
      * appStoreEntitlements, bundleSigningPrefix, 
-     * signingKeyUserName and signingKeychain.
+     * signingKeyUserName, signingKeychain and macType.
      * </p>
      */
     @Parameter( required = false, readonly = false )
