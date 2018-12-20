@@ -31,60 +31,96 @@ public class JPackagerWindowsOptions
 
     /**
      * Adds the application to the system menu
+     * <p>
      * <code>--win-menu</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    boolean menu;
+    public boolean menu;
 
     /**
      * Start Menu group this application is placed in
+     * <p>
      * <code>--win-menu-group &lt;menu group name&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    String menuGroup;
+    public String menuGroup;
 
     /**
-     * Request to perform an install on a per-user basis
-     * <code>--win-per-user-install/code>
+     * Request to perform an install on a per-user basis.
+     * <p>
+     * <code>--win-per-user-install</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    boolean perUserInstall;
+    public boolean perUserInstall;
     
     /**
      * Adds a dialog to enable the user to choose a directory in which the product is installed
+     * <p>
      * <code>--win-dir-chooser</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    boolean dirChooser;
+    public boolean dirChooser;
     
     /**
-     *  Name of the application for registry references.
-     *  The default is the Application Name with only alphanumerics, dots, and dashes (no whitespace)
+     * Name of the application for registry references.
+     * The default is the Application Name with only alphanumerics, dots, and dashes (no whitespace)
+     * <p>
      * <code>--win-registry-name &lt;registry name&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    String registryName;
+    public String registryName;
     
     /**
-     *  UUID associated with upgrades for this package
+     * UUID associated with upgrades for this package
+     * <p>
      * <code>--win-upgrade-uuid &lt;id string&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    String upgradeUUID;
+    public String upgradeUUID;
     
     /**
      * Creates a desktop shortcut for the application
+     * <p>
      * <code>--win-shortcut</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    boolean shortcut;
+    public boolean shortcut;
 
     /**
      * Creates a console launcher for the application, 
      * should be specified for application which requires console interactions
+     * <p>
      * <code>--win-console</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
-    boolean console;
+    public boolean console;
+
+    
+    /**
+     * Installer type of JPackager operation on Windows.
+     * <p>
+     *  Valid values for &lt;windowsType&gt; &quot;msi&quot;, &quot;exe&quot;,
+     *  
+     *  If &lt;windowsType&gt; is omitted a .msi Installer Package will be generated.
+     * 
+     *  
+     *  If &lt;windowsType&gt; is empty, all supported types of installable
+     *  packages for Windows will be generated.
+     *  
+     *  If both &lt;windowsType&gt; and  &lt;type&gt; are being 
+     *  set the value of the &lt;type&gt;
+     *  parameter is being used.
+     *  </p>
+     */
+    @Parameter( defaultValue = "msi", required = false, readonly = false )
+    public String windowsType;
 
 }

@@ -67,7 +67,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Mode of JPackager operation. 
      * One of <code>create-image</code>, <code>create-installer</code>, <code>create-jre-installer</code>.
-     * Default is <code>create-installer</code>.
      */
     @Parameter( defaultValue = "create-installer", required = true, readonly = false )
     private String mode;
@@ -75,19 +74,19 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Installer type of JPackager operation. 
      * <p>
-     *  Valid values for &quot;type&quot; are &quot;msi&quot;, &quot;rpm&quot;, &quot;deb&quot;,
+     *  Valid values for &lt;type&gt; are &quot;msi&quot;, &quot;rpm&quot;, &quot;deb&quot;,
      *  &quot;dmg&quot;, &quot;pkg&quot;, &quot;pkg-app-store&quot;.
-     *  If &quot;type&quot; is omitted, all supported types of installable
-     *  packages for current platform will be generated.
+     * </p><p>
+     *  If &lt;type&gt; is omitted a value from the platform specific settings
+     *  &lt;linuxType&gt, &lt;windowsType&gt; or &lt;macType&gt; is being used.
+     *  </p>
      */
     @Parameter( required = false, readonly = false )
     private String type;
 
     /**
      * The output directory for the resulting Application Image or Package.
-     * <p>
-     * Defaults to ${project.build.directory}/maven-jpackager-ou
-     * </p>
+     *
      * <p>
      * <code>--output &lt;path&gt;</code>
      * </p>
@@ -98,9 +97,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     /**
      * The output directory for the resulting Application Image or Package.
-     * <p>
-     * Defaults to ${project.build.directory}/maven-jpackager-in
-     * </p>
+     * 
      * <p>
      * <code>--output &lt;path&gt;</code>
      * </p>
@@ -111,9 +108,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     /**
      * Directory in which to use and place temporary files.
-     * <p>
-     * Defaults to ${project.build.directory}/maven-jpackager-build
-     * </p>
+     * 
      * <p>
      * <code>--build-root &lt;path&gt;</code>
      * </p>
@@ -145,16 +140,20 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * List of files in the base directory. If omitted, all files from "input"
      * directory (which is a mandatory argument in this case) will be packaged.
+     * 
+     * <p>
      * <code>--files &lt;files&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private List<String> files;
 
     /**
      * Name of the application. 
-     * Defaults to ${project.name}.
      * 
+     * <p>
      * <code>--name &lt;name&gt;</code>
+     * </p>
      */
     @Parameter( defaultValue = "${project.name}", required = false, readonly = false )
     private String name;
@@ -162,28 +161,34 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * The main JAR of the application. This JAR should have the main-class, and is
      * relative to the assembled application directory.
+     * 
+     * <p>
      * <code>--main-jar&lt;jarname&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String mainJar;
 
     /**
      * Qualified name of the application class to execute.
+     * 
+     * <p>
      * <code>-class &lt;className&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String mainClass;
 
     /**
      * Version of the application.
-     * <p>
-     * Defaults to ${project.version}
-     * </p>
+     *
      * <p>
      * Note a -SNAPSHOT or .SNAPSHOT is automatically deleted from the
      * version when constructing the jpackage command line arguments.
      * </p>
+     * <p>
      * <code>--app-version &lt;version&gt;</code>
+     * </p>
      */
     @Parameter( defaultValue = "${project.version}", required = false, readonly = false )
     private String appVersion;
@@ -191,14 +196,20 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Command line arguments to pass to the main class if no arguments
      * are specified by the launcher.
+     * 
+     * <p>
      * <code>--arguments &lt;args&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private List<String> arguments;
 
     /**
      * Icon of the application bundle.
+     * 
+     * <p>
      * <code>--icon &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private File icon;
@@ -206,7 +217,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Prevents multiple instances of the application from launching
      * (see SingleInstanceService API for more details).
+     * 
+     * <p>
      * <code>--singleton</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private boolean singleton;
@@ -220,23 +234,28 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * such as "com/example/myapplication"), see UserJvmOptionsService API
      * for more details.
      * <p>
-     * Defaults to ${project.groupId}.${project.artifactId}
-     * </p>
      * <code>--identifier &lt;identifier&gt;</code>
+     * </p>
      */
     @Parameter( defaultValue = "${project.groupId}.${project.artifactId}", required = false, readonly = false )
     private String identifier;
     
     /**
      * Removes native executables from the custom run-time images.
+     * 
+     * <p>
      * <code>--strip-native-commands</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private boolean stripNativeCommands;
     
     /**
      * JVM flags and options to pass to the application.
+     * 
+     * <p>
      * <code>--jvm-args &lt;args&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private List<String> jvmArgs;
@@ -244,7 +263,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * JVM options the user may override along and their default values
      * (see UserJvmOptionsService API for more details).
+     * 
+     * <p>
      * <code>--user-jvm-args &lt;args&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private List<String> userJvmArgs;
@@ -253,14 +275,20 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Properties file that contains list of key=value parameters that
      * describe a file association. &quot;extension&quot;, &quot;mime-type&quot;, &quot;icon&quot;,
      * &quot;description&quot; can be used as keys for the association.
+     * 
+     * <p>
      * <code>--file-associations &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private File fileAssociations;
     
     /**
      * Properties file that contains a collection of options for a secondary launcher.
+     * 
+     * <p>
      * <code>--secondary-launcher &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private File secondaryLauncher;
@@ -269,23 +297,30 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Location of the predefined runtime image that is used to build
      * an application image and installable package.
      * 
+     * <p>
      * <code>--runtime-image &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private File runtimeImage;
 
     /**
-     * Location of tfirst-1.2.3he predefined application image that is used to build
+     * Location of the predefined application image that is used to build
      * an installable package.
      * 
+     * <p>
      * <code>--app-image &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private File appImage;
 
     /**
      * Qualified name of the application class to execute.
+     * 
+     * <p>
      * <code>-install-dir &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String installDir;
@@ -293,7 +328,9 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * The license file, relative to the base directory.
      *
+     * <p>
      * <code>--license-file &lt;path&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String licenseFile;
@@ -302,17 +339,19 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Copyright for the application.
      *
+     * <p>
      * <code>--copyright &lt;text&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String copyright;
 
     /**
      * Description of the application.
+     * 
      * <p>
-     * Defaults to ${project.description}
-     * </p>
      * <code>--description &lt;text&gt;</code>
+     * </p>
      */
     @Parameter(  defaultValue = "${project.description}", required = false, readonly = false )
     private String description;
@@ -320,18 +359,19 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Category or group of the application
      *
+     * <p>
      * <code>--category &lt;text&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String category;
 
     /**
      * Vendor of the application.
+     *
      * <p>
-     * Defaults to ${project.organization}
-     * </p>
-     * 
      * <code>--vendor &lt;text&gt;</code>
+     * </p>
      */
     @Parameter( defaultValue = "${project.organization}", required = false, readonly = false )
     private String vendor;
@@ -341,7 +381,9 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Main module of the application. This module must have the main-class,
      * and be on the module path.
      *
+     * <p>
      * <code>--module &lt;name&gt;</code>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     private String module;
@@ -352,8 +394,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * <p>
      * Available subelements of &lt;LinuxOptions&gt; are:
      * bundleName, packageDeps, rpmLicenseType and debMaintainer.
-     * 
-     * <p>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     JPackagerLinuxOptions linuxOptions;
@@ -364,8 +405,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Available subelements of &lt;WindowsOptions&gt; are:
      * menu, menuGroup, perUserInstall, dirChooser, registryName, upgradeUUID,
      * shortcut and console.
-     * 
-     * <p>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     JPackagerWindowsOptions windowsOptions;
@@ -378,8 +418,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * sign, bundleName, bundleIdentifier, appStoreCategory,
      * appStoreEntitlements, bundleSigningPrefix, 
      * signingKeyUserName and signingKeychain.
-     * 
-     * <p>
+     * </p>
      */
     @Parameter( required = false, readonly = false )
     JPackagerMacOptions macOptions;
@@ -428,6 +467,8 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         File jPackagerParent = jPackagerExecuteable.getParentFile().getParentFile();
         File jmodsFolder = new File( jPackagerParent, JMODS );
 
+        maySetPlatformDefaultType();
+        
         failIfParametersAreNotValid();
         
         ifBuildRootDirectoryDoesNotExistcreateIt();
@@ -475,6 +516,22 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     }
 
+    private void maySetPlatformDefaultType()
+    {
+        if ( ( type == null ) || ( "".equals( type ) ) )
+        {
+            if ( SystemUtils.IS_OS_LINUX && ( linuxOptions != null ) ) {
+            	type = linuxOptions.linuxType;
+            }
+            else if ( SystemUtils.IS_OS_WINDOWS && ( windowsOptions != null ) ) {
+            	type = windowsOptions.windowsType;
+            }
+            else if ( SystemUtils.IS_OS_MAC && ( macOptions != null ) ) {
+            	type = macOptions.macType;
+            }
+        }
+    }
+    
     private void publishClassifierArtifacts()
     {
         String[] extensions = {
@@ -1883,9 +1940,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             getLog().error( message );
             throw new MojoFailureException( message );
         }
-        if ( ( type != null ) && ( ! ( "msi".equals( type ) || "rpm".equals( type ) 
-                || "deb".equals( type ) || "dmg".equals( type ) || "pkg".equals( type )
-                || "pkg-app-store".equals( type ) ) ) ) 
+        if ( ( type != null ) && ( ! ( "msi".equals( type ) || "exe".equals( type ) 
+        		 || "rpm".equals( type ) || "deb".equals( type ) 
+        		 || "dmg".equals( type ) || "pkg".equals( type )
+                 || "pkg-app-store".equals( type ) ) ) ) 
         {
             String message = "<type> is not valid, only msi, rpm, deb, dmg, pkg, pkg-app-store are allowed.";
             getLog().error( message );

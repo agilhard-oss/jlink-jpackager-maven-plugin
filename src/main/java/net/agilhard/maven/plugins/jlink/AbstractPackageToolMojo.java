@@ -98,7 +98,10 @@ public abstract class AbstractPackageToolMojo
     protected MavenSession session;
 
     /**
-     * This will turn on verbose mode. The jlink/jpackager command line equivalent is: <code>--verbose</code>
+     * This will turn on verbose mode. 
+     * <p>
+     * The jlink/jpackager command line equivalent is: <code>--verbose</code>
+     * </p>
      */
     @Parameter( defaultValue = "false" )
     protected boolean verbose;
@@ -134,9 +137,10 @@ public abstract class AbstractPackageToolMojo
      *     .
      *   &lt;/limitModules&gt;
      * </pre>
-     * 
+     * <p>
      * This configuration is the equivalent of the command line option:
      * <code>--limit-modules &lt;mod&gt;[,&lt;mod&gt;...]</code>
+     * </p>
      */
     @Parameter
     protected List<String> limitModules;
@@ -168,8 +172,9 @@ public abstract class AbstractPackageToolMojo
      *   .
      * &lt;/addModules&gt;
      * </pre>
-     * 
+     * <p>
      * The command line equivalent for jlink is: <code>--add-modules &lt;mod&gt;[,&lt;mod&gt;...]</code>.
+     * </p>
      */
     @Parameter
     protected List<String> addModules;
