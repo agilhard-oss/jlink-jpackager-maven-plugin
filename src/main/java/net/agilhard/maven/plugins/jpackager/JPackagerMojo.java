@@ -518,13 +518,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     private void maySetPlatformDefaultType()
     {
-        if ( ( type == null ) || ( "".equals( type ) ) )
+        if ( ( ( type == null ) || ( "".equals( type ) ) )
+	    && ( ! "create-image".equals(mode)) )
         {
             if ( SystemUtils.IS_OS_LINUX && ( linuxOptions != null ) ) {
             	type = linuxOptions.linuxType;
             }
             else if ( SystemUtils.IS_OS_WINDOWS ) {
-            	type = ( ( windowsOptions == null )  || ( windowsOptions.windowsType == null ) ) ? "msi" : windowsOptions.windowsType;
+            	type = ( ( windowsOptions == null )  || ( windowsOptions.windowsType == null ) ) ? "exe" : windowsOptions.windowsType;
             }
             else if ( SystemUtils.IS_OS_MAC  ) {
             	type = ( ( macOptions == null ) || ( macOptions.macType == null ) ) ? "dmg" : macOptions.macType;
