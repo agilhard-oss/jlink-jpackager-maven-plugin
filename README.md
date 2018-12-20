@@ -86,7 +86,7 @@ For Windows, there are two additional tools that developers will need to install
 [Inno Setup](http://www.jrsoftware.org/isinfo.php)
 [Inno Setup Download](http://www.jrsoftware.org/isdl.php)
 
-[WiX Toolset](http://wixtoolset.org)
+[Wix Toolset](http://wixtoolset.org)
 [Wix Toolset Downloads](http://wixtoolset.org/releases/)
 
 
