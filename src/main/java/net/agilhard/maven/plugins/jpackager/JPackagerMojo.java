@@ -1066,7 +1066,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( !modulesToAdd.isEmpty() )
         {
             argsFile.println( "--add-modules" );
-            argsFile.println( getColonSeparatedList( modulesToAdd ) );
+            argsFile.println( getCommaSeparatedList( modulesToAdd ) );
         }
        
         if ( SystemUtils.IS_OS_LINUX && ( linuxOptions != null ) )

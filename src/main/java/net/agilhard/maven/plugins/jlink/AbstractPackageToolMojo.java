@@ -97,6 +97,18 @@ public abstract class AbstractPackageToolMojo
     @Parameter ( defaultValue = "${session}", readonly = true, required = true )
     protected MavenSession session;
 
+    
+    
+    /**
+     * Flag to ignore automatic modules. 
+     * <p>
+     * The jlink/jpackager command line equivalent is: <code>--verbose</code>
+     * </p>
+     */
+    @Parameter( defaultValue = "false" )
+    protected boolean ignoreAutomaticModules;
+
+    
     /**
      * This will turn on verbose mode. 
      * <p>
@@ -560,7 +572,19 @@ public abstract class AbstractPackageToolMojo
                 {
                     getLog().warn( "The module name " + entry.getValue().name() + " does already exists." );
                 }
-                modulepathElements.put( entry.getValue().name(), entry.getKey() );
+                
+                if ( ignoreAutomaticModules )
+                {
+                    // just do not add automatic modules
+                    if ( ! entry.getValue().isAutomatic() )
+                    {
+                        modulepathElements.put( entry.getValue().name(), entry.getKey() );
+                    }
+                }
+                else
+                {
+                    modulepathElements.put( entry.getValue().name(), entry.getKey() );
+                }
             }
 
             // This part is for the module in target/classes ? (Hacky..)
