@@ -333,7 +333,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String licenseFile;
+    private File licenseFile;
 
     
     /**
@@ -994,14 +994,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( licenseFile != null ) 
         {
             argsFile.println( "--license-file" );
-            if ( licenseFile.indexOf( " " ) > -1 )
-            {
-              argsFile.append( "\"" ).append( licenseFile.replace( "\\", "\\\\" ) ).println( "\"" );
-            }
-            else
-            {
-                argsFile.println( licenseFile );
-            }        
+            argsFile.println(licenseFile.getCanonicalPath());        
         }
         
         if ( copyright != null ) 
@@ -1582,16 +1575,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( licenseFile != null ) 
         {
             cmd.createArg().setValue( "--license-file" );
-            if ( licenseFile.indexOf( " " ) > -1 )
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.append( "\"" ).append( licenseFile.replace( "\\", "\\\\" ) ).append( "\"" );
-                cmd.createArg().setValue( sb.toString() );
-            }
-            else
-            {
-                cmd.createArg().setValue( licenseFile );
-            }        
+            cmd.createArg().setValue( licenseFile.getCanonicalPath() );                  
         }
         
         if ( copyright != null ) 
