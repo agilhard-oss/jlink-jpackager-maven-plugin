@@ -1052,7 +1052,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( hasLimitModules() )
         {
             argsFile.println( "--limit-modules" );
-            String sb = getColonSeparatedList( limitModules );
+            String sb = getCommaSeparatedList( limitModules );
             argsFile.println( sb );
         }
 
