@@ -1641,14 +1641,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( hasLimitModules() )
         {
             cmd.createArg().setValue( "--limit-modules" );
-            String sb = getColonSeparatedList( limitModules );
+            String sb = getCommaSeparatedList( limitModules );
             cmd.createArg().setValue( sb );
         }
 
         if ( !modulesToAdd.isEmpty() )
         {
             cmd.createArg().setValue( "--add-modules" );
-            cmd.createArg().setValue( getColonSeparatedList( modulesToAdd ) );
+            cmd.createArg().setValue( getCommaSeparatedList( modulesToAdd ) );
         }
        
         if ( SystemUtils.IS_OS_LINUX && ( linuxOptions != null ) )
