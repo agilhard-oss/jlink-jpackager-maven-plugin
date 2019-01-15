@@ -23,12 +23,12 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.agilhard.maven.plugins.jlink-jpackager.its</groupId>
-  <artifactId>jpackager-its-input-license</artifactId>
+  <artifactId>jpackager-its-input-files</artifactId>
   <version>99.0</version>
   <packaging>jpackager</packaging>
-  <name>jpackager-its-input-license</name>
+  <name>jpackager-its-input-files</name>
   <url>http://maven.apache.org</url>
-  <description>JPackager Integration Tests --input --license-file.</description>
+  <description>JPackager Integration Tests --input --files.</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>
@@ -52,7 +52,10 @@
 			<verbose>true</verbose>
 			<module>first.jar.module.info/myproject.HelloWorld</module>
 			<inputDirectoryPackage>src/main/jpackager</inputDirectoryPackage>
-			<licenseFile>LICENSE</licenseFile>
+			<files>
+			  <file>bar.txt</file>
+                          <file>foo.txt</file>
+                        </files>
         </configuration>
       </plugin>
     </plugins>

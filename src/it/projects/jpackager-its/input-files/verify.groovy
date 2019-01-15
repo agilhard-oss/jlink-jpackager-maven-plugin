@@ -45,34 +45,34 @@ try
 
     if ( Os.isName( "Linux" ) )
     {
-        artifact  = new File( out, "jpackager-its-limit-modules-99.0-1.x86_64.rpm" );
+        artifact  = new File( out, "jpackager-its-input-files-99.0-1.x86_64.rpm" );
         if ( !artifact.exists() || artifact.isDirectory() )
         {
-            System.err.println( "jpackager-its-limit-modules-99.0-1.x86_64.rpm file is missing or is a directory." );
+            System.err.println( "jpackager-its-input-files-99.0-1.x86_64.rpm file is missing or is a directory." );
             return false;
         }
-        artifact  = new File( out, "jpackager-its-limit-modules-99.0.deb" );
+        artifact  = new File( out, "jpackager-its-input-files-99.0.deb" );
         if ( !artifact.exists() || artifact.isDirectory() )
         {
-            System.err.println( "jpackager-its-limit-modules-99.0.deb file is missing or is a directory." );
+            System.err.println( "jpackager-its-input-files-99.0.deb file is missing or is a directory." );
             return false;
         }
     } 
     else if ( Os.isName( "Windows" ) )
     {
-        artifact  = new File( out, "jpackager-its-limit-modules-99.0.msi" );
+        artifact  = new File( out, "jpackager-its-input-files-99.0.msi" );
         if ( !artifact.exists() || artifact.isDirectory() )
         {
-            System.err.println( "jpackager-its-limit-modules-99.0.msi file is missing or is a directory." );
+            System.err.println( "jpackager-its-input-files-99.0.msi file is missing or is a directory." );
             return false;
         }
     }
     else if ( Os.isName( "Mac" ) )
     {
-        artifact  = new File( out, "jpackager-its-limit-modules-99.0.dmg" );
+        artifact  = new File( out, "jpackager-its-input-files-99.0.dmg" );
         if ( !artifact.exists() || artifact.isDirectory() )
         {
-            System.err.println( "jpackager-its-limit-modules-99.0.dmg file is missing or is a directory." );
+            System.err.println( "jpackager-its-input-files-99.0.dmg file is missing or is a directory." );
             return false;
         }
     }

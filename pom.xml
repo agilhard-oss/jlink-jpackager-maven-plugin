@@ -255,6 +255,7 @@
             <artifactId>maven-invoker-plugin</artifactId>
             <configuration>
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <postBuildHookScript>verify</postBuildHookScript>
               <environmentVariables>
                 <!--
                   ! Prevent reading the .mavenrc or maven_pre.bat on Windows 
