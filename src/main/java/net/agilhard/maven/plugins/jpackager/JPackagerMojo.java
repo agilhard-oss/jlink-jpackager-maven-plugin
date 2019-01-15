@@ -789,9 +789,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             argsFile.println( "--files" );
             String sb = getColonSeparatedList( files );
-            StringBuffer sb2 = new StringBuffer();
-            sb2.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).append( '"' );
-            argsFile.println( sb2.toString() ); 
+            argsFile.println( sb.toString() ); 
         }
        
         if ( name != null ) 
@@ -910,16 +908,36 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( ! ( ( jvmArgs == null ) || jvmArgs.isEmpty() ) )
         {
-            argsFile.println( "--jvmArgs" );
-            String sb = getColonSeparatedList( jvmArgs );
-            argsFile.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).println( '"' );
+            for ( String arg : jvmArgs )
+            {
+                argsFile.println( "--jvm-args" );
+                if ( arg.indexOf( " " ) > -1 )
+                {
+                    argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( arg );
+                }
+            }
+
         }
         
         if ( ! ( ( userJvmArgs == null ) || userJvmArgs.isEmpty() ) )
         {
-            argsFile.println( "--user-jvm-args" );
-            String sb = getColonSeparatedList( userJvmArgs );
-            argsFile.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).println( '"' ); 
+            for ( String arg : userJvmArgs )
+            {
+                argsFile.println( "--user-jvm-args" );
+                if ( arg.indexOf( " " ) > -1 )
+                {
+                    argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( arg );
+                }
+            }
+
         }
         
         if ( fileAssociations != null ) 
@@ -1345,9 +1363,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             cmd.createArg().setValue( "--files" );
             String sb = getColonSeparatedList( files );
-            StringBuffer sb2 = new StringBuffer();
-            sb2.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).append( '"' );
-            cmd.createArg().setValue( sb2.toString() ); 
+            cmd.createArg().setValue( sb.toString() ); 
         }
        
         if ( name != null ) 
@@ -1478,21 +1494,40 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( ! ( ( jvmArgs == null ) || jvmArgs.isEmpty() ) )
         {
-            cmd.createArg().setValue( "--jvmArgs" );
-            String sb = getColonSeparatedList( jvmArgs );
-            StringBuilder sb2 = new StringBuilder();
-            sb2.append( "\"" ).append( sb.replace( "\\", "\\\\" ) ).append( "\"" );
-            cmd.createArg().setValue( sb2.toString() );
+            for ( String arg : jvmArgs )
+            {
+                cmd.createArg().setValue( "--jvm-args" );
+                if ( arg.indexOf( " " ) > -1 )
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).append( "\"" );
+                    cmd.createArg().setValue( sb.toString() );
+                }
+                else
+                {
+                    cmd.createArg().setValue( arg );
+                }
+            }
         }
         
         if ( ! ( ( userJvmArgs == null ) || userJvmArgs.isEmpty() ) )
         {
-            cmd.createArg().setValue( "--user-jvm-args" );
-            String sb = getColonSeparatedList( userJvmArgs );
-            StringBuilder sb2 = new StringBuilder();
-            sb2.append( "\"" ).append( sb.replace( "\\", "\\\\" ) ).append( "\"" );
-            cmd.createArg().setValue( sb2.toString() );        }
-        
+            for ( String arg : jvmArgs )
+            {
+                cmd.createArg().setValue( "--user-jvm-args" );
+                if ( arg.indexOf( " " ) > -1 )
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).append( "\"" );
+                    cmd.createArg().setValue( sb.toString() );
+                }
+                else
+                {
+                    cmd.createArg().setValue( arg );
+                }
+            }
+	}
+
         if ( fileAssociations != null ) 
         {
             cmd.createArg().setValue( "--file-associations" );
