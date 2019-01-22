@@ -34,11 +34,13 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
+import net.agilhard.maven.plugins.packutil.AbstractPackageToolMojo;
+
 /**
  * The JLink goal is intended to create a Java Run Time Image file based on
  * <a href="http://openjdk.java.net/jeps/282">http://openjdk.java.net/jeps/282</a>,
  * <a href="http://openjdk.java.net/jeps/220">http://openjdk.java.net/jeps/220</a>.
- * 
+ *
  * @author Karl Heinz Marbaise <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>
  */
 // CHECKSTYLE_OFF: LineLength
@@ -129,7 +131,7 @@ public class JLinkMojo
 
     /**
      * Suggest providers that implement the given service types from the module path.
-     * 
+     *
      * <pre>
      * &lt;suggestProviders&gt;
      *   &lt;suggestProvider&gt;name-a&lt;/suggestProvider&gt;
@@ -138,7 +140,7 @@ public class JLinkMojo
      *   .
      * &lt;/suggestProviders&gt;
      * </pre>
-     * 
+     *
      * The jlink command line equivalent: <code>--suggest-providers [&lt;name&gt;,...]</code>
      */
     @Parameter
@@ -147,51 +149,51 @@ public class JLinkMojo
     protected String getJLinkExecutable()
         throws IOException
     {
-        return getToolExecutable( "jlink" );
+        return this.getToolExecutable( "jlink" );
     }
 
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
 
-        String jLinkExec = getExecutable();
+        final String jLinkExec = this.getExecutable();
 
-        getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jlink [ " + jLinkExec + " ]" );
+        this.getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jlink [ " + jLinkExec + " ]" );
 
         // TODO: Find a more better and cleaner way?
-        File jLinkExecuteable = new File( jLinkExec );
+        final File jLinkExecuteable = new File( jLinkExec );
 
         // Really Hacky...do we have a better solution to find the jmods directory of the JDK?
-        File jLinkParent = jLinkExecuteable.getParentFile().getParentFile();
-        File jmodsFolder = new File( jLinkParent, JMODS );
+        final File jLinkParent = jLinkExecuteable.getParentFile().getParentFile();
+        final File jmodsFolder = new File( jLinkParent, JMODS );
 
-        getLog().debug( " Parent: " + jLinkParent.getAbsolutePath() );
-        getLog().debug( " jmodsFolder: " + jmodsFolder.getAbsolutePath() );
+        this.getLog().debug( " Parent: " + jLinkParent.getAbsolutePath() );
+        this.getLog().debug( " jmodsFolder: " + jmodsFolder.getAbsolutePath() );
 
-        failIfParametersAreNotInTheirValidValueRanges();
+        this.failIfParametersAreNotInTheirValidValueRanges();
 
-        ifOutputDirectoryExistsDeleteIt();
+        this.ifOutputDirectoryExistsDeleteIt();
 
-        prepareModules( jmodsFolder );
-        
+        this.prepareModules( jmodsFolder );
+
         Commandline cmd;
         try
         {
-            cmd = createJLinkCommandLine( pathsOfModules, modulesToAdd );
+            cmd = this.createJLinkCommandLine( this.pathsOfModules, this.modulesToAdd );
         }
-        catch ( IOException e )
+        catch ( final IOException e )
         {
             throw new MojoExecutionException( e.getMessage() );
         }
         cmd.setExecutable( jLinkExec );
 
-        executeCommand( cmd, outputDirectoryImage );
+        this.executeCommand(cmd);
 
-        File createZipArchiveFromImage = createZipArchiveFromImage( buildDirectory, outputDirectoryImage );
+        final File createZipArchiveFromImage = this.createZipArchiveFromImage( this.buildDirectory, this.outputDirectoryImage );
 
-        failIfProjectHasAlreadySetAnArtifact();
+        this.failIfProjectHasAlreadySetAnArtifact();
 
-        getProject().getArtifact().setFile( createZipArchiveFromImage );
+        this.getProject().getArtifact().setFile( createZipArchiveFromImage );
     }
 
 
@@ -202,9 +204,9 @@ public class JLinkMojo
         String jLinkExec;
         try
         {
-            jLinkExec = getJLinkExecutable();
+            jLinkExec = this.getJLinkExecutable();
         }
-        catch ( IOException e )
+        catch ( final IOException e )
         {
             throw new MojoFailureException( "Unable to find jlink command: " + e.getMessage(), e );
         }
@@ -215,18 +217,18 @@ public class JLinkMojo
     private void failIfParametersAreNotInTheirValidValueRanges()
         throws MojoFailureException
     {
-        if ( compress != null && ( compress < 0 || compress > 2 ) )
+        if ( this.compress != null && ( this.compress < 0 || this.compress > 2 ) )
         {
-            String message = "The given compress parameters " + compress + " is not in the valid value range from 0..2";
-            getLog().error( message );
+            final String message = "The given compress parameters " + this.compress + " is not in the valid value range from 0..2";
+            this.getLog().error( message );
             throw new MojoFailureException( message );
         }
 
-        if ( endian != null && ( !"big".equals( endian ) && !"little".equals( endian ) ) )
+        if ( this.endian != null && ( !"big".equals( this.endian ) && !"little".equals( this.endian ) ) )
         {
-            String message = "The given endian parameter " + endian
+            final String message = "The given endian parameter " + this.endian
                 + " does not contain one of the following values: 'little' or 'big'.";
-            getLog().error( message );
+            this.getLog().error( message );
             throw new MojoFailureException( message );
         }
     }
@@ -234,71 +236,71 @@ public class JLinkMojo
     private void ifOutputDirectoryExistsDeleteIt()
         throws MojoExecutionException
     {
-        if ( outputDirectoryImage.exists() )
+        if ( this.outputDirectoryImage.exists() )
         {
             // Delete the output folder of JLink before we start
             // otherwise JLink will fail with a message "Error: directory already exists: ..."
             try
             {
-                getLog().debug( "Deleting existing " + outputDirectoryImage.getAbsolutePath() );
-                FileUtils.forceDelete( outputDirectoryImage );
+                this.getLog().debug( "Deleting existing " + this.outputDirectoryImage.getAbsolutePath() );
+                FileUtils.forceDelete( this.outputDirectoryImage );
             }
-            catch ( IOException e )
+            catch ( final IOException e )
             {
-                getLog().error( "IOException", e );
-                throw new MojoExecutionException( "Failure during deletion of " + outputDirectoryImage.getAbsolutePath()
+                this.getLog().error( "IOException", e );
+                throw new MojoExecutionException( "Failure during deletion of " + this.outputDirectoryImage.getAbsolutePath()
                     + " occured." );
             }
         }
     }
 
-    private Commandline createJLinkCommandLine( Collection<String> pathsOfModules, Collection<String> modulesToAdd )
+    private Commandline createJLinkCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
         throws IOException
     {
-        File file = new File( outputDirectoryImage.getParentFile(), "jlinkArgs" );
-        if ( !getLog().isDebugEnabled() )
+        final File file = new File( this.outputDirectoryImage.getParentFile(), "jlinkArgs" );
+        if ( !this.getLog().isDebugEnabled() )
         {
             file.deleteOnExit();
         }
         file.getParentFile().mkdirs();
         file.createNewFile();
 
-        PrintStream argsFile = new PrintStream( file );
+        final PrintStream argsFile = new PrintStream( file );
 
-        if ( stripDebug )
+        if ( this.stripDebug )
         {
             argsFile.println( "--strip-debug" );
         }
 
-        if ( bindServices )
+        if ( this.bindServices )
         {
             argsFile.println( "--bind-services" );
         }
 
-        if ( endian != null )
+        if ( this.endian != null )
         {
             argsFile.println( "--endian" );
-            argsFile.println( endian );
+            argsFile.println( this.endian );
         }
-        if ( ignoreSigningInformation )
+        if ( this.ignoreSigningInformation )
         {
             argsFile.println( "--ignore-signing-information" );
         }
-        if ( compress != null )
+        if ( this.compress != null )
         {
             argsFile.println( "--compress" );
-            argsFile.println( compress );
+            argsFile.println( this.compress );
         }
-        if ( launcher != null )
+        if ( this.launcher != null )
         {
             argsFile.println( "--launcher" );
-            argsFile.println( launcher );
+            argsFile.println( this.launcher );
         }
 
-        if ( disablePlugin != null )
+        if ( this.disablePlugin != null )
         {
             argsFile.println( "--disable-plugin" );
-            argsFile.append( '"' ).append( disablePlugin ).println( '"' );
+            argsFile.append( '"' ).append( this.disablePlugin ).println( '"' );
 
         }
         if ( pathsOfModules != null )
@@ -306,32 +308,32 @@ public class JLinkMojo
             // @formatter:off
             argsFile.println( "--module-path" );
             argsFile.append( '"' )
-                .append( getPlatformDependSeparateList( pathsOfModules )
+                .append( this.getPlatformDependSeparateList( pathsOfModules )
                          .replace( "\\", "\\\\" ) ).println( '"' );
             // @formatter:off
         }
 
-        if ( noHeaderFiles )
+        if ( this.noHeaderFiles )
         {
             argsFile.println( "--no-header-files" );
         }
 
-        if ( noManPages )
+        if ( this.noManPages )
         {
             argsFile.println( "--no-man-pages" );
         }
 
-        if ( hasSuggestProviders() )
+        if ( this.hasSuggestProviders() )
         {
             argsFile.println( "--suggest-providers" );
-            String sb = getCommaSeparatedList( suggestProviders );
+            final String sb = this.getCommaSeparatedList( this.suggestProviders );
             argsFile.println( sb );
         }
 
-        if ( hasLimitModules() )
+        if ( this.hasLimitModules() )
         {
             argsFile.println( "--limit-modules" );
-            String sb = getCommaSeparatedList( limitModules );
+            final String sb = this.getCommaSeparatedList( this.limitModules );
             argsFile.println( sb );
         }
 
@@ -340,30 +342,30 @@ public class JLinkMojo
             argsFile.println( "--add-modules" );
             // This must be name of the module and *NOT* the name of the
             // file! Can we somehow pre check this information to fail early?
-            String sb = getCommaSeparatedList( modulesToAdd );
+            final String sb = this.getCommaSeparatedList( modulesToAdd );
             argsFile.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).println( '"' );
         }
 
-        if ( pluginModulePath != null )
+        if ( this.pluginModulePath != null )
         {
             argsFile.println( "--plugin-module-path" );
-            StringBuilder sb = convertSeparatedModulePathToPlatformSeparatedModulePath( pluginModulePath );
+            final StringBuilder sb = this.convertSeparatedModulePathToPlatformSeparatedModulePath( this.pluginModulePath );
             argsFile.append( '"' ).append( sb.toString().replace( "\\", "\\\\" ) ).println( '"' );
         }
 
-        if ( buildDirectory != null )
+        if ( this.buildDirectory != null )
         {
             argsFile.println( "--output" );
-            argsFile.println( outputDirectoryImage );
+            argsFile.println( this.outputDirectoryImage );
         }
 
-        if ( verbose )
+        if ( this.verbose )
         {
             argsFile.println( "--verbose" );
         }
         argsFile.close();
 
-        Commandline cmd = new Commandline();
+        final Commandline cmd = new Commandline();
         cmd.createArg().setValue( '@' + file.getAbsolutePath() );
 
         return cmd;
@@ -371,7 +373,7 @@ public class JLinkMojo
 
     private boolean hasSuggestProviders()
     {
-        return suggestProviders != null && !suggestProviders.isEmpty();
+        return this.suggestProviders != null && !this.suggestProviders.isEmpty();
     }
 
 
