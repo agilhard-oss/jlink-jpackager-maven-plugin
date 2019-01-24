@@ -626,4 +626,20 @@ public abstract class AbstractPackageToolMojo
     	}
     	
     }
+    
+    protected void addSystemModulesFromJPackTool() {
+    	@SuppressWarnings("unchecked")
+		List<String> linkedSystemModules = (List<String>) this.project.getProperties().get(this.jpacktoolPropertyPrefix+".linkedSystemModules");
+    	if ( linkedSystemModules != null ) {
+    		if ( addModules == null ) {
+    			addModules=new ArrayList<String>();
+    		}
+    		for ( String mod : linkedSystemModules ) {
+    			if ( ! addModules.contains(mod) ) {
+    				addModules.add(mod);
+    			}
+    		}
+    	}
+    
+    }
 }

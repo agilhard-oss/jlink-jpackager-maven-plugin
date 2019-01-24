@@ -465,6 +465,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     	Boolean b = (Boolean) this.project.getProperties().get(pfx+".used");
     	jpacktoolPrepareUsed = b == null ? false : b.booleanValue();
 
+    	if ( jpacktoolPrepareUsed ) {
+    		this.addSystemModulesFromJPackTool();
+    	}
+    	
         final String jPackagerExec = this.getExecutable();
 
         this.getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jpackager [ " + jPackagerExec + " ]" );

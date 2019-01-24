@@ -278,7 +278,7 @@
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 <pomInclude>jlink-cli-options/**/pom.xml</pomInclude>
                 -->
-                <pomInclude>**/pom.xml</pomInclude>
+                <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 
               </pomIncludes>
               <pomExcludes>
