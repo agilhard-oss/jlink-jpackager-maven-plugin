@@ -136,6 +136,24 @@ public abstract class AbstractPackageToolMojo
     protected boolean addJDKToLimitModules;
     
     /**
+     * Flag if to move classpath jars from jpacktool-prepare goal
+     */
+    @Parameter( defaultValue = "true" )
+    protected boolean jPacktoolMoveClassPathJars;
+
+    /**
+     * Flag if to move real modules from jpacktool-prepare goal
+     */
+    @Parameter( defaultValue = "true" )
+    protected boolean jPacktoolMoveAutomaticModules;
+
+    /**
+     * Flag if to move real modules from jpacktool-prepare goal
+     */
+    @Parameter( defaultValue = "false" )
+    protected boolean jPacktoolMoveRealModules;
+    
+    /**
      * <p>
      * Usually this is not necessary, cause this is handled automatically by the given dependencies.
      * </p>
@@ -165,6 +183,10 @@ public abstract class AbstractPackageToolMojo
      */
     @Parameter
     protected List<File> addModulesDirs;
+    
+    
+    protected boolean jpacktoolPrepareUsed;
+
     
     /**
      * This will convert a module path separated by either {@code :} or {@code ;} into a string which uses the platform

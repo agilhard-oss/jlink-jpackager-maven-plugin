@@ -433,6 +433,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
  // CHECKSTYLE_ON: LineLength
     private boolean usingJDK11Jpackager;
 
+    
+    protected Exception lastException;
+
+    
     protected String getJPackageExecutable()
         throws IOException
 
@@ -456,6 +460,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+
+    	String pfx=this.jpacktoolPropertyPrefix;
+    	Boolean b = (Boolean) this.project.getProperties().get(pfx+".used");
+    	jpacktoolPrepareUsed = b == null ? false : b.booleanValue();
 
         final String jPackagerExec = this.getExecutable();
 
@@ -499,6 +507,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             this.copyArtifactsToModuleTempDirectory();
         }
 
+        if ( jpacktoolPrepareUsed ) {
+        	try {
+				this.moveJPacktoolJars();
+			} catch (Exception e) {
+	            throw new MojoExecutionException( e.getMessage() );
+			}
+        }
+        
         Commandline cmd;
         try
         {
@@ -532,6 +548,90 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     }
 
+    
+    
+    private void moveJarToInputClasspath(Path source) throws IOException {
+    	Path target=inputDirectoryPackage.toPath().resolve("classpath");
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	target = target.resolve(source.getFileName());
+    	Files.move(source, target, REPLACE_EXISTING);
+    }
+    
+    private void moveJarToInputAutomatic(Path source) throws IOException  {
+    	Path target=inputDirectoryPackage.toPath().resolve("automatic-modules");
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	target = target.resolve(source.getFileName());
+    	Files.move(source, target, REPLACE_EXISTING);
+    }
+    
+    private void moveJarToInputModule(Path source) throws IOException  {
+    	Path target=inputDirectoryPackage.toPath().resolve("modules");
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	target = target.resolve(source.getFileName());
+    	Files.move(source, target, REPLACE_EXISTING);
+    }
+    
+    private void moveJPacktoolJars() throws Exception {
+    	
+    	lastException = null;
+    	
+    	if ( this.jPacktoolMoveClassPathJars ) {
+    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
+    	        path -> path.toString().endsWith(".jar"))
+    	        .forEach(t -> {
+					try {
+						moveJarToInputClasspath(t);
+					} catch (IOException e) {
+						lastException=e;
+					}
+				});
+    		if ( lastException != null ) {
+    			throw lastException;
+    		}
+    	}
+
+    	
+    	if ( this.jPacktoolMoveAutomaticModules ) {
+    	Files.newDirectoryStream(outputDirectoryAutomaticJars.toPath(),
+    	        path -> path.toString().endsWith(".jar"))
+    	        .forEach(t -> {
+					try {
+						moveJarToInputAutomatic(t);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+			if ( lastException != null ) {
+				throw lastException;
+			}
+		}
+
+    	
+    	if ( this.jPacktoolMoveRealModules ) {
+    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
+    	        path -> path.toString().endsWith(".jar"))
+    	        .forEach(t -> {
+					try {
+						moveJarToInputModule(t);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+    		if ( lastException != null ) {
+    			throw lastException;
+    		}
+    	}
+    }
+
+    
     private void maySetPlatformDefaultType()
     {
         if ( ( ( this.type == null ) || ( "".equals( this.type ) ) )

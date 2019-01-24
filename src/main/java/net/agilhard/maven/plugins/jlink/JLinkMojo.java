@@ -1,5 +1,7 @@
 package net.agilhard.maven.plugins.jlink;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,6 +24,8 @@ package net.agilhard.maven.plugins.jlink;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -127,8 +131,10 @@ public class JLinkMojo
      * line equivalent is: <code>--no-man-pages</code>
      */
     @Parameter( defaultValue = "false" )
-    private boolean noManPages;
-
+    private boolean noManPages;    
+    
+    protected Exception lastException;
+    
     /**
      * Suggest providers that implement the given service types from the module path.
      *
@@ -156,6 +162,10 @@ public class JLinkMojo
         throws MojoExecutionException, MojoFailureException
     {
 
+    	String pfx=this.jpacktoolPropertyPrefix;
+    	Boolean b = (Boolean) this.project.getProperties().get(pfx+".used");
+    	jpacktoolPrepareUsed = b == null ? false : b.booleanValue();
+    	
         final String jLinkExec = this.getExecutable();
 
         this.getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jlink [ " + jLinkExec + " ]" );
@@ -199,14 +209,102 @@ public class JLinkMojo
 
         this.executeCommand(cmd);
 
-        final File createZipArchiveFromImage = this.createZipArchiveFromImage( this.buildDirectory, this.outputDirectoryImage );
-
+        
         this.failIfProjectHasAlreadySetAnArtifact();
+
+        if ( jpacktoolPrepareUsed ) {
+        	try {
+				this.moveJPacktoolJars();
+			} catch (Exception e) {
+	            throw new MojoExecutionException( e.getMessage() );
+			}
+        }
+
+        final File createZipArchiveFromImage = this.createZipArchiveFromImage( this.buildDirectory, this.outputDirectoryImage );
 
         this.getProject().getArtifact().setFile( createZipArchiveFromImage );
     }
 
+    private void moveJarToJLinkOutClasspath(Path source) throws IOException {
+    	Path target=outputDirectoryImage.toPath().resolve("app").resolve("classpath");
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	target = target.resolve(source.getFileName());
+    	Files.move(source, target, REPLACE_EXISTING);
+    }
+    
+    private void moveJarToJLinkOutAutomatic(Path source) throws IOException  {
+    	Path target=outputDirectoryImage.toPath().resolve("app").resolve("automatic-modules");
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	target = target.resolve(source.getFileName());
+    	Files.move(source, target, REPLACE_EXISTING);
+    }
+    
+    private void moveJarToJLinkOutModule(Path source) throws IOException  {
+    	Path target=outputDirectoryImage.toPath().resolve("app").resolve("modules");
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	target = target.resolve(source.getFileName());
+    	Files.move(source, target, REPLACE_EXISTING);
+    }
+    
+    private void moveJPacktoolJars() throws Exception {
+    	
+    	lastException = null;
 
+    	if ( this.jPacktoolMoveClassPathJars ) {
+    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
+    	        path -> path.toString().endsWith(".jar"))
+    	        .forEach(t -> {
+					try {
+						moveJarToJLinkOutClasspath(t);
+					} catch (IOException e) {
+						lastException=e;
+					}
+				});
+    		if ( lastException != null ) {
+    			throw lastException;
+    		}
+    	}
+
+    	
+    	if ( this.jPacktoolMoveAutomaticModules ) {
+    	Files.newDirectoryStream(outputDirectoryAutomaticJars.toPath(),
+    	        path -> path.toString().endsWith(".jar"))
+    	        .forEach(t -> {
+					try {
+						moveJarToJLinkOutAutomatic(t);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+			if ( lastException != null ) {
+				throw lastException;
+			}
+		}
+
+    	
+    	if ( this.jPacktoolMoveRealModules ) {
+    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
+    	        path -> path.toString().endsWith(".jar"))
+    	        .forEach(t -> {
+					try {
+						moveJarToJLinkOutModule(t);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+    		if ( lastException != null ) {
+    			throw lastException;
+    		}
+    	}
+    }
 
     private String getExecutable()
         throws MojoFailureException

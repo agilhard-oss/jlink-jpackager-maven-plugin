@@ -89,8 +89,10 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
     	JPackToolHandler handler = getHandler();
     	
     	Properties props = this.project.getProperties();
+
     	String pfx=this.jpacktoolPropertyPrefix;
-        		
+    	props.put(pfx+".used",Boolean.TRUE);
+    	
     	for ( String nodeString : handler.getNodeStrings() ) {
     		getLog().info("--------------------");
     		getLog().info("Dependencies for "+nodeString);
