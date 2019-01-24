@@ -486,7 +486,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         this.ifOutputDirectoryExistsDeleteIt();
 
-        this.prepareModules( jmodsFolder, true, this.copyArtifacts, this.moduleTempDirectory );
+        File tempDirToAdd = this.moduleTempDirectory;
+        if ( outputDirectoryModules.isDirectory() ) {
+        	tempDirToAdd = null;
+        }
+        
+        this.prepareModules( jmodsFolder, true, this.copyArtifacts, tempDirToAdd );
 
         if ( this.copyArtifacts && (! outputDirectoryModules.isDirectory() ))
         {

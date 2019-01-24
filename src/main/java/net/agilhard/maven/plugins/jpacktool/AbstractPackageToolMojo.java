@@ -419,7 +419,7 @@ public abstract class AbstractPackageToolMojo
         
         if ( copyArtifacts )
         {
-            if ( (moduleTempDirectory != null) && (moduleTempDirectory.isDirectory()) )
+            if ( moduleTempDirectory != null)
             {
                 this.pathsOfModules.add( moduleTempDirectory.getAbsolutePath() );
             }
