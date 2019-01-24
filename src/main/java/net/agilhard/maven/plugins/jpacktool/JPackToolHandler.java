@@ -41,7 +41,9 @@ public class JPackToolHandler extends CollectJarsHandler {
 	private List<File> classPathElements = new ArrayList<>();
 
 	private List<String> warnings = new ArrayList<>();
-
+	
+	private List<String> errors = new ArrayList<>();
+	
 	private List<String> jarsOnClassPath = new ArrayList<>();
 
 	protected List<String> systemModules = new ArrayList<>();;
@@ -165,11 +167,24 @@ public class JPackToolHandler extends CollectJarsHandler {
 		List<String> linkedDeps = new ArrayList<>();
 		List<String> linkedSystemDeps = new ArrayList<>();
 
+		// fill with empty values first in case there is an error later
+		
+		allModulesMap.put(nodeString, deps);
+		automaticModulesMap.put(nodeString, automaticDeps);
+		linkedModulesMap.put(nodeString, linkedDeps);
+		linkedSystemModulesMap.put(nodeString, linkedSystemDeps);
+		
 		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				if (line.startsWith("Warning:")) {
-					warnings.add(line);
+					if ( ! warnings.contains(line) ) {
+						warnings.add(line);
+					}
+				} else if (line.startsWith("Error:")) {
+						if ( ! errors.contains(line) ) {
+							errors.add(line);
+						}
 				} else {
 					for (String dep : line.split(",")) {
 						if (!deps.contains(dep)) {
@@ -361,5 +376,10 @@ public class JPackToolHandler extends CollectJarsHandler {
 	public List<String> getWarnings() {
 		return warnings;
 	}
-		
+
+	public List<String> getErrors() {
+		return errors;
+	}
+	
+	
 }

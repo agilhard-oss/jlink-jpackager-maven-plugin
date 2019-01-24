@@ -95,10 +95,10 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
     		getLog().info("--------------------");
     		getLog().info("Dependencies for "+nodeString);
     		
-        	getLog().info("Dependency Modules:" + String.join(",", handler.getAllModulesMap().get(nodeString) ) );   
-        	getLog().info("Dependency System Modules:" + String.join(",", handler.getLinkedSystemModulesMap().get(nodeString)) );   
-        	getLog().info("Dependency Linked Modules:" + String.join(",", handler.getLinkedModulesMap().get(nodeString)) );   
-        	getLog().info("Dependency Automatic Modules:" + String.join(",", handler.getAutomaticModulesMap().get(nodeString)) );   
+        	getLog().info("Dependency Modules:" + ( handler.getAllModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getAllModulesMap().get(nodeString) ) ) );   
+        	getLog().info("Dependency System Modules:" + ( handler.getLinkedSystemModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getLinkedSystemModulesMap().get(nodeString) ) ) );   
+        	getLog().info("Dependency Linked Modules:" + ( handler.getLinkedModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getLinkedModulesMap().get(nodeString) ) ) );   
+        	getLog().info("Dependency Automatic Modules:" + ( handler.getAutomaticModulesMap().get(nodeString)== null ? "" : String.join(",", handler.getAutomaticModulesMap().get(nodeString) ) ) );   
     	}
     	
     	props.put(pfx+".allModulesMap", handler.getAllModulesMap());
@@ -127,9 +127,21 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 
     	if ( handler.getWarnings().size() > 0 ) {
     		getLog().warn("--------------------");
+    		getLog().warn("Warnings from jdep calls");
+    		getLog().warn("--------------------");
     		for ( String warn : handler.getWarnings() ) {
     			getLog().warn(warn);
     		}
+    	}
+    	if ( handler.getErrors().size() > 0 ) {
+    		getLog().error("--------------------");
+    		getLog().error("Errors from jdep calls");
+    		getLog().error("--------------------");
+    		for ( String err : handler.getErrors() ) {
+    			getLog().error(err);
+    		}
+    		
+    		throw new MojoFailureException("errors on jdep calls");
     	}
     }
 
