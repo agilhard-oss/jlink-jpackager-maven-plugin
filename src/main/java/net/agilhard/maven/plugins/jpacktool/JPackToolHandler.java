@@ -27,280 +27,288 @@ import org.codehaus.plexus.util.cli.Commandline;
 
 public class JPackToolHandler extends CollectJarsHandler {
 
-    /**
-     * The jdeps Java Tool Executable.
-     */
-    private String jdepsExecutable;
-    
-    private boolean generateAutomaticJdeps;
-    
-    private boolean generateClassPathJdeps;
-    
-    private boolean generateModuleJdeps;
-    
-    private List<File> classPathElements = new ArrayList<>();
+	/**
+	 * The jdeps Java Tool Executable.
+	 */
+	private String jdepsExecutable;
+
+	private boolean generateAutomaticJdeps;
+
+	private boolean generateClassPathJdeps;
+
+	private boolean generateModuleJdeps;
+
+	private List<File> classPathElements = new ArrayList<>();
+
+	private List<String> warnings = new ArrayList<>();
+
+	private List<String> jarsOnClassPath = new ArrayList<>();
 
 	protected List<String> systemModules = new ArrayList<>();;
 	protected List<String> linkedSystemModules = new ArrayList<>();;
-    	
-    private List<String> allModules = new ArrayList<>();
-    private List<String> linkedModules = new ArrayList<>();
-    private List<String> automaticModules = new ArrayList<>();
 
-    private List<String> nodeStrings = new ArrayList<>();
+	private List<String> allModules = new ArrayList<>();
+	private List<String> linkedModules = new ArrayList<>();
+	private List<String> automaticModules = new ArrayList<>();
 
-    private Map<String,List<String>> allModulesMap = new HashMap<>();
-    private Map<String,List<String>> linkedModulesMap = new HashMap<>();;
-    private Map<String,List<String>> automaticModulesMap = new HashMap<>();;
-    private Map<String,List<String>> linkedSystemModulesMap = new HashMap<>();;
+	private List<String> nodeStrings = new ArrayList<>();
+
+	private Map<String, List<String>> allModulesMap = new HashMap<>();
+	private Map<String, List<String>> linkedModulesMap = new HashMap<>();;
+	private Map<String, List<String>> automaticModulesMap = new HashMap<>();;
+	private Map<String, List<String>> linkedSystemModulesMap = new HashMap<>();;
 
 	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, String jdepsExecutable,
-			boolean generateAutomaticJdeps, boolean generateClassPathJdeps, boolean generateModuleJdeps) throws MojoExecutionException {
-		
+			File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules,
+			String jdepsExecutable, boolean generateAutomaticJdeps, boolean generateClassPathJdeps,
+			boolean generateModuleJdeps) throws MojoExecutionException {
+
 		super(mojo, dependencyGraphBuilder, outputDirectoryAutomaticJars, outputDirectoryClasspathJars,
 				outputDirectoryModules, true);
-		
-		
+
 		this.jdepsExecutable = jdepsExecutable;
-		
+
 		this.generateAutomaticJdeps = generateAutomaticJdeps;
 		this.generateClassPathJdeps = generateClassPathJdeps;
 		this.generateModuleJdeps = generateModuleJdeps;
-		
+
 		this.systemModules = mojo.getSystemModules();
 	}
-	
-    /**
-     * Convert a list into a
-     * @param modules The list of modules.
-     * @return The string with the module list which is separated by {@code ,}.
-     */
-    protected String getColonSeparatedList( final Collection<File> elements ) throws MojoFailureException
-    {
-        final StringBuilder sb = new StringBuilder();
-        for ( final File element : elements )
-        {
-            if ( sb.length() > 0 )
-            {
-                sb.append( ':' );
-            }
-            try {
-				sb.append( element.getCanonicalPath() );
+
+	/**
+	 * Convert a list into a
+	 * 
+	 * @param modules The list of modules.
+	 * @return The string with the module list which is separated by {@code ,}.
+	 */
+	protected String getColonSeparatedList(final Collection<File> elements) throws MojoFailureException {
+		final StringBuilder sb = new StringBuilder();
+		for (final File element : elements) {
+			if (sb.length() > 0) {
+				sb.append(':');
+			}
+			try {
+				sb.append(element.getCanonicalPath());
 			} catch (IOException e) {
 				throw new MojoFailureException("error getting path");
 			}
-        }
-        return sb.toString();
-    }
-	
-	protected Commandline createJDepsCommandLine(File sourceFile) throws MojoFailureException
-	{
-        final Commandline cmd = new Commandline();
-        
-        if ( this.classPathElements.size() > 0 ) {
-        	cmd.createArg().setValue( "--class-path" );
-        	String s = this.getColonSeparatedList( this.classPathElements );
-        	cmd.createArg().setValue( s);
-        }
-        
-        if ( (outputDirectoryAutomaticJars != null) || ( outputDirectoryModules != null ) ) { 
-        	cmd.createArg().setValue( "--module-path" );
-        	StringBuilder sb = new StringBuilder();
-            if ( outputDirectoryModules != null ) { 
-            	try {
+		}
+		return sb.toString();
+	}
+
+	protected Commandline createJDepsCommandLine(File sourceFile) throws MojoFailureException {
+		final Commandline cmd = new Commandline();
+
+		if (this.classPathElements.size() > 0) {
+			cmd.createArg().setValue("--class-path");
+			String s = this.getColonSeparatedList(this.classPathElements);
+			cmd.createArg().setValue(s);
+		}
+
+		if ((outputDirectoryAutomaticJars != null) || (outputDirectoryModules != null)) {
+			cmd.createArg().setValue("--module-path");
+			StringBuilder sb = new StringBuilder();
+			if (outputDirectoryModules != null) {
+				try {
 					sb.append(outputDirectoryModules.getCanonicalPath());
 				} catch (IOException e) {
 					throw new MojoFailureException("error getting path");
 				}
-            }
-            if ( outputDirectoryAutomaticJars != null) { 
-                if ( outputDirectoryModules != null ) {
-                	sb.append(':');
-                }
-            	try {
+			}
+			if (outputDirectoryAutomaticJars != null) {
+				if (outputDirectoryModules != null) {
+					sb.append(':');
+				}
+				try {
 					sb.append(outputDirectoryAutomaticJars.getCanonicalPath());
 				} catch (IOException e) {
 					throw new MojoFailureException("error getting path");
 				}
-            }	
-            cmd.createArg().setValue( sb.toString() );
+			}
+			cmd.createArg().setValue(sb.toString());
 
-        }
-        
-        cmd.createArg().setValue( "--print-module-deps" );
+		}
 
-        try {
-			String s=sourceFile.getCanonicalPath();
+		cmd.createArg().setValue("--print-module-deps");
+		cmd.createArg().setValue("--ignore-missing-deps");
+
+		try {
+			String s = sourceFile.getCanonicalPath();
 			cmd.createArg().setValue(s);
 		} catch (IOException e) {
 			throw new MojoFailureException("error getting path");
 		}
-        
-        
-        return cmd;
+
+		return cmd;
 	}
 
-	protected void generateJdeps(String nodeString, File sourceFile, File targetFile) throws MojoExecutionException, MojoFailureException {
-	
-        Commandline cmd =  this.createJDepsCommandLine(sourceFile);
-        cmd.setExecutable(jdepsExecutable);
-        String name=sourceFile.getName();
-        int i = name.lastIndexOf('-');
-        name = name.substring(0,i) + ".jdeps";
-        
-        File file = new File(targetFile, name );
-        try ( FileOutputStream fout = new FileOutputStream(file) ) {
-        	executeCommand(cmd, fout);
-        } catch ( IOException ioe ) {
-			getLog().error("error creating .jdeps file");
-        } catch ( MojoExecutionException mee ) {
-        	throw mee;
-        }
+	protected void generateJdeps(String nodeString, File sourceFile, File targetFile)
+			throws MojoExecutionException, MojoFailureException {
 
-        List<String> deps = new ArrayList<>();
-        List<String> automaticDeps = new ArrayList<>();
-        List<String> linkedDeps = new ArrayList<>();
-        List<String> linkedSystemDeps = new ArrayList<>();
+		Commandline cmd = this.createJDepsCommandLine(sourceFile);
+		cmd.setExecutable(jdepsExecutable);
+		String name = sourceFile.getName();
+		int i = name.lastIndexOf('-');
+		name = name.substring(0, i) + ".jdeps";
+
+		File file = new File(targetFile, name);
+		try (FileOutputStream fout = new FileOutputStream(file)) {
+			executeCommand(cmd, fout);
+		} catch (IOException ioe) {
+			getLog().error("error creating .jdeps file");
+		} catch (MojoExecutionException mee) {
+			throw mee;
+		}
+
+		List<String> deps = new ArrayList<>();
+		List<String> automaticDeps = new ArrayList<>();
+		List<String> linkedDeps = new ArrayList<>();
+		List<String> linkedSystemDeps = new ArrayList<>();
 
 		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				for( String dep : line.split(",") ) {
-					if ( ! deps.contains(dep) ) {
-						deps.add(dep);
-					}
-					if ( ! allModules.contains(dep) ) {
-						allModules.add(dep);
-					}
-					if ( systemModules.contains( dep ) ) {
-						if ( ! linkedSystemModules.contains(dep) ) {
-							linkedSystemModules.add(dep);
+				if (line.startsWith("Warning:")) {
+					warnings.add(line);
+				} else {
+					for (String dep : line.split(",")) {
+						if (!deps.contains(dep)) {
+							deps.add(dep);
 						}
-						if ( ! linkedSystemDeps.contains(dep) ) {
-							linkedSystemDeps.add(dep);
+						if (!allModules.contains(dep)) {
+							allModules.add(dep);
 						}
-					} else {
-						if ( automaticModules.contains( dep ) ) {
-							if ( ! automaticDeps.contains(dep) ) {
-								automaticDeps.add(dep);
+						if (systemModules.contains(dep)) {
+							if (!linkedSystemModules.contains(dep)) {
+								linkedSystemModules.add(dep);
+							}
+							if (!linkedSystemDeps.contains(dep)) {
+								linkedSystemDeps.add(dep);
 							}
 						} else {
-							if ( ! linkedModules.contains(dep) ) {
-								linkedModules.add(dep);
-							}
-							if ( ! linkedDeps.contains(dep) ) {
-								linkedDeps.add(dep);
+							if (automaticModules.contains(dep)) {
+								if (!automaticDeps.contains(dep)) {
+									automaticDeps.add(dep);
+								}
+							} else {
+								if (!linkedModules.contains(dep)) {
+									linkedModules.add(dep);
+								}
+								if (!linkedDeps.contains(dep)) {
+									linkedDeps.add(dep);
+								}
 							}
 						}
+
 					}
-					
 				}
 			}
 		} catch (IOException ioe) {
 			throw new MojoExecutionException("i/o error", ioe);
 		}
-        
+
 		allModulesMap.put(nodeString, deps);
 		automaticModulesMap.put(nodeString, automaticDeps);
 		linkedModulesMap.put(nodeString, linkedDeps);
 		linkedSystemModulesMap.put(nodeString, linkedSystemDeps);
 	}
-	
-    protected void handleNonModJar(final DependencyNode dependencyNode, final Artifact artifact,
-    		Map.Entry<File, JavaModuleDescriptor> entry) 
-    		throws MojoExecutionException, MojoFailureException {
-    	    	
+
+	protected void handleNonModJar(final DependencyNode dependencyNode, final Artifact artifact,
+			Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
+
+		getLog().debug("handleNonModJar:" + artifact.getFile());
+
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
-		
+
 		String nodeString = dependencyNode.toNodeString();
-		
-		if ( ! nodeStrings.contains(nodeString) ) {
+
+		if (!nodeStrings.contains(nodeString)) {
 			nodeStrings.add(nodeString);
 		}
-		
-		
-		if ( isAutomatic ) {
-			try ( JarFile jarFile = new JarFile(artifact.getFile() ) ) {
+
+		if (isAutomatic) {
+			try (JarFile jarFile = new JarFile(artifact.getFile())) {
 				Manifest manifest = jarFile.getManifest();
-		        Attributes mainAttributes = manifest.getMainAttributes();
-				isAutomatic = mainAttributes.getValue("Automatic-Module-Name") != null;
-				
+				if (manifest == null) {
+					isAutomatic = false;
+				} else {
+					Attributes mainAttributes = manifest.getMainAttributes();
+					isAutomatic = mainAttributes.getValue("Automatic-Module-Name") != null;
+				}
 			} catch (IOException e) {
 
 				getLog().error("error reading manifest");
 				throw new MojoExecutionException("error reading manifest");
 			}
-			
+
 		}
 
 		Path path = artifact.getFile().toPath();
-		
-        if ( Files.isRegularFile( path ) )
-        {
 
-           File target = null;
-           if ( isAutomatic ) {
-             	if ( outputDirectoryAutomaticJars != null ) {
-             		if ( generateAutomaticJdeps ) {
-             			generateJdeps(nodeString, artifact.getFile(), outputDirectoryAutomaticJars);
-             		}
-                }
-           } else {
-             	if ( outputDirectoryClasspathJars != null ) {
-             		if ( generateClassPathJdeps ) {
-             			generateJdeps(nodeString, artifact.getFile(), outputDirectoryClasspathJars);
-             		}
-            		target = new File(outputDirectoryClasspathJars,artifact.getFile().getName());
+		if (Files.isRegularFile(path)) {
 
-                	if ( ! classPathElements.contains(target) ) {
-                		classPathElements.add(target);
-                	}
-               	}
-           }
-        }
-        
-        if ( isAutomatic ) {
-        	String name=entry.getValue().name();
-        	
-        	if ( ! automaticModules.contains(name) ) {
-        		automaticModules.add(name);
-        	}
-        }
-        
-    	super.handleNonModJar(dependencyNode, artifact, entry);
+			File target = null;
+			if (isAutomatic) {
+				if (outputDirectoryAutomaticJars != null) {
+					if (generateAutomaticJdeps) {
+						generateJdeps(nodeString, artifact.getFile(), outputDirectoryAutomaticJars);
+					}
+				}
+			} else {
+				if (outputDirectoryClasspathJars != null) {
+					if (generateClassPathJdeps) {
+						generateJdeps(nodeString, artifact.getFile(), outputDirectoryClasspathJars);
+					}
+					target = new File(outputDirectoryClasspathJars, artifact.getFile().getName());
 
-    }
-    
-    protected void handleModJar(final DependencyNode dependencyNode, final Artifact artifact,
-    		Map.Entry<File, JavaModuleDescriptor> entry) 
-    		throws MojoExecutionException, MojoFailureException {
+					if (!classPathElements.contains(target)) {
+						classPathElements.add(target);
+						jarsOnClassPath.add(artifact.getFile().getName());
+					}
+				}
+			}
+		}
+
+		if (isAutomatic) {
+			String name = entry.getValue().name();
+
+			if (!automaticModules.contains(name)) {
+				automaticModules.add(name);
+			}
+		}
+
+		super.handleNonModJar(dependencyNode, artifact, entry);
+
+	}
+
+	protected void handleModJar(final DependencyNode dependencyNode, final Artifact artifact,
+			Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
+
+		getLog().debug("handleModJar:" + artifact.getFile());
 
 		String nodeString = dependencyNode.toNodeString();
 
-		if ( ! nodeStrings.contains(nodeString) ) {
+		if (!nodeStrings.contains(nodeString)) {
 			nodeStrings.add(nodeString);
 		}
-		
-    	if ( generateModuleJdeps ) {
-    		generateJdeps(nodeString, artifact.getFile(), outputDirectoryModules);
-    	}
-    	
-    	String name=entry.getValue().name();
-		
-    	if ( ! linkedModules.contains(name) ) {
-    		linkedModules.add(name);
-    	}
-    	
-    	super.handleModJar(dependencyNode, artifact, entry);
 
-    }
-    
-    
-    protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
-    	ExecuteCommand.executeCommand(mojo.verbose, this.getLog(), cmd, outputStream );
-    }
+		if (generateModuleJdeps) {
+			generateJdeps(nodeString, artifact.getFile(), outputDirectoryModules);
+		}
+
+		String name = entry.getValue().name();
+
+		if (!linkedModules.contains(name)) {
+			linkedModules.add(name);
+		}
+
+		super.handleModJar(dependencyNode, artifact, entry);
+
+	}
+
+	protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
+		ExecuteCommand.executeCommand(mojo.verbose, this.getLog(), cmd, outputStream);
+	}
 
 	public List<File> getClassPathElements() {
 		return classPathElements;
@@ -346,6 +354,12 @@ public class JPackToolHandler extends CollectJarsHandler {
 		return linkedSystemModulesMap;
 	}
 
+	public List<String> getJarsOnClassPath() {
+		return jarsOnClassPath;
+	}
 
-    
+	public List<String> getWarnings() {
+		return warnings;
+	}
+		
 }

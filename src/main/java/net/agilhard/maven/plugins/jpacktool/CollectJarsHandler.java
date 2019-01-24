@@ -82,9 +82,12 @@ public class CollectJarsHandler extends AbstractDependencyJarsHandler {
 		if ( onlyNamedAreAutomatic && isAutomatic ) {
 			try ( JarFile jarFile = new JarFile(artifact.getFile() ) ) {
 				Manifest manifest = jarFile.getManifest();
-		        Attributes mainAttributes = manifest.getMainAttributes();
-				isAutomatic = mainAttributes.getValue("Automatic-Module-Name") != null;
-				
+				if ( manifest == null ) {
+					isAutomatic = false;
+				} else {
+					Attributes mainAttributes = manifest.getMainAttributes();
+					isAutomatic = mainAttributes.getValue("Automatic-Module-Name") != null;
+				}
 			} catch (IOException e) {
 
 				getLog().error("error reading manifest");

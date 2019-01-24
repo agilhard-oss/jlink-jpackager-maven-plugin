@@ -90,19 +90,7 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
     	
     	Properties props = this.project.getProperties();
     	String pfx=this.jpacktoolPropertyPrefix;
-    	
-    	getLog().info("All Modules:" + String.join(",", handler.getAllModules()) ); 
-    	props.put(pfx+".allModules", handler.getAllModules());
-    	
-    	getLog().info("Linked System Modules:" + String.join(",", handler.getLinkedSystemModules()) );   
-    	props.put(pfx+".linkedSystemModules", handler.getLinkedSystemModules());
-    	
-    	getLog().info("Linked Modules:" + String.join(",", handler.getLinkedModules()) );   
-    	props.put(pfx+".linkedModules", handler.getLinkedModules());
-    			
-    	getLog().info("Automatic Modules:" + String.join(",", handler.getAutomaticModules()) );   
-    	props.put(pfx+".automaticModules", handler.getAutomaticModules());
-    	
+        		
     	for ( String nodeString : handler.getNodeStrings() ) {
     		getLog().info("--------------------");
     		getLog().info("Dependencies for "+nodeString);
@@ -120,6 +108,29 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
     	
     	props.put(pfx+".nodeStrings", handler.getNodeStrings());
 
+		getLog().info("--------------------");
+
+    	getLog().info("All Modules:" + String.join(",", handler.getAllModules()) ); 
+    	props.put(pfx+".allModules", handler.getAllModules());
+    	
+    	getLog().info("Linked System Modules:" + String.join(",", handler.getLinkedSystemModules()) );   
+    	props.put(pfx+".linkedSystemModules", handler.getLinkedSystemModules());
+    	
+    	getLog().info("Linked Modules:" + String.join(",", handler.getLinkedModules()) );   
+    	props.put(pfx+".linkedModules", handler.getLinkedModules());
+    			
+    	getLog().info("Automatic Modules:" + String.join(",", handler.getAutomaticModules()) );   
+    	props.put(pfx+".automaticModules", handler.getAutomaticModules());
+    	
+    	getLog().info("Jars on Classpath:" + String.join(",", handler.getJarsOnClassPath()) );   
+    	props.put(pfx+".jarsOnClassPath", handler.getJarsOnClassPath());
+
+    	if ( handler.getWarnings().size() > 0 ) {
+    		getLog().warn("--------------------");
+    		for ( String warn : handler.getWarnings() ) {
+    			getLog().warn(warn);
+    		}
+    	}
     }
 
 	@Override
