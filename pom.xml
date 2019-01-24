@@ -272,13 +272,16 @@
               <projectsDirectory>src/it/projects</projectsDirectory>
               <pomIncludes>
                 <!--
+                
                 <pomInclude>**/pom.xml</pomInclude>
+                
                 <pomInclude>jpacktool-its/jpacktool-prepare/pom.xml</pomInclude>
                 <pomInclude>jpackager-its/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 <pomInclude>jlink-cli-options/**/pom.xml</pomInclude>
-                -->
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
+                -->
+                <pomInclude>**/pom.xml</pomInclude>
                 
               </pomIncludes>
               <pomExcludes>
