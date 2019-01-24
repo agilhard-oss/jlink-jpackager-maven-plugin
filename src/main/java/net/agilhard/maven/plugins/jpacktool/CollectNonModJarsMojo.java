@@ -12,9 +12,7 @@
  * Project : jlink-jpackager-maven-plugin
  * Created by bei, 20.01.2019
  */
-package net.agilhard.maven.plugins.packutil;
-
-import java.io.File;
+package net.agilhard.maven.plugins.jpacktool;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -29,16 +27,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  *
  */
 @Mojo(
-    name = "collect-nonmod-jars", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PACKAGE,
+    name = "collect-nonmod-jars", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PREPARE_PACKAGE,
     requiresProject = true)
-public class CollectNonModJarsMojo extends AbstractHandleNonModJarsMojo {
+public class CollectNonModJarsMojo extends AbstractDependencyJarsMojo<CollectJarsHandler> {
 
-    @Parameter( defaultValue = "${project.build.directory}/jars/automatic", required = true, readonly = false )
-    private File outputDirectoryAutomaticJars;    
-
-    @Parameter( defaultValue = "${project.build.directory}/jars/classpath", required = true, readonly = false )
-    private File outputDirectoryClasspathJars;
-    
     @Parameter( defaultValue = "true", required = true, readonly=false)
     private boolean onlyNamedAreAutomatic;
     
@@ -60,8 +52,8 @@ public class CollectNonModJarsMojo extends AbstractHandleNonModJarsMojo {
     }
 
 	@Override
-	public AbstractHandleNonModJarsHandler createHandler() {
-		return new CollectNonModJarsHandler(this, dependencyGraphBuilder, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, onlyNamedAreAutomatic);
+	public CollectJarsHandler createHandler() {
+		return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, null, onlyNamedAreAutomatic);
 	}
     
 }

@@ -23,18 +23,23 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.agilhard.maven.plugins.jlink-jpackager.its</groupId>
-  <artifactId>packutil-its-collect-nonmod-jars</artifactId>
+  <artifactId>jpacktool-its-jpacktool-jpackager</artifactId>
   <version>99.0</version>
-  <packaging>pom</packaging>
-  <name>packutil-its-collect-nonmod-jars</name>
+  <packaging>jpacktool-jpackager</packaging>
+  <name>jpacktool-its-jpacktool-jpackager</name>
   <url>http://maven.apache.org</url>
-  <description>PackUtil Integration Tests collect-nonmod-jars.</description>
+  <description>jpacktool-its-jpacktool-jpackager</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>localhost</groupId>
+      <artifactId>first-jar-module-info-gui</artifactId>
+      <version>99.0</version>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -52,21 +57,11 @@
 	<groupId>net.agilhard.maven.plugins</groupId>
 	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
-<!--
-        <version>1.0.0-SNAPSHOT</version>
--->
         <extensions>true</extensions>
         <configuration>
 	  <verbose>true</verbose>
+	  <module>first.jar.module.info/myproject.HelloWorld</module>
         </configuration>
-	<executions>
-	  <execution>
-	    <goals>
-	      <goal>collect-nonmod-jars</goal>
-	    </goals>
-	  </execution>
-	</executions>
-	  
       </plugin>
     </plugins>
   </build>

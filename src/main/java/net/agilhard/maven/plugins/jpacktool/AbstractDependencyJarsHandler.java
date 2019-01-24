@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.packutil;
+package net.agilhard.maven.plugins.jpacktool;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +21,12 @@ import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 
-public abstract class AbstractHandleNonModJarsHandler {
+public abstract class AbstractDependencyJarsHandler {
 	public HashSet<String> handledNodes;
 	final AbstractToolMojo mojo;
 	DependencyGraphBuilder dependencyGraphBuilder;
 	
-	public AbstractHandleNonModJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
+	public AbstractDependencyJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
 		this.mojo = mojo;
 		this.handledNodes = new HashSet<>();
 		this.dependencyGraphBuilder = dependencyGraphBuilder; 
@@ -48,6 +48,17 @@ public abstract class AbstractHandleNonModJarsHandler {
     	
     }
 
+    protected abstract void handleModJar(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException;
+	
+    protected void handleModJarIfNotAlreadyHandled(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
+    	String key=dependencyNode.toNodeString();
+    	
+    	if ( ! handledNodes.contains(key) ) {
+    		handledNodes.add(key);
+    		handleModJar(dependencyNode, artifact, entry);
+    	}
+    	
+    }
     
     protected void handleDependencyNode(final DependencyNode dependencyNode) throws MojoExecutionException, MojoFailureException {
 
@@ -81,7 +92,7 @@ public abstract class AbstractHandleNonModJarsHandler {
                 } else if (entry.getValue().isAutomatic()) {
                     this.handleNonModJarIfNotAlreadyHandled(dependencyNode, artifact, entry);
                 } else {
-                    this.getLog().debug("file is a module: " + file);
+                    this.handleModJarIfNotAlreadyHandled(dependencyNode, artifact, entry);
                 }
             }
         }

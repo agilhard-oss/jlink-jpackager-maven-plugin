@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.packutil;
+package net.agilhard.maven.plugins.jpacktool;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,8 @@ package net.agilhard.maven.plugins.packutil;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.module.ModuleFinder;
+import java.lang.module.ModuleReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
@@ -58,13 +61,13 @@ public abstract class AbstractPackageToolMojo
     extends AbstractToolMojo
 {
 
-    protected static final String JMODS = "jmods";
-
+    protected static final String JMODS = "jmods";    
 
     /**
      * Name of the generated ZIP file in the <code>target</code> directory. This will not change the name of the
      * installed/deployed file.
-     */
+     */        List<String> deps = new ArrayList<>();
+
     @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
     protected String finalName;
     
@@ -77,16 +80,13 @@ public abstract class AbstractPackageToolMojo
 
     /**
      * Flag to ignore automatic modules.
-     * <p>
-     * The jlink/jpackager command line equivalent is: <code>--verbose</code>
-     * </p>
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter( defaultValue = "true" )
     protected boolean ignoreAutomaticModules;
 
 
     /**
-     * Include additional paths on the <code>--module-path</code> option. Project dedependencies and JDK modules are
+     * Include additional paths on the <code>--module-path</code> option. Project dependencies and JDK modules are
      * automatically added.
      */
     @Parameter
@@ -112,7 +112,7 @@ public abstract class AbstractPackageToolMojo
      */
     @Parameter
     protected List<String> limitModules;
-
+    
     protected Collection<String> modulesToAdd = new ArrayList<>();
     protected Collection<String> pathsOfModules = new ArrayList<>();
     protected Collection<String> pathsOfArtifacts = new ArrayList<>();
@@ -123,6 +123,18 @@ public abstract class AbstractPackageToolMojo
     @Parameter( defaultValue = "${project.build.outputDirectory}", required = true, readonly = true )
     protected File outputDirectory;
 
+    /**
+     * Directory with .jar modules to add to --limit-modules
+     */
+    @Parameter
+    protected List<File> limitModulesDirs;
+    
+    /**
+     * Toggle whether to add all modules in the java boot path to the limitModules setting.
+     */
+    @Parameter( defaultValue = "false" )
+    protected boolean addJDKToLimitModules;
+    
     /**
      * <p>
      * Usually this is not necessary, cause this is handled automatically by the given dependencies.
@@ -147,6 +159,13 @@ public abstract class AbstractPackageToolMojo
     @Parameter
     protected List<String> addModules;
 
+    
+    /**
+     * Directory with .jar modules to add to --add-modules
+     */
+    @Parameter
+    protected List<File> addModulesDirs;
+    
     /**
      * This will convert a module path separated by either {@code :} or {@code ;} into a string which uses the platform
      * depend path separator uniformly.
@@ -283,19 +302,20 @@ public abstract class AbstractPackageToolMojo
                 if ( modulepathElements.containsKey( entry.getValue().name() ) )
                 {
                     this.getLog().warn( "The module name " + entry.getValue().name() + " does already exists." );
-                }
+                } else {
 
-                if ( this.ignoreAutomaticModules )
-                {
-                    // just do not add automatic modules
-                    if ( ! entry.getValue().isAutomatic() )
-                    {
-                        modulepathElements.put( entry.getValue().name(), entry.getKey() );
-                    }
-                }
-                else
-                {
-                    modulepathElements.put( entry.getValue().name(), entry.getKey() );
+                	if ( this.ignoreAutomaticModules )
+                	{
+                		// just do not add automatic modules
+                		if ( ! entry.getValue().isAutomatic() )
+                		{
+                			modulepathElements.put( entry.getValue().name(), entry.getKey() );
+                		}
+                	}
+                	else
+                	{
+                		modulepathElements.put( entry.getValue().name(), entry.getKey() );
+                	}
                 }
             }
 
@@ -363,11 +383,11 @@ public abstract class AbstractPackageToolMojo
     {
         this.prepareModules( jmodsFolder, false, false, null );
     }
-
+    
     protected void prepareModules( final File jmodsFolder, final boolean useDirectory,
             final boolean copyArtifacts, final File moduleTempDirectory ) throws MojoFailureException
     {
-
+    	
         if ( this.addModules != null )
         {
             this.modulesToAdd.addAll( this.addModules );
@@ -378,13 +398,38 @@ public abstract class AbstractPackageToolMojo
             this.pathsOfModules.addAll( this.modulePaths );
         }
 
+    	if ( addModulesDirs != null ) {
+    		for ( File dir : addModulesDirs ) {
+    			try {
+    				String p=dir.getCanonicalPath();
+					this.pathsOfModules.add(p);
+					
+			    	ModuleFinder finder = ModuleFinder.of(dir.toPath());
+			    	Set<ModuleReference> moduleReferences = finder.findAll();
+			    	
+			    	this.getLog().debug("addModulesDir " + p + " found " + ( moduleReferences == null ? 0 : moduleReferences.size() ) + " module references");
+			    	for ( ModuleReference moduleReference : moduleReferences ) {
+			    		this.addModules.add(moduleReference.descriptor().name());
+			    	}
+				} catch (IOException e) {
+					throw new MojoFailureException("i/o error:", e);
+				}
+    		}
+    	}
+        
         if ( copyArtifacts )
         {
-            if ( moduleTempDirectory != null )
+            if ( (moduleTempDirectory != null) && (moduleTempDirectory.isDirectory()) )
             {
                 this.pathsOfModules.add( moduleTempDirectory.getAbsolutePath() );
             }
         }
+        
+        if ( (outputDirectoryModules != null) && (outputDirectoryModules.isDirectory() ) )
+        {
+            this.pathsOfModules.add( outputDirectoryModules.getAbsolutePath() );
+        }
+        
         for ( final Entry<String, File> item : this.getModulePathElements().entrySet() )
         {
             this.getLog().info( " -> module: " + item.getKey() + " ( " + item.getValue().getPath() + " )" );
@@ -393,7 +438,9 @@ public abstract class AbstractPackageToolMojo
              this.modulesToAdd.add( item.getKey() );
              if ( copyArtifacts )
              {
-                 this.pathsOfArtifacts.add( item.getValue().getPath() );
+            	 if ( ! outputDirectoryModules.isDirectory() ) {
+            		 this.pathsOfArtifacts.add( item.getValue().getPath() );
+            	 }
              }
              else
              {
@@ -411,6 +458,10 @@ public abstract class AbstractPackageToolMojo
         {
             // The jmods directory of the JDK
             this.pathsOfModules.add( jmodsFolder.getAbsolutePath() );
+        }
+        
+        if ( outputDirectoryModules.isDirectory() ) {
+        	this.pathsOfModules.add(outputDirectoryModules.getAbsolutePath());
         }
     }
 
@@ -520,4 +571,37 @@ public abstract class AbstractPackageToolMojo
         return result;
     }
 
+    protected void addToLimitModules(String name) {
+    	if ( limitModules == null ) {
+    		limitModules = new ArrayList<String>();
+    	}
+    	if ( ! limitModules.contains(name) ) {
+    		getLog().info("addToLimitModules name="+name);
+
+    		limitModules.add(name);
+    	}
+    }
+    
+    protected void addSystemModulesToLimitModules() throws MojoExecutionException {
+    	if ( limitModules == null ) {
+    		limitModules = new ArrayList<String>();
+    	}
+    	limitModules.addAll( this.getSystemModules() );
+    	
+    }
+    
+    protected void addModulesToLimitModules(Path...paths) {
+    	
+    	for ( Path path : paths ) {
+    		this.getLog().debug("addModulesToLimitModules path="+path);
+    	}
+    	ModuleFinder finder = ModuleFinder.of(paths);
+    	Set<ModuleReference> moduleReferences = finder.findAll();
+    	
+    	this.getLog().debug("addModulesToLimitModules found " + ( moduleReferences == null ? 0 : moduleReferences.size() ) + " module references");
+    	for ( ModuleReference moduleReference : moduleReferences ) {
+    		 this.addToLimitModules(moduleReference.descriptor().name());
+    	}
+    	
+    }
 }

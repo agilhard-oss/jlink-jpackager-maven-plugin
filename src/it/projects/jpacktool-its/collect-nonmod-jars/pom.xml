@@ -23,12 +23,12 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.agilhard.maven.plugins.jlink-jpackager.its</groupId>
-  <artifactId>jpackager-its-module</artifactId>
+  <artifactId>packutil-its-collect-nonmod-jars</artifactId>
   <version>99.0</version>
-  <packaging>jpackager</packaging>
-  <name>jpackager-its-module-gui</name>
+  <packaging>pom</packaging>
+  <name>packutil-its-collect-nonmod-jars</name>
   <url>http://maven.apache.org</url>
-  <description>JPackager Integration Tests Swing --module.</description>
+  <description>packutil-its-collect-nonmod-jars</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>
@@ -36,9 +36,14 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>localhost</groupId>
-      <artifactId>first-jar-module-info-gui</artifactId>
-      <version>99.0</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>1.6.1</version>
     </dependency>
   </dependencies>
   <build>
@@ -47,11 +52,21 @@
 	<groupId>net.agilhard.maven.plugins</groupId>
 	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
+<!--
+        <version>1.0.0-SNAPSHOT</version>
+-->
         <extensions>true</extensions>
         <configuration>
 	  <verbose>true</verbose>
-	  <module>first.jar.module.info/myproject.HelloWorld</module>
         </configuration>
+	<executions>
+	  <execution>
+	    <goals>
+	      <goal>collect-nonmod-jars</goal>
+	    </goals>
+	  </execution>
+	</executions>
+	  
       </plugin>
     </plugins>
   </build>

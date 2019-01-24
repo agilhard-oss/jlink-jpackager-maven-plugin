@@ -12,7 +12,7 @@
  * Project : jlink-jpackager-maven-plugin
  * Created by bei, 20.01.2019
  */
-package net.agilhard.maven.plugins.packutil;
+package net.agilhard.maven.plugins.jpacktool;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -28,7 +28,6 @@ import java.util.jar.Manifest;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
@@ -39,18 +38,21 @@ import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
  *
  */
 
-public class CollectNonModJarsHandler extends AbstractHandleNonModJarsHandler {
+public class CollectJarsHandler extends AbstractDependencyJarsHandler {
 
-    private File outputDirectoryAutomaticJars;
+    protected File outputDirectoryAutomaticJars;
     
-    private File outputDirectoryClasspathJars;
+    protected File outputDirectoryClasspathJars;
     
-    private boolean onlyNamedAreAutomatic;
+    protected File outputDirectoryModules;
 
-    public CollectNonModJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, boolean onlyNamedAreAutomatic ) {
+    protected boolean onlyNamedAreAutomatic = true;
+    
+    public CollectJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules, boolean onlyNamedAreAutomatic ) {
 		super(mojo, dependencyGraphBuilder);
 		this.outputDirectoryAutomaticJars = outputDirectoryAutomaticJars;
 		this.outputDirectoryClasspathJars = outputDirectoryClasspathJars;
+		this.outputDirectoryModules = outputDirectoryModules;
 		this.onlyNamedAreAutomatic = onlyNamedAreAutomatic;
 	}
 
@@ -78,9 +80,7 @@ public class CollectNonModJarsHandler extends AbstractHandleNonModJarsHandler {
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
 		
 		if ( onlyNamedAreAutomatic && isAutomatic ) {
-			JarFile jarFile;
-			try {
-				jarFile = new JarFile(artifact.getFile());
+			try ( JarFile jarFile = new JarFile(artifact.getFile() ) ) {
 				Manifest manifest = jarFile.getManifest();
 		        Attributes mainAttributes = manifest.getMainAttributes();
 				isAutomatic = mainAttributes.getValue("Automatic-Module-Name") != null;
@@ -94,20 +94,25 @@ public class CollectNonModJarsHandler extends AbstractHandleNonModJarsHandler {
 		}
 
 		Path path = artifact.getFile().toPath();
-
 		
         if ( Files.isRegularFile( path ) )
         {
             try
             {
-                final Path target;
+                Path target = null;
                 if ( isAutomatic ) {
-                	target = outputDirectoryAutomaticJars.toPath().resolve(path.getFileName());
+                	if ( outputDirectoryAutomaticJars != null ) {
+                		target = outputDirectoryAutomaticJars.toPath().resolve(path.getFileName());
+                	}
                 } else {
-                	target = outputDirectoryClasspathJars.toPath().resolve(path.getFileName());
+                	if ( outputDirectoryClasspathJars != null ) {
+                		target = outputDirectoryClasspathJars.toPath().resolve(path.getFileName());
+                	}
                 }
-                this.getLog().info( "copy jar " + path + " to " + target.toString());
-                Files.copy( path, target, REPLACE_EXISTING );
+                if ( target != null ) {
+                	this.getLog().info( "copy jar " + path + " to " + target.toString());
+                	Files.copy( path, target, REPLACE_EXISTING );
+                }
             }
             catch ( final IOException e )
             {
@@ -117,5 +122,32 @@ public class CollectNonModJarsHandler extends AbstractHandleNonModJarsHandler {
             }
         }
 	}
+
+    protected void handleModJar(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException
+    {
+		Path path = artifact.getFile().toPath();
+		
+        if ( Files.isRegularFile( path ) )
+        {
+            try
+            {
+                Path target = null;
+                	if ( outputDirectoryModules != null ) {
+                		target = outputDirectoryModules.toPath().resolve(path.getFileName());
+                	}
+                if ( target != null ) {
+                	this.getLog().info( "copy jar " + path + " to " + target.toString());
+                	Files.copy( path, target, REPLACE_EXISTING );
+                }
+            }
+            catch ( final IOException e )
+            {
+                this.getLog().error( "IOException", e );
+                throw new MojoExecutionException(
+                     "Failure during copying of " + path + " occured." );
+            }
+        }
+
+    }
 
 }

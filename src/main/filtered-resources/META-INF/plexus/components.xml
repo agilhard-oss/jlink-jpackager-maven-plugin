@@ -152,5 +152,142 @@
       </configuration>
     </component>
 
+    <!--
+     | JPACKTOOL-JLINK
+     |-->
+    <component>
+      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+      <role-hint>jpacktool-jlink</role-hint>
+      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+      <configuration>
+        <type>jpacktool-jlink</type>
+        <extension>zip</extension>
+        <includesDependencies>true</includesDependencies>
+        <language>java</language>
+        <addedToClasspath>false</addedToClasspath>
+      </configuration>
+    </component>
+
+    <!--
+      | Defining the phases with their appropriate plugins
+      ! and versions which will be executed during the 'default'
+      ! life cycle.
+    -->
+    <!--
+     | JPACKTOOL-JLINK
+     |-->
+    <component>
+      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+      <role-hint>jpacktool-jlink</role-hint>
+      <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
+      <configuration>
+        <lifecycles>
+          <lifecycle>
+            <id>default</id>
+            <!-- START SNIPPET: jpacktool-jlink-lifecycle -->
+            <phases>
+              <process-resources>
+                org.apache.maven.plugins:maven-resources-plugin:3.1.0:resources
+              </process-resources>
+              <compile>
+                org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile
+              </compile>
+              <process-test-resources>
+                org.apache.maven.plugins:maven-resources-plugin:3.1.0:testResources
+              </process-test-resources>
+              <test-compile>
+                org.apache.maven.plugins:maven-compiler-plugin:3.8.0:testCompile
+              </test-compile>
+              <test>
+                org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test
+              </test>
+              <prepare-package>
+                net.agilhard.maven.plugins:jlink-jpackager-maven-plugin::${project.version}:jpacktool-prepare
+              </prepare-package>
+              <package>
+                net.agilhard.maven.plugins:jlink-jpackager-maven-plugin::${project.version}:jlink
+              </package>
+              <install>
+                org.apache.maven.plugins:maven-install-plugin:2.5.2:install
+              </install>
+              <deploy>
+                org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy
+              </deploy>
+            </phases>
+            <!-- END SNIPPET: jpacktool-jlink-lifecycle -->
+          </lifecycle>
+        </lifecycles>
+      </configuration>
+    </component>
+
+
+    <!--
+     | JPACKTOOL-JPACKAGER
+     |-->
+    <component>
+      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+      <role-hint>jpacktool-jpackager</role-hint>
+      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+      <configuration>
+        <type>jpacktool-jpackager</type>
+        <extension>zip</extension>
+        <includesDependencies>true</includesDependencies>
+        <language>java</language>
+        <addedToClasspath>false</addedToClasspath>
+      </configuration>
+    </component>
+
+    <!--
+      | Defining the phases with their appropriate plugins
+      ! and versions which will be executed during the 'default'
+      ! life cycle.
+    -->
+    <!--
+     | JPACKTOOL-JPACKAGER
+     |-->
+    <component>
+      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+      <role-hint>jpacktool-jpackager</role-hint>
+      <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
+      <configuration>
+        <lifecycles>
+          <lifecycle>
+            <id>default</id>
+            <!-- START SNIPPET: jpacktool-jpackager-lifecycle -->
+            <phases>
+              <process-resources>
+                org.apache.maven.plugins:maven-resources-plugin:3.1.0:resources
+              </process-resources>
+              <compile>
+                org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile
+              </compile>
+              <process-test-resources>
+                org.apache.maven.plugins:maven-resources-plugin:3.1.0:testResources
+              </process-test-resources>
+              <test-compile>
+                org.apache.maven.plugins:maven-compiler-plugin:3.8.0:testCompile
+              </test-compile>
+              <test>
+                org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test
+              </test>
+              <prepare-package>
+                net.agilhard.maven.plugins:jlink-jpackager-maven-plugin::${project.version}:jpacktool-prepare
+              </prepare-package>
+              <package>
+                net.agilhard.maven.plugins:jlink-jpackager-maven-plugin::${project.version}:jpackager
+              </package>
+              <install>
+                org.apache.maven.plugins:maven-install-plugin:2.5.2:install
+              </install>
+              <deploy>
+                org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy
+              </deploy>
+            </phases>
+            <!-- END SNIPPET: jpacktool-jpackager-lifecycle -->
+          </lifecycle>
+        </lifecycles>
+      </configuration>
+    </component>
+
   </components>
 </component-set>

@@ -23,12 +23,12 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.agilhard.maven.plugins.jlink-jpackager.its</groupId>
-  <artifactId>jpackager-its-module</artifactId>
+  <artifactId>jpacktool-its-jpacktool-jlink</artifactId>
   <version>99.0</version>
-  <packaging>jpackager</packaging>
-  <name>jpackager-its-module-gui</name>
+  <packaging>jpacktool-jlink</packaging>
+  <name>Maven</name>
   <url>http://maven.apache.org</url>
-  <description>JPackager Integration Tests Swing --module.</description>
+  <description>jpacktool-its-jpacktool-jlink</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>
@@ -40,18 +40,33 @@
       <artifactId>first-jar-module-info-gui</artifactId>
       <version>99.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>1.6.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.9</source>
+          <target>1.9</target>
+        </configuration>
+      </plugin>
       <plugin>
 	<groupId>net.agilhard.maven.plugins</groupId>
 	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
-        <configuration>
-	  <verbose>true</verbose>
-	  <module>first.jar.module.info/myproject.HelloWorld</module>
-        </configuration>
       </plugin>
     </plugins>
   </build>

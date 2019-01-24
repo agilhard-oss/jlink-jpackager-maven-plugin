@@ -23,12 +23,12 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.agilhard.maven.plugins.jlink-jpackager.its</groupId>
-  <artifactId>jpackager-its-module</artifactId>
+  <artifactId>jlink-cli-options-add-jdk-to-limit-modules</artifactId>
   <version>99.0</version>
-  <packaging>jpackager</packaging>
-  <name>jpackager-its-module-gui</name>
+  <packaging>jlink</packaging>
+  <name>Maven</name>
   <url>http://maven.apache.org</url>
-  <description>JPackager Integration Tests Swing --module.</description>
+  <description>Test JLink CLI Options add-jdk-to-limit-modules.</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>
@@ -37,20 +37,28 @@
   <dependencies>
     <dependency>
       <groupId>localhost</groupId>
-      <artifactId>first-jar-module-info-gui</artifactId>
+      <artifactId>first-jar-module-info</artifactId>
       <version>99.0</version>
     </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.9</source>
+          <target>1.9</target>
+        </configuration>
+      </plugin>
+      <plugin>
 	<groupId>net.agilhard.maven.plugins</groupId>
 	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-	  <verbose>true</verbose>
-	  <module>first.jar.module.info/myproject.HelloWorld</module>
+          <addJDKToLimitModules>true</addJDKToLimitModules>
         </configuration>
       </plugin>
     </plugins>

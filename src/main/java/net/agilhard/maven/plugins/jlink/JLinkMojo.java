@@ -34,7 +34,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import net.agilhard.maven.plugins.packutil.AbstractPackageToolMojo;
+import net.agilhard.maven.plugins.jpacktool.AbstractPackageToolMojo;
 
 /**
  * The JLink goal is intended to create a Java Run Time Image file based on
@@ -172,6 +172,16 @@ public class JLinkMojo
 
         this.failIfParametersAreNotInTheirValidValueRanges();
 
+        if ( addJDKToLimitModules ) {
+        	this.addSystemModulesToLimitModules();
+        }
+        
+        if ( limitModulesDirs != null ) {
+        	for ( File dir : limitModulesDirs ) {
+        		this.addModulesToLimitModules(dir.toPath());
+        	}
+        }
+        
         this.ifOutputDirectoryExistsDeleteIt();
 
         this.prepareModules( jmodsFolder );
@@ -307,9 +317,9 @@ public class JLinkMojo
         {
             // @formatter:off
             argsFile.println( "--module-path" );
-            argsFile.append( '"' )
+            argsFile
                 .append( this.getPlatformDependSeparateList( pathsOfModules )
-                         .replace( "\\", "\\\\" ) ).println( '"' );
+                         .replace( "\\", "\\\\" ) ).println("");
             // @formatter:off
         }
 
@@ -343,14 +353,14 @@ public class JLinkMojo
             // This must be name of the module and *NOT* the name of the
             // file! Can we somehow pre check this information to fail early?
             final String sb = this.getCommaSeparatedList( modulesToAdd );
-            argsFile.append( '"' ).append( sb.replace( "\\", "\\\\" ) ).println( '"' );
+            argsFile.println( sb );
         }
 
         if ( this.pluginModulePath != null )
         {
             argsFile.println( "--plugin-module-path" );
             final StringBuilder sb = this.convertSeparatedModulePathToPlatformSeparatedModulePath( this.pluginModulePath );
-            argsFile.append( '"' ).append( sb.toString().replace( "\\", "\\\\" ) ).println( '"' );
+            argsFile.println( sb );
         }
 
         if ( this.buildDirectory != null )

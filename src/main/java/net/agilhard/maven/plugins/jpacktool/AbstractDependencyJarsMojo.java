@@ -12,7 +12,7 @@
  * Project : jlink-jpackager-maven-plugin
  * Created by bei, 20.01.2019
  */
-package net.agilhard.maven.plugins.packutil;
+package net.agilhard.maven.plugins.jpacktool;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -23,19 +23,20 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
  * @author bei
  *
  */
-public abstract class AbstractHandleNonModJarsMojo extends AbstractToolMojo {
+public abstract class AbstractDependencyJarsMojo<T extends AbstractDependencyJarsHandler> extends AbstractToolMojo {
 
 	@Component(role = DependencyGraphBuilder.class, hint = "maven31")
 	public DependencyGraphBuilder dependencyGraphBuilder;
 
+	private T handler;
 
 	/**
      * Constructor
      */
-    public AbstractHandleNonModJarsMojo() {
+    public AbstractDependencyJarsMojo() {
     }
     
-    public abstract AbstractHandleNonModJarsHandler createHandler();
+    public abstract T createHandler() throws MojoExecutionException, MojoFailureException;
     
     
     /** {@inheritDoc} */
@@ -43,10 +44,14 @@ public abstract class AbstractHandleNonModJarsMojo extends AbstractToolMojo {
     public void execute() throws MojoExecutionException, MojoFailureException
     {
     	
-        AbstractHandleNonModJarsHandler handler = createHandler();
+        this.handler = createHandler();
         handler.execute();
         
     }
+
+	public T getHandler() {
+		return handler;
+	}
 
 
 

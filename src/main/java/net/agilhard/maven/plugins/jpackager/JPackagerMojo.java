@@ -45,7 +45,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import net.agilhard.maven.plugins.packutil.AbstractPackageToolMojo;
+import net.agilhard.maven.plugins.jpacktool.AbstractPackageToolMojo;
 
 /**
  * The JPackager goal is intended to create a native installer package file based on
@@ -130,7 +130,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Flag whether to copy artifact modules to the moduleTempDirectory.
      *
      * <p>
-     * The default value is true. Setting this to false only works if there are no modules whith classes
+     * The default value is true. Setting this to false only works if there are no modules with classes
      * in the module hierachy.
      * </p>
      *
@@ -471,14 +471,24 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         this.maySetPlatformDefaultType();
 
         this.failIfParametersAreNotValid();
-
+        
+        if ( addJDKToLimitModules ) {
+        	this.addSystemModulesToLimitModules();
+        }
+        
+        if ( limitModulesDirs != null ) {
+        	for ( File dir : limitModulesDirs ) {
+        		this.addModulesToLimitModules(dir.toPath());
+        	}
+        }
+        
         this.ifBuildRootDirectoryDoesNotExistcreateIt();
 
         this.ifOutputDirectoryExistsDeleteIt();
 
         this.prepareModules( jmodsFolder, true, this.copyArtifacts, this.moduleTempDirectory );
 
-        if ( this.copyArtifacts )
+        if ( this.copyArtifacts && (! outputDirectoryModules.isDirectory() ))
         {
             this.ifModuleTempDirectoryDoesNotExistCreateIt();
             this.copyArtifactsToModuleTempDirectory();
@@ -1364,7 +1374,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             cmd.createArg().setValue( "--files" );
             final String sb = this.getColonSeparatedList( this.files );
-            cmd.createArg().setValue( sb.toString() );
+            cmd.createArg().setValue( sb );
         }
 
         if ( this.name != null )
