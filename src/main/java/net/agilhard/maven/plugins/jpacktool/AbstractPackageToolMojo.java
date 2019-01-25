@@ -185,8 +185,59 @@ public abstract class AbstractPackageToolMojo
     protected List<File> addModulesDirs;
     
     
+    /**
+     * Name of the classpath folder
+     */
+    @Parameter( defaultValue = "classpath" )
+    protected String classPathFolderName;
+    
+    
+    /**
+     * Name of the automatic-modules folder
+     */
+    @Parameter( defaultValue = "automatic-modules" )
+    protected String automaticModulesFolderName;
+    
+    
+    /**
+     * Name of the modules folder
+     */
+    @Parameter( defaultValue = "modules" )
+    protected String modulesFolderName;
+    
+    /**
+     * Flag if jpacktool-prepare goal has been used before
+     */
     protected boolean jpacktoolPrepareUsed;
 
+    /**
+     * set jpacktoolPrepareUsed variable based on maven property
+     */
+    protected void checkJpacktoolPrepareUsed() {
+    	String pfx=this.jpacktoolPropertyPrefix;
+    	Boolean b = (Boolean) this.project.getProperties().get(pfx+".used");
+    	jpacktoolPrepareUsed = b == null ? false : b.booleanValue();	
+    }
+    
+    
+    /**
+     * resolve to path and create directory if not exists.
+     * @throws IOException 
+     */
+    protected Path resolveAndCreate(File dir, String appFolderName, String folderName) throws IOException
+    {
+    	Path target=dir.toPath();
+    	if ( (appFolderName != null) && ( ! "".equals(appFolderName) ) ) {
+    		target = target.resolve(appFolderName);
+    	}
+    	if ( (folderName != null) && ( ! "".equals(folderName) ) ) {
+    		target = target.resolve(folderName);
+    	}
+    	if (!Files.exists(target)) {
+    		Files.createDirectories(target);
+    	}
+    	return target;
+    }
     
     /**
      * This will convert a module path separated by either {@code :} or {@code ;} into a string which uses the platform

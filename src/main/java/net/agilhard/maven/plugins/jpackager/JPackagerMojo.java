@@ -461,9 +461,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
-    	String pfx=this.jpacktoolPropertyPrefix;
-    	Boolean b = (Boolean) this.project.getProperties().get(pfx+".used");
-    	jpacktoolPrepareUsed = b == null ? false : b.booleanValue();
+    	checkJpacktoolPrepareUsed();
 
     	if ( jpacktoolPrepareUsed ) {
     		this.addSystemModulesFromJPackTool();
@@ -555,28 +553,22 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     
     
     private void moveJarToInputClasspath(Path source) throws IOException {
-    	Path target=inputDirectoryPackage.toPath().resolve("classpath");
-    	if (!Files.exists(target)) {
-    		Files.createDirectories(target);
-    	}
+    	Path target = resolveAndCreate(inputDirectoryPackage, null, classPathFolderName);
+
     	target = target.resolve(source.getFileName());
     	Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJarToInputAutomatic(Path source) throws IOException  {
-    	Path target=inputDirectoryPackage.toPath().resolve("automatic-modules");
-    	if (!Files.exists(target)) {
-    		Files.createDirectories(target);
-    	}
+    	Path target = resolveAndCreate(inputDirectoryPackage, null, automaticModulesFolderName);
+
     	target = target.resolve(source.getFileName());
     	Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJarToInputModule(Path source) throws IOException  {
-    	Path target=inputDirectoryPackage.toPath().resolve("modules");
-    	if (!Files.exists(target)) {
-    		Files.createDirectories(target);
-    	}
+    	Path target = resolveAndCreate(inputDirectoryPackage, null, modulesFolderName);
+
     	target = target.resolve(source.getFileName());
     	Files.move(source, target, REPLACE_EXISTING);
     }

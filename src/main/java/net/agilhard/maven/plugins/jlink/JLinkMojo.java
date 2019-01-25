@@ -133,6 +133,14 @@ public class JLinkMojo
     @Parameter( defaultValue = "false" )
     private boolean noManPages;    
     
+    
+    /**
+     * Name of the app folder
+     */
+    @Parameter( defaultValue = "app" )
+    protected String appFolderName;
+
+    
     protected Exception lastException;
     
     /**
@@ -162,9 +170,7 @@ public class JLinkMojo
         throws MojoExecutionException, MojoFailureException
     {
 
-    	String pfx=this.jpacktoolPropertyPrefix;
-    	Boolean b = (Boolean) this.project.getProperties().get(pfx+".used");
-    	jpacktoolPrepareUsed = b == null ? false : b.booleanValue();
+    	checkJpacktoolPrepareUsed();
     	
     	if ( jpacktoolPrepareUsed ) {
     		this.addSystemModulesFromJPackTool();
@@ -230,28 +236,22 @@ public class JLinkMojo
     }
 
     private void moveJarToJLinkOutClasspath(Path source) throws IOException {
-    	Path target=outputDirectoryImage.toPath().resolve("app").resolve("classpath");
-    	if (!Files.exists(target)) {
-    		Files.createDirectories(target);
-    	}
+    	Path target = resolveAndCreate(outputDirectoryImage, appFolderName, classPathFolderName);
+
     	target = target.resolve(source.getFileName());
     	Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJarToJLinkOutAutomatic(Path source) throws IOException  {
-    	Path target=outputDirectoryImage.toPath().resolve("app").resolve("automatic-modules");
-    	if (!Files.exists(target)) {
-    		Files.createDirectories(target);
-    	}
+    	Path target = resolveAndCreate(outputDirectoryImage, appFolderName, automaticModulesFolderName);
+
     	target = target.resolve(source.getFileName());
     	Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJarToJLinkOutModule(Path source) throws IOException  {
-    	Path target=outputDirectoryImage.toPath().resolve("app").resolve("modules");
-    	if (!Files.exists(target)) {
-    		Files.createDirectories(target);
-    	}
+    	Path target = resolveAndCreate(outputDirectoryImage, appFolderName, modulesFolderName);
+
     	target = target.resolve(source.getFileName());
     	Files.move(source, target, REPLACE_EXISTING);
     }
