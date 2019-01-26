@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
@@ -308,6 +309,9 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
 
     protected Map<String, Object> jpacktoolModel;
 
+    protected Map<String, Object> templateMap;
+
+    
     /**
      * set jpacktoolPrepareUsed variable based on maven property
      */
@@ -807,10 +811,27 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
 
     }
 
+    protected Map<String, Object> getTemplateMap() { 
+    	if ( templateMap == null ) {
+    		
+    		templateMap = new HashMap<String, Object>();
+    	
+    		templateMap.putAll(jpacktoolModel);
+    		
+    		Properties properties = getProject().getProperties();
+    		
+    		for (final String name: properties.stringPropertyNames()) {
+    			templateMap.put(name, properties.getProperty(name));
+    		}
+
+    	}
+    	return templateMap;
+    }
+    
     protected void generateFromTemplate(String templateName, File outputFile) throws MojoFailureException {
         GeneratedFile genFile;
         try {
-            genFile = new GeneratedFile(getTemplateGenerator().createFreemarkerConfiguration(), jpacktoolModel, templateName,
+            genFile = new GeneratedFile(getTemplateGenerator().createFreemarkerConfiguration(), getTemplateMap(), templateName,
                     outputFile);
         } catch (IOException e) {
             throw new MojoFailureException("error to generate from template", e);
@@ -863,7 +884,11 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
             jvmArgs = new ArrayList<String>();
         }
         
-        if ( jPacktoolMoveAutomaticModules || jPacktoolMoveRealModules ) {
+        if ( jpacktoolModel == null ) {
+        	jpacktoolModel = new HashMap<String, Object>();
+        }
+        
+        if ( ( jPacktoolMoveAutomaticModules || jPacktoolMoveRealModules ) && jpacktoolPrepareUsed ) {
             StringBuffer sb=new StringBuffer();
             if ( jPacktoolMoveAutomaticModules ) {
                 if ( appFolderName != null ) {
@@ -890,7 +915,7 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
 
         }
         
-        if ( jPacktoolMoveClassPathJars ) {
+        if ( jPacktoolMoveClassPathJars && jpacktoolPrepareUsed ) {
             StringBuffer sb1 = new StringBuffer();
             if ( appFolderName != null ) {
                 sb1.append(appFolderName);

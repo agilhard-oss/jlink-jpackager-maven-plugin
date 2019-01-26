@@ -287,7 +287,9 @@ public class JLinkMojo extends AbstractPackageToolMojo {
          }
       }
 
-      generateScript();
+      if ( jpacktoolPrepareUsed) {
+    	  generateScript();
+      }
 
       final File createZipArchiveFromImage = createZipArchiveFromImage(this.buildDirectory,
             this.outputDirectoryImage);

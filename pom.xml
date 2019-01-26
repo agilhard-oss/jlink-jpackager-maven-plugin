@@ -49,7 +49,6 @@
     <maven.compiler.target>9</maven.compiler.target>
     <mavenPluginToolsVersion>3.5.2</mavenPluginToolsVersion>
     <version.orgApacheMavenPlugins.mavenJavadocPlugin>3.0.0-M1</version.orgApacheMavenPlugins.mavenJavadocPlugin>
-    <checkstyle.violation.ignore>RedundantThrows,NewlineAtEndOfFile,ParameterNumber,MethodLength,FileLength</checkstyle.violation.ignore>
 
   </properties>
 
@@ -348,7 +347,7 @@
                 
                 -->
                 
-                <pomInclude>jpacktool-its/jpacktool-jlink/pom.xml</pomInclude>
+                <pomInclude>**/pom.xml</pomInclude>
                 
                 
               </pomIncludes>
