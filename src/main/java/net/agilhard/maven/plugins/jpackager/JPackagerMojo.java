@@ -1,5 +1,24 @@
 package net.agilhard.maven.plugins.jpackager;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /*
@@ -195,17 +214,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     private String appVersion;
 
     /**
-     * Command line arguments to pass to the main class if no arguments
-     * are specified by the launcher.
-     *
-     * <p>
-     * <code>--arguments &lt;args&gt;</code>
-     * </p>
-     */
-    @Parameter( required = false, readonly = false )
-    private List<String> arguments;
-
-    /**
      * Icon of the application bundle.
      *
      * <p>
@@ -251,26 +259,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     @Parameter( required = false, readonly = false )
     private boolean stripNativeCommands;
 
-    /**
-     * JVM flags and options to pass to the application.
-     *
-     * <p>
-     * <code>--jvm-args &lt;args&gt;</code>
-     * </p>
-     */
-    @Parameter( required = false, readonly = false )
-    private List<String> jvmArgs;
-
-    /**
-     * JVM options the user may override along and their default values
-     * (see UserJvmOptionsService API for more details).
-     *
-     * <p>
-     * <code>--user-jvm-args &lt;args&gt;</code>
-     * </p>
-     */
-    @Parameter( required = false, readonly = false )
-    private List<String> userJvmArgs;
 
     /**
      * Properties file that contains list of key=value parameters that
@@ -413,7 +401,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     /**
      * Mac Options
-	 *
+     *
      * <p>
      * Available subelements of &lt;MacOptions&gt; are:
      * sign, bundleName, bundleIdentifier, appStoreCategory,
@@ -461,12 +449,9 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
-    	checkJpacktoolPrepareUsed();
+        initJPacktoolModel();
+        initTemplates();
 
-    	if ( jpacktoolPrepareUsed ) {
-    		this.addSystemModulesFromJPackTool();
-    	}
-    	
         final String jPackagerExec = this.getExecutable();
 
         this.getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jpackager [ " + jPackagerExec + " ]" );
@@ -483,13 +468,13 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         this.failIfParametersAreNotValid();
         
         if ( addJDKToLimitModules ) {
-        	this.addSystemModulesToLimitModules();
+            this.addSystemModulesToLimitModules();
         }
         
         if ( limitModulesDirs != null ) {
-        	for ( File dir : limitModulesDirs ) {
-        		this.addModulesToLimitModules(dir.toPath());
-        	}
+            for ( File dir : limitModulesDirs ) {
+                this.addModulesToLimitModules(dir.toPath());
+            }
         }
         
         this.ifBuildRootDirectoryDoesNotExistcreateIt();
@@ -498,23 +483,27 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         File tempDirToAdd = this.moduleTempDirectory;
         if ( outputDirectoryModules.isDirectory() ) {
-        	tempDirToAdd = null;
+            tempDirToAdd = null;
         }
         
-        this.prepareModules( jmodsFolder, true, this.copyArtifacts, tempDirToAdd );
+        prepareModules( jmodsFolder, true, this.copyArtifacts, tempDirToAdd );
 
+        addSystemModulesFromJPackToolPrepare();
+        
         if ( this.copyArtifacts && (! outputDirectoryModules.isDirectory() ))
         {
             this.ifModuleTempDirectoryDoesNotExistCreateIt();
             this.copyArtifactsToModuleTempDirectory();
         }
 
+        updateModel();
+        
         if ( jpacktoolPrepareUsed ) {
-        	try {
-				this.moveJPacktoolJars();
-			} catch (Exception e) {
-	            throw new MojoExecutionException( e.getMessage() );
-			}
+            try {
+                this.moveJPacktoolJars();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
         }
         
         Commandline cmd;
@@ -551,98 +540,97 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
     
-    
     private void moveJarToInputClasspath(Path source) throws IOException {
-    	Path target = resolveAndCreate(inputDirectoryPackage, null, classPathFolderName);
+        Path target = resolveAndCreate(inputDirectoryPackage, null, classPathFolderName);
 
-    	target = target.resolve(source.getFileName());
-    	Files.move(source, target, REPLACE_EXISTING);
+        target = target.resolve(source.getFileName());
+        Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJarToInputAutomatic(Path source) throws IOException  {
-    	Path target = resolveAndCreate(inputDirectoryPackage, null, automaticModulesFolderName);
+        Path target = resolveAndCreate(inputDirectoryPackage, null, automaticModulesFolderName);
 
-    	target = target.resolve(source.getFileName());
-    	Files.move(source, target, REPLACE_EXISTING);
+        target = target.resolve(source.getFileName());
+        Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJarToInputModule(Path source) throws IOException  {
-    	Path target = resolveAndCreate(inputDirectoryPackage, null, modulesFolderName);
+        Path target = resolveAndCreate(inputDirectoryPackage, null, modulesFolderName);
 
-    	target = target.resolve(source.getFileName());
-    	Files.move(source, target, REPLACE_EXISTING);
+        target = target.resolve(source.getFileName());
+        Files.move(source, target, REPLACE_EXISTING);
     }
     
     private void moveJPacktoolJars() throws Exception {
-    	
-    	lastException = null;
-    	
-    	if ( this.jPacktoolMoveClassPathJars ) {
-    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
-    	        path -> path.toString().endsWith(".jar"))
-    	        .forEach(t -> {
-					try {
-						moveJarToInputClasspath(t);
-					} catch (IOException e) {
-						lastException=e;
-					}
-				});
-    		if ( lastException != null ) {
-    			throw lastException;
-    		}
-    	}
+        
+        lastException = null;
+        
+        if ( this.jPacktoolMoveClassPathJars ) {
+        Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
+                path -> path.toString().endsWith(".jar"))
+                .forEach(t -> {
+                    try {
+                        moveJarToInputClasspath(t);
+                    } catch (IOException e) {
+                        lastException=e;
+                    }
+                });
+            if ( lastException != null ) {
+                throw lastException;
+            }
+        }
 
-    	
-    	if ( this.jPacktoolMoveAutomaticModules ) {
-    	Files.newDirectoryStream(outputDirectoryAutomaticJars.toPath(),
-    	        path -> path.toString().endsWith(".jar"))
-    	        .forEach(t -> {
-					try {
-						moveJarToInputAutomatic(t);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				});
-			if ( lastException != null ) {
-				throw lastException;
-			}
-		}
+        
+        if ( this.jPacktoolMoveAutomaticModules ) {
+        Files.newDirectoryStream(outputDirectoryAutomaticJars.toPath(),
+                path -> path.toString().endsWith(".jar"))
+                .forEach(t -> {
+                    try {
+                        moveJarToInputAutomatic(t);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                });
+            if ( lastException != null ) {
+                throw lastException;
+            }
+        }
 
-    	
-    	if ( this.jPacktoolMoveRealModules ) {
-    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
-    	        path -> path.toString().endsWith(".jar"))
-    	        .forEach(t -> {
-					try {
-						moveJarToInputModule(t);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				});
-    		if ( lastException != null ) {
-    			throw lastException;
-    		}
-    	}
+        
+        if ( this.jPacktoolMoveRealModules ) {
+        Files.newDirectoryStream(outputDirectoryModules.toPath(),
+                path -> path.toString().endsWith(".jar"))
+                .forEach(t -> {
+                    try {
+                        moveJarToInputModule(t);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                });
+            if ( lastException != null ) {
+                throw lastException;
+            }
+        }
     }
 
     
     private void maySetPlatformDefaultType()
     {
         if ( ( ( this.type == null ) || ( "".equals( this.type ) ) )
-	    && ( ! "create-image".equals(this.mode)) )
+        && ( ! "create-image".equals(this.mode)) )
         {
             if ( SystemUtils.IS_OS_LINUX && ( this.linuxOptions != null ) ) {
-            	this.type = this.linuxOptions.linuxType;
+                this.type = this.linuxOptions.linuxType;
             }
             else if ( SystemUtils.IS_OS_WINDOWS ) {
-            	this.type = ( ( this.windowsOptions == null )  || ( this.windowsOptions.windowsType == null ) ) ? "exe" : this.windowsOptions.windowsType;
+                this.type = ( ( this.windowsOptions == null )  || ( this.windowsOptions.windowsType == null ) ) ? "exe" : this.windowsOptions.windowsType;
             }
             else if ( SystemUtils.IS_OS_MAC  ) {
-            	this.type = ( ( this.macOptions == null ) || ( this.macOptions.macType == null ) ) ? "dmg" : this.macOptions.macType;
+                this.type = ( ( this.macOptions == null ) || ( this.macOptions.macType == null ) ) ? "dmg" : this.macOptions.macType;
             }
-	    this.getLog().info("<type> is not set using platform default (" + ( this.type == null ? "" : this.type ) + ")" );
+        this.getLog().info("<type> is not set using platform default (" + ( this.type == null ? "" : this.type ) + ")" );
         }
     }
 
@@ -1638,7 +1626,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                     cmd.createArg().setValue( arg );
                 }
             }
-	}
+    }
 
         if ( this.fileAssociations != null )
         {
@@ -2074,8 +2062,8 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             throw new MojoFailureException( message );
         }
         if ( ( this.type != null ) && ( ! ( "msi".equals( this.type ) || "exe".equals( this.type )
-        		 || "rpm".equals( this.type ) || "deb".equals( this.type )
-        		 || "dmg".equals( this.type ) || "pkg".equals( this.type )
+                 || "rpm".equals( this.type ) || "deb".equals( this.type )
+                 || "dmg".equals( this.type ) || "pkg".equals( this.type )
                  || "pkg-app-store".equals( this.type ) ) ) )
         {
             final String message = "<type> is not valid, only msi, rpm, deb, dmg, pkg, pkg-app-store are allowed.";
@@ -2084,5 +2072,8 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     }
 
+    protected void updateJvmArgs() throws MojoFailureException {
+        updateJvmArgs("app");
+    }
 
 }

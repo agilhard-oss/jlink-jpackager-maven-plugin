@@ -33,10 +33,10 @@ try
         System.err.println( "target file is missing or not a directory." );
         return false;
     }
-    File artifact = new File( target, "jlink-cli-options-add-jdk-to-limit-modules-99.0.zip" );
+    File artifact = new File( target, "jlink-its-add-jdk-to-limit-modules-99.0.zip" );
     if ( !artifact.exists() || artifact.isDirectory() )
     {
-        System.err.println( "jlink-cli-options-add-jdk-to-limit-modules-99.0.zip file is missing or is a directory." );
+        System.err.println( "jlink-its-add-jdk-to-limit-modules-99.0.zip file is missing or is a directory." );
         return false;
     }
 

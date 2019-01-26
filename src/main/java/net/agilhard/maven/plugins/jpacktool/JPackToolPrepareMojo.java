@@ -1,20 +1,28 @@
-/**
- * Copyright Fr.Meyer's Sohn Logistics 2019. All Rights Reserved
 
- * $Date:  $
- * $Author:  $
- * $Revision:  $
- * $Source:  $
- * $State: Exp $ - $Locker:  $
- * **********************
- * auto generated header
- *
- * Project : jlink-jpackager-maven-plugin
- * Created by bei, 20.01.2019
- */
 package net.agilhard.maven.plugins.jpacktool;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -57,105 +65,117 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
      */
     private String jdepsExecutable;
     
+    
+    private Map<String,Object> model = new HashMap<>();
+    
+    
+    private void putModel(String key, Object value)
+    {
+        model.put(key, value);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
-    	if ( (! outputDirectoryAutomaticJars.exists() ) && copyAutomaticJars ) {
-    		if ( ! outputDirectoryAutomaticJars.mkdirs() ) {
-    			throw new MojoExecutionException("directory can not be created:"+outputDirectoryAutomaticJars);
-    		}
-    	}
-    	if ( (! outputDirectoryClasspathJars.exists() ) && copyClassPathJars ) {
-    		if ( ! outputDirectoryClasspathJars.mkdirs() ) {
-    			throw new MojoExecutionException("directory can not be created:"+outputDirectoryClasspathJars);
-    		}
-    	}
-    	if ( (! outputDirectoryModules.exists() ) && copyModuleJars ) {
-    		if ( ! outputDirectoryModules.mkdirs() ) {
-    			throw new MojoExecutionException("directory can not be created:"+outputDirectoryModules);
-    		}
-    	}
-    	
-    	try {
-			jdepsExecutable = this.getToolExecutable("jdeps");
-		} catch (IOException e) {
-			throw new MojoFailureException("i/o error", e);
-		}
-    	
-    	super.execute();
-    	
-    	JPackToolHandler handler = getHandler();
-    	
-    	Properties props = this.project.getProperties();
+        if ( (! outputDirectoryAutomaticJars.exists() ) && copyAutomaticJars ) {
+            if ( ! outputDirectoryAutomaticJars.mkdirs() ) {
+                throw new MojoExecutionException("directory can not be created:"+outputDirectoryAutomaticJars);
+            }
+        }
+        if ( (! outputDirectoryClasspathJars.exists() ) && copyClassPathJars ) {
+            if ( ! outputDirectoryClasspathJars.mkdirs() ) {
+                throw new MojoExecutionException("directory can not be created:"+outputDirectoryClasspathJars);
+            }
+        }
+        if ( (! outputDirectoryModules.exists() ) && copyModuleJars ) {
+            if ( ! outputDirectoryModules.mkdirs() ) {
+                throw new MojoExecutionException("directory can not be created:"+outputDirectoryModules);
+            }
+        }
+        
+        try {
+            jdepsExecutable = this.getToolExecutable("jdeps");
+        } catch (IOException e) {
+            throw new MojoFailureException("i/o error", e);
+        }
+        
+        super.execute();
+        
+        JPackToolHandler handler = getHandler();
+        
+        Properties props = this.project.getProperties();
 
-    	String pfx=this.jpacktoolPropertyPrefix;
-    	props.put(pfx+".used",Boolean.TRUE);
-    	
-    	for ( String nodeString : handler.getNodeStrings() ) {
-    		getLog().info("--------------------");
-    		getLog().info("Dependencies for "+nodeString);
-    		
-        	getLog().info("Dependency Modules:" + ( handler.getAllModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getAllModulesMap().get(nodeString) ) ) );   
-        	getLog().info("Dependency System Modules:" + ( handler.getLinkedSystemModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getLinkedSystemModulesMap().get(nodeString) ) ) );   
-        	getLog().info("Dependency Linked Modules:" + ( handler.getLinkedModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getLinkedModulesMap().get(nodeString) ) ) );   
-        	getLog().info("Dependency Automatic Modules:" + ( handler.getAutomaticModulesMap().get(nodeString)== null ? "" : String.join(",", handler.getAutomaticModulesMap().get(nodeString) ) ) );   
-    	}
-    	
-    	props.put(pfx+".allModulesMap", handler.getAllModulesMap());
-    	props.put(pfx+".linkedSystemModulesMap", handler.getLinkedSystemModulesMap());
-    	props.put(pfx+".linkedModulesMap", handler.getLinkedModulesMap());
-    	props.put(pfx+".automaticModulesMap", handler.getAutomaticModulesMap());
-    	
-    	props.put(pfx+".nodeStrings", handler.getNodeStrings());
+        String pfx=this.jpacktoolPropertyPrefix;
+        props.put(pfx+".used",Boolean.TRUE);
+        
+        for ( String nodeString : handler.getNodeStrings() ) {
+            getLog().info("--------------------");
+            getLog().info("Dependencies for "+nodeString);
+            
+            getLog().info("Dependency Modules:" + ( handler.getAllModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getAllModulesMap().get(nodeString) ) ) );   
+            getLog().info("Dependency System Modules:" + ( handler.getLinkedSystemModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getLinkedSystemModulesMap().get(nodeString) ) ) );   
+            getLog().info("Dependency Linked Modules:" + ( handler.getLinkedModulesMap().get(nodeString) == null ? "" : String.join(",", handler.getLinkedModulesMap().get(nodeString) ) ) );   
+            getLog().info("Dependency Automatic Modules:" + ( handler.getAutomaticModulesMap().get(nodeString)== null ? "" : String.join(",", handler.getAutomaticModulesMap().get(nodeString) ) ) );   
+        }
+        
+        putModel("allModulesMap", handler.getAllModulesMap());
+        putModel("linkedSystemModulesMap", handler.getLinkedSystemModulesMap());
+        putModel("linkedModulesMap", handler.getLinkedModulesMap());
+        putModel("automaticModulesMap", handler.getAutomaticModulesMap());
+        
+        putModel("nodeStrings", handler.getNodeStrings());
 
-		getLog().info("--------------------");
+        getLog().info("--------------------");
 
-    	getLog().info("All Modules:" + String.join(",", handler.getAllModules()) ); 
-    	props.put(pfx+".allModules", handler.getAllModules());
-    	
-    	getLog().info("Linked System Modules:" + String.join(",", handler.getLinkedSystemModules()) );   
-    	props.put(pfx+".linkedSystemModules", handler.getLinkedSystemModules());
-    	
-    	getLog().info("Linked Modules:" + String.join(",", handler.getLinkedModules()) );   
-    	props.put(pfx+".linkedModules", handler.getLinkedModules());
-    			
-    	getLog().info("Automatic Modules:" + String.join(",", handler.getAutomaticModules()) );   
-    	props.put(pfx+".automaticModules", handler.getAutomaticModules());
-    	
-    	getLog().info("Jars on Classpath:" + String.join(",", handler.getJarsOnClassPath()) );   
-    	props.put(pfx+".jarsOnClassPath", handler.getJarsOnClassPath());
+        getLog().info("All Modules:" + String.join(",", handler.getAllModules()) ); 
+        putModel("allModules", handler.getAllModules());
+        
+        getLog().info("Linked System Modules:" + String.join(",", handler.getLinkedSystemModules()) );   
+        putModel("linkedSystemModules", handler.getLinkedSystemModules());
+        
+        getLog().info("Linked Modules:" + String.join(",", handler.getLinkedModules()) );   
+        putModel("linkedModules", handler.getLinkedModules());
+                
+        getLog().info("Automatic Modules:" + String.join(",", handler.getAutomaticModules()) );   
+        putModel("automaticModules", handler.getAutomaticModules());
+        
+        getLog().info("Jars on Classpath:" + String.join(",", handler.getJarsOnClassPath()) );   
+        putModel("jarsOnClassPath", handler.getJarsOnClassPath());
+        
+        props.put(pfx+".model", model);
 
-    	if ( handler.getWarnings().size() > 0 ) {
-    		getLog().warn("--------------------");
-    		getLog().warn("Warnings from jdep calls");
-    		getLog().warn("--------------------");
-    		for ( String warn : handler.getWarnings() ) {
-    			getLog().warn(warn);
-    		}
-    	}
-    	if ( handler.getErrors().size() > 0 ) {
-    		getLog().error("--------------------");
-    		getLog().error("Errors from jdep calls");
-    		getLog().error("--------------------");
-    		for ( String err : handler.getErrors() ) {
-    			getLog().error(err);
-    		}
-    		
-    		throw new MojoFailureException("errors on jdep calls");
-    	}
+        if ( handler.getWarnings().size() > 0 ) {
+            getLog().warn("--------------------");
+            getLog().warn("Warnings from jdep calls");
+            getLog().warn("--------------------");
+            for ( String warn : handler.getWarnings() ) {
+                getLog().warn(warn);
+            }
+        }
+        if ( handler.getErrors().size() > 0 ) {
+            getLog().error("--------------------");
+            getLog().error("Errors from jdep calls");
+            getLog().error("--------------------");
+            for ( String err : handler.getErrors() ) {
+                getLog().error(err);
+            }
+            
+            throw new MojoFailureException("errors on jdep calls");
+        }
+        
     }
 
-	@Override
-	public JPackToolHandler createHandler() throws MojoExecutionException, MojoFailureException
-	{
-		return new JPackToolHandler(this, dependencyGraphBuilder, 
-				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
-				copyClassPathJars ? outputDirectoryClasspathJars : null,
-				copyModuleJars ? outputDirectoryModules : null, jdepsExecutable,
-			    generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps);
-		
-	}
+    @Override
+    public JPackToolHandler createHandler() throws MojoExecutionException, MojoFailureException
+    {
+        return new JPackToolHandler(this, dependencyGraphBuilder, 
+                copyAutomaticJars ? outputDirectoryAutomaticJars : null,
+                copyClassPathJars ? outputDirectoryClasspathJars : null,
+                copyModuleJars ? outputDirectoryModules : null, jdepsExecutable,
+                generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps);
+        
+    }
     
 }

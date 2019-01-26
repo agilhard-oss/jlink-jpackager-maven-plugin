@@ -1,7 +1,5 @@
 package net.agilhard.maven.plugins.jlink;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -29,6 +27,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -40,454 +39,531 @@ import org.codehaus.plexus.util.cli.Commandline;
 
 import net.agilhard.maven.plugins.jpacktool.AbstractPackageToolMojo;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 /**
  * The JLink goal is intended to create a Java Run Time Image file based on
- * <a href="http://openjdk.java.net/jeps/282">http://openjdk.java.net/jeps/282</a>,
- * <a href="http://openjdk.java.net/jeps/220">http://openjdk.java.net/jeps/220</a>.
+ * <a href=
+ * "http://openjdk.java.net/jeps/282">http://openjdk.java.net/jeps/282</a>,
+ * <a href=
+ * "http://openjdk.java.net/jeps/220">http://openjdk.java.net/jeps/220</a>.
  *
- * @author Karl Heinz Marbaise <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>
+ * @author Karl Heinz Marbaise
+ *         <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>
  */
 // CHECKSTYLE_OFF: LineLength
-@Mojo( name = "jlink", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true )
+@Mojo(name = "jlink", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true)
 // CHECKSTYLE_ON: LineLength
-public class JLinkMojo
-    extends AbstractPackageToolMojo
-{
+public class JLinkMojo extends AbstractPackageToolMojo {
 
-    /**
-     * This is intended to strip debug information out. The command line equivalent of <code>jlink</code> is:
-     * <code>-G, --strip-debug</code> strip debug information.
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean stripDebug;
+   /**
+    * This is intended to strip debug information out. The command line equivalent
+    * of <code>jlink</code> is: <code>-G, --strip-debug</code> strip debug
+    * information.
+    */
+   @Parameter(defaultValue = "false")
+   private boolean stripDebug;
 
-    /**
-     * Here you can define the compression of the resources being used. The command line equivalent is:
-     * <code>-c, --compress=level&gt;</code>. The valid values for the level are: <code>0, 1, 2</code>.
-     */
-    @Parameter
-    private Integer compress;
+   /**
+    * Here you can define the compression of the resources being used. The command
+    * line equivalent is: <code>-c, --compress=level&gt;</code>. The valid values
+    * for the level are: <code>0, 1, 2</code>.
+    */
+   @Parameter
+   private Integer compress;
 
-    /**
-     * Should the plugin generate a launcher script by means of jlink? The command line equivalent is:
-     * <code>--launcher &lt;name&gt;=&lt;module&gt;[/&lt;mainclass&gt;]</code>. The valid values for the level are:
-     * <code>&lt;name&gt;=&lt;module&gt;[/&lt;mainclass&gt;]</code>.
-     */
-    @Parameter
-    private String launcher;
+   /**
+    * Should the plugin generate a launcher script by means of jlink? The command
+    * line equivalent is:
+    * <code>--launcher &lt;name&gt;=&lt;module&gt;[/&lt;mainclass&gt;]</code>. The
+    * valid values for the level are:
+    * <code>&lt;name&gt;=&lt;module&gt;[/&lt;mainclass&gt;]</code>.
+    */
+   @Parameter
+   private String launcher;
 
+   /**
+    * Name of the script generated from launcherTemplate
+    */
+   @Parameter
+   private String launcherTemplateScript;
 
-    /**
-     * Define the plugin module path to be used. There can be defined multiple entries separated by either {@code ;} or
-     * {@code :}. The jlink command line equivalent is: <code>--plugin-module-path &lt;modulepath&gt;</code>
-     */
-    @Parameter
-    private String pluginModulePath;
+   /**
+    * main class for script Generation
+    */
+   @Parameter
+   private String mainClass;
 
-    /**
-     * The output directory for the resulting Run Time Image. The created Run Time Image is stored in non compressed
-     * form. This will later being packaged into a <code>zip</code> file. <code>--output &lt;path&gt;</code>
-     */
-    // TODO: is this a good final location?
-    @Parameter( defaultValue = "${project.build.directory}/maven-jlink", required = true, readonly = true )
-    private File outputDirectoryImage;
+   /**
+    * main module for script Generation
+    */
+   @Parameter
+   private String mainModule;
 
-    /**
-     * The byte order of the generated Java Run Time image. <code>--endian &lt;little|big&gt;</code>. If the endian is
-     * not given the default is: <code>native</code>.
-     */
-    // TODO: Should we define either little or big as default? or should we left as it.
-    @Parameter
-    private String endian;
+   /**
+    * main jar for script Generation
+    */
+   @Parameter
+   private String mainJar;
 
+   /**
+    * Name of the script generated from launcherTemplate for linux
+    */
+   @Parameter(defaultValue = "start.sh")
+   private String launcherTemplateScriptWindows;
 
-    /**
-     * Add the option <code>--bind-services</code> or not.
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean bindServices;
+   /**
+    * Name of the script generated from launcherTemplate for linux
+    */
+   @Parameter(defaultValue = "start.sh")
+   private String launcherTemplateScriptMac;
 
-    /**
-     * You can disable a plugin by using this option. <code>--disable-plugin pluginName</code>.
-     */
-    @Parameter
-    private String disablePlugin;
+   /**
+    * Name of the script generated from launcherTemplate for linux
+    */
+   @Parameter(defaultValue = "start.sh")
+   private String launcherTemplateScriptLinux;
 
-    /**
-     * <code>--ignore-signing-information</code>
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean ignoreSigningInformation;
+   /**
+    * Should the plugin generate a launcher script by means of its own template
+    * mechanism.
+    * 
+    * Can contain either the value &quot;default&quot; or a resource: URL or a path
+    * to a file.
+    */
+   @Parameter(defaultValue = "default")
+   private String launcherTemplate;
 
-    /**
-     * This will suppress to have an <code>includes</code> directory in the resulting Java Run Time Image. The JLink
-     * command line equivalent is: <code>--no-header-files</code>
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean noHeaderFiles;
+   /**
+    * Define the plugin module path to be used. There can be defined multiple
+    * entries separated by either {@code ;} or {@code :}. The jlink command line
+    * equivalent is: <code>--plugin-module-path &lt;modulepath&gt;</code>
+    */
+   @Parameter
+   private String pluginModulePath;
 
-    /**
-     * This will suppress to have the <code>man</code> directory in the resulting Java Run Time Image. The JLink command
-     * line equivalent is: <code>--no-man-pages</code>
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean noManPages;    
-    
-    
-    /**
-     * Name of the app folder
-     */
-    @Parameter( defaultValue = "app" )
-    protected String appFolderName;
+   /**
+    * The output directory for the resulting Run Time Image. The created Run Time
+    * Image is stored in non compressed form. This will later being packaged into a
+    * <code>zip</code> file. <code>--output &lt;path&gt;</code>
+    */
+   // TODO: is this a good final location?
+   @Parameter(defaultValue = "${project.build.directory}/maven-jlink", required = true, readonly = true)
+   private File outputDirectoryImage;
 
-    
-    protected Exception lastException;
-    
-    /**
-     * Suggest providers that implement the given service types from the module path.
-     *
-     * <pre>
-     * &lt;suggestProviders&gt;
-     *   &lt;suggestProvider&gt;name-a&lt;/suggestProvider&gt;
-     *   &lt;suggestProvider&gt;name-b&lt;/suggestProvider&gt;
-     *   .
-     *   .
-     * &lt;/suggestProviders&gt;
-     * </pre>
-     *
-     * The jlink command line equivalent: <code>--suggest-providers [&lt;name&gt;,...]</code>
-     */
-    @Parameter
-    private List<String> suggestProviders;
+   /**
+    * The byte order of the generated Java Run Time image.
+    * <code>--endian &lt;little|big&gt;</code>. If the endian is not given the
+    * default is: <code>native</code>.
+    */
+   // TODO: Should we define either little or big as default? or should we left as
+   // it.
+   @Parameter
+   private String endian;
 
-    protected String getJLinkExecutable()
-        throws IOException
-    {
-        return this.getToolExecutable( "jlink" );
-    }
+   /**
+    * Add the option <code>--bind-services</code> or not.
+    */
+   @Parameter(defaultValue = "false")
+   private boolean bindServices;
 
-    public void execute()
-        throws MojoExecutionException, MojoFailureException
-    {
+   /**
+    * You can disable a plugin by using this option.
+    * <code>--disable-plugin pluginName</code>.
+    */
+   @Parameter
+   private String disablePlugin;
 
-    	checkJpacktoolPrepareUsed();
-    	
-    	if ( jpacktoolPrepareUsed ) {
-    		this.addSystemModulesFromJPackTool();
-    	}
-    	
-        final String jLinkExec = this.getExecutable();
+   /**
+    * <code>--ignore-signing-information</code>
+    */
+   @Parameter(defaultValue = "false")
+   private boolean ignoreSigningInformation;
 
-        this.getLog().info( "Toolchain in jlink-jpackager-maven-plugin: jlink [ " + jLinkExec + " ]" );
+   /**
+    * This will suppress to have an <code>includes</code> directory in the
+    * resulting Java Run Time Image. The JLink command line equivalent is:
+    * <code>--no-header-files</code>
+    */
+   @Parameter(defaultValue = "false")
+   private boolean noHeaderFiles;
 
-        // TODO: Find a more better and cleaner way?
-        final File jLinkExecuteable = new File( jLinkExec );
+   /**
+    * This will suppress to have the <code>man</code> directory in the resulting
+    * Java Run Time Image. The JLink command line equivalent is:
+    * <code>--no-man-pages</code>
+    */
+   @Parameter(defaultValue = "false")
+   private boolean noManPages;
 
-        // Really Hacky...do we have a better solution to find the jmods directory of the JDK?
-        final File jLinkParent = jLinkExecuteable.getParentFile().getParentFile();
-        final File jmodsFolder = new File( jLinkParent, JMODS );
+   /**
+    * Name of the app folder
+    */
+   @Parameter(defaultValue = "app")
+   protected String appFolderName;
 
-        this.getLog().debug( " Parent: " + jLinkParent.getAbsolutePath() );
-        this.getLog().debug( " jmodsFolder: " + jmodsFolder.getAbsolutePath() );
+   protected Exception lastException;
 
-        this.failIfParametersAreNotInTheirValidValueRanges();
+   /**
+    * Suggest providers that implement the given service types from the module
+    * path.
+    *
+    * <pre>
+    * &lt;suggestProviders&gt;
+    *   &lt;suggestProvider&gt;name-a&lt;/suggestProvider&gt;
+    *   &lt;suggestProvider&gt;name-b&lt;/suggestProvider&gt;
+    *   .
+    *   .
+    * &lt;/suggestProviders&gt;
+    * </pre>
+    *
+    * The jlink command line equivalent:
+    * <code>--suggest-providers [&lt;name&gt;,...]</code>
+    */
+   @Parameter
+   private List<String> suggestProviders;
 
-        if ( addJDKToLimitModules ) {
-        	this.addSystemModulesToLimitModules();
-        }
-        
-        if ( limitModulesDirs != null ) {
-        	for ( File dir : limitModulesDirs ) {
-        		this.addModulesToLimitModules(dir.toPath());
-        	}
-        }
-        
-        this.ifOutputDirectoryExistsDeleteIt();
+   protected String getJLinkExecutable() throws IOException {
+      return this.getToolExecutable("jlink");
+   }
 
-        this.prepareModules( jmodsFolder );
+   public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Commandline cmd;
-        try
-        {
-            cmd = this.createJLinkCommandLine( this.pathsOfModules, this.modulesToAdd );
-        }
-        catch ( final IOException e )
-        {
-            throw new MojoExecutionException( e.getMessage() );
-        }
-        cmd.setExecutable( jLinkExec );
+      initJPacktoolModel();
+      initTemplates();
 
-        this.executeCommand(cmd);
+      final String jLinkExec = this.getExecutable();
 
-        
-        this.failIfProjectHasAlreadySetAnArtifact();
+      this.getLog().info("Toolchain in jlink-jpackager-maven-plugin: jlink [ " + jLinkExec + " ]");
 
-        if ( jpacktoolPrepareUsed ) {
-        	try {
-				this.moveJPacktoolJars();
-			} catch (Exception e) {
-	            throw new MojoExecutionException( e.getMessage() );
-			}
-        }
+      // TODO: Find a more better and cleaner way?
+      final File jLinkExecuteable = new File(jLinkExec);
 
-        final File createZipArchiveFromImage = this.createZipArchiveFromImage( this.buildDirectory, this.outputDirectoryImage );
+      // Really Hacky...do we have a better solution to find the jmods directory of
+      // the JDK?
+      final File jLinkParent = jLinkExecuteable.getParentFile().getParentFile();
+      final File jmodsFolder = new File(jLinkParent, JMODS);
 
-        this.getProject().getArtifact().setFile( createZipArchiveFromImage );
-    }
+      this.getLog().debug(" Parent: " + jLinkParent.getAbsolutePath());
+      this.getLog().debug(" jmodsFolder: " + jmodsFolder.getAbsolutePath());
 
-    private void moveJarToJLinkOutClasspath(Path source) throws IOException {
-    	Path target = resolveAndCreate(outputDirectoryImage, appFolderName, classPathFolderName);
+      this.failIfParametersAreNotInTheirValidValueRanges();
 
-    	target = target.resolve(source.getFileName());
-    	Files.move(source, target, REPLACE_EXISTING);
-    }
-    
-    private void moveJarToJLinkOutAutomatic(Path source) throws IOException  {
-    	Path target = resolveAndCreate(outputDirectoryImage, appFolderName, automaticModulesFolderName);
+      if (addJDKToLimitModules) {
+         this.addSystemModulesToLimitModules();
+      }
 
-    	target = target.resolve(source.getFileName());
-    	Files.move(source, target, REPLACE_EXISTING);
-    }
-    
-    private void moveJarToJLinkOutModule(Path source) throws IOException  {
-    	Path target = resolveAndCreate(outputDirectoryImage, appFolderName, modulesFolderName);
+      if (limitModulesDirs != null) {
+         for (File dir : limitModulesDirs) {
+            this.addModulesToLimitModules(dir.toPath());
+         }
+      }
 
-    	target = target.resolve(source.getFileName());
-    	Files.move(source, target, REPLACE_EXISTING);
-    }
-    
-    private void moveJPacktoolJars() throws Exception {
-    	
-    	lastException = null;
+      this.ifOutputDirectoryExistsDeleteIt();
 
-    	if ( this.jPacktoolMoveClassPathJars ) {
-    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
-    	        path -> path.toString().endsWith(".jar"))
-    	        .forEach(t -> {
-					try {
-						moveJarToJLinkOutClasspath(t);
-					} catch (IOException e) {
-						lastException=e;
-					}
-				});
-    		if ( lastException != null ) {
-    			throw lastException;
-    		}
-    	}
+      prepareModules(jmodsFolder);
 
-    	
-    	if ( this.jPacktoolMoveAutomaticModules ) {
-    	Files.newDirectoryStream(outputDirectoryAutomaticJars.toPath(),
-    	        path -> path.toString().endsWith(".jar"))
-    	        .forEach(t -> {
-					try {
-						moveJarToJLinkOutAutomatic(t);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				});
-			if ( lastException != null ) {
-				throw lastException;
-			}
-		}
+      addSystemModulesFromJPackToolPrepare();
 
-    	
-    	if ( this.jPacktoolMoveRealModules ) {
-    	Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(),
-    	        path -> path.toString().endsWith(".jar"))
-    	        .forEach(t -> {
-					try {
-						moveJarToJLinkOutModule(t);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				});
-    		if ( lastException != null ) {
-    			throw lastException;
-    		}
-    	}
-    }
+      updateModel();
 
-    private String getExecutable()
-        throws MojoFailureException
-    {
-        String jLinkExec;
-        try
-        {
-            jLinkExec = this.getJLinkExecutable();
-        }
-        catch ( final IOException e )
-        {
-            throw new MojoFailureException( "Unable to find jlink command: " + e.getMessage(), e );
-        }
-        return jLinkExec;
-    }
+      Commandline cmd;
+      try {
+         cmd = this.createJLinkCommandLine(this.pathsOfModules, this.modulesToAdd);
+      } catch (final IOException e) {
+         throw new MojoExecutionException(e.getMessage());
+      }
+      cmd.setExecutable(jLinkExec);
 
+      executeCommand(cmd);
 
-    private void failIfParametersAreNotInTheirValidValueRanges()
-        throws MojoFailureException
-    {
-        if ( this.compress != null && ( this.compress < 0 || this.compress > 2 ) )
-        {
-            final String message = "The given compress parameters " + this.compress + " is not in the valid value range from 0..2";
-            this.getLog().error( message );
-            throw new MojoFailureException( message );
-        }
+      failIfProjectHasAlreadySetAnArtifact();
 
-        if ( this.endian != null && ( !"big".equals( this.endian ) && !"little".equals( this.endian ) ) )
-        {
-            final String message = "The given endian parameter " + this.endian
-                + " does not contain one of the following values: 'little' or 'big'.";
-            this.getLog().error( message );
-            throw new MojoFailureException( message );
-        }
-    }
+      if (jpacktoolPrepareUsed) {
+         try {
+            this.moveJPacktoolJars();
+         } catch (Exception e) {
+            throw new MojoExecutionException(e.getMessage());
+         }
+      }
 
-    private void ifOutputDirectoryExistsDeleteIt()
-        throws MojoExecutionException
-    {
-        if ( this.outputDirectoryImage.exists() )
-        {
-            // Delete the output folder of JLink before we start
-            // otherwise JLink will fail with a message "Error: directory already exists: ..."
-            try
-            {
-                this.getLog().debug( "Deleting existing " + this.outputDirectoryImage.getAbsolutePath() );
-                FileUtils.forceDelete( this.outputDirectoryImage );
-            }
-            catch ( final IOException e )
-            {
-                this.getLog().error( "IOException", e );
-                throw new MojoExecutionException( "Failure during deletion of " + this.outputDirectoryImage.getAbsolutePath()
-                    + " occured." );
-            }
-        }
-    }
+      generateScript();
 
-    private Commandline createJLinkCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
-        throws IOException
-    {
-        final File file = new File( this.outputDirectoryImage.getParentFile(), "jlinkArgs" );
-        if ( !this.getLog().isDebugEnabled() )
-        {
-            file.deleteOnExit();
-        }
-        file.getParentFile().mkdirs();
-        file.createNewFile();
+      final File createZipArchiveFromImage = createZipArchiveFromImage(this.buildDirectory,
+            this.outputDirectoryImage);
 
-        final PrintStream argsFile = new PrintStream( file );
+      this.getProject().getArtifact().setFile(createZipArchiveFromImage);
+   }
 
-        if ( this.stripDebug )
-        {
-            argsFile.println( "--strip-debug" );
-        }
+   protected void updateModel() throws MojoFailureException {
+      super.updateModel();
 
-        if ( this.bindServices )
-        {
-            argsFile.println( "--bind-services" );
-        }
+      if (mainJar != null) {
+         jpacktoolModel.put("mainJar", mainJar);
+      }
 
-        if ( this.endian != null )
-        {
-            argsFile.println( "--endian" );
-            argsFile.println( this.endian );
-        }
-        if ( this.ignoreSigningInformation )
-        {
-            argsFile.println( "--ignore-signing-information" );
-        }
-        if ( this.compress != null )
-        {
-            argsFile.println( "--compress" );
-            argsFile.println( this.compress );
-        }
-        if ( this.launcher != null )
-        {
-            argsFile.println( "--launcher" );
-            argsFile.println( this.launcher );
-        }
+      if (mainClass != null) {
+         jpacktoolModel.put("mainClass", mainClass);
+      }
 
-        if ( this.disablePlugin != null )
-        {
-            argsFile.println( "--disable-plugin" );
-            argsFile.append( '"' ).append( this.disablePlugin ).println( '"' );
+      if (mainModule != null) {
+         jpacktoolModel.put("mainModule", mainModule);
+      }
+   }
 
-        }
-        if ( pathsOfModules != null )
-        {
-            // @formatter:off
-            argsFile.println( "--module-path" );
-            argsFile
-                .append( this.getPlatformDependSeparateList( pathsOfModules )
-                         .replace( "\\", "\\\\" ) ).println("");
-            // @formatter:off
-        }
+   private void moveJarToJLinkOutClasspath(Path source) throws IOException {
+      Path target = resolveAndCreate(outputDirectoryImage, appFolderName, classPathFolderName);
 
-        if ( this.noHeaderFiles )
-        {
-            argsFile.println( "--no-header-files" );
-        }
+      target = target.resolve(source.getFileName());
+      Files.move(source, target, REPLACE_EXISTING);
+   }
 
-        if ( this.noManPages )
-        {
-            argsFile.println( "--no-man-pages" );
-        }
+   private void moveJarToJLinkOutAutomatic(Path source) throws IOException {
+      Path target = resolveAndCreate(outputDirectoryImage, appFolderName, automaticModulesFolderName);
 
-        if ( this.hasSuggestProviders() )
-        {
-            argsFile.println( "--suggest-providers" );
-            final String sb = this.getCommaSeparatedList( this.suggestProviders );
-            argsFile.println( sb );
-        }
+      target = target.resolve(source.getFileName());
+      Files.move(source, target, REPLACE_EXISTING);
+   }
 
-        if ( this.hasLimitModules() )
-        {
-            argsFile.println( "--limit-modules" );
-            final String sb = this.getCommaSeparatedList( this.limitModules );
-            argsFile.println( sb );
-        }
+   private void moveJarToJLinkOutModule(Path source) throws IOException {
+      Path target = resolveAndCreate(outputDirectoryImage, appFolderName, modulesFolderName);
 
-        if ( !modulesToAdd.isEmpty() )
-        {
-            argsFile.println( "--add-modules" );
-            // This must be name of the module and *NOT* the name of the
-            // file! Can we somehow pre check this information to fail early?
-            final String sb = this.getCommaSeparatedList( modulesToAdd );
-            argsFile.println( sb );
-        }
+      target = target.resolve(source.getFileName());
+      Files.move(source, target, REPLACE_EXISTING);
+   }
 
-        if ( this.pluginModulePath != null )
-        {
-            argsFile.println( "--plugin-module-path" );
-            final StringBuilder sb = this.convertSeparatedModulePathToPlatformSeparatedModulePath( this.pluginModulePath );
-            argsFile.println( sb );
-        }
+   private void moveJPacktoolJars() throws Exception {
 
-        if ( this.buildDirectory != null )
-        {
-            argsFile.println( "--output" );
-            argsFile.println( this.outputDirectoryImage );
-        }
+      lastException = null;
 
-        if ( this.verbose )
-        {
-            argsFile.println( "--verbose" );
-        }
-        argsFile.close();
+      if (this.jPacktoolMoveClassPathJars) {
+         Files.newDirectoryStream(outputDirectoryClasspathJars.toPath(), path -> path.toString().endsWith(".jar"))
+               .forEach(t -> {
+                  try {
+                     moveJarToJLinkOutClasspath(t);
+                  } catch (IOException e) {
+                     lastException = e;
+                  }
+               });
+         if (lastException != null) {
+            throw lastException;
+         }
+      }
 
-        final Commandline cmd = new Commandline();
-        cmd.createArg().setValue( '@' + file.getAbsolutePath() );
+      if (this.jPacktoolMoveAutomaticModules) {
+         Files.newDirectoryStream(outputDirectoryAutomaticJars.toPath(), path -> path.toString().endsWith(".jar"))
+               .forEach(t -> {
+                  try {
+                     moveJarToJLinkOutAutomatic(t);
+                  } catch (IOException e) {
+                     lastException = e;
+                  }
+               });
+         if (lastException != null) {
+            throw lastException;
+         }
+      }
 
-        return cmd;
-    }
+      if (this.jPacktoolMoveRealModules) {
+         Files.newDirectoryStream(outputDirectoryModules.toPath(), path -> path.toString().endsWith(".jar"))
+               .forEach(t -> {
+                  try {
+                     moveJarToJLinkOutModule(t);
+                  } catch (IOException e) {
+                     // TODO Auto-generated catch block
+                     e.printStackTrace();
+                  }
+               });
+         if (lastException != null) {
+            throw lastException;
+         }
+      }
+   }
 
-    private boolean hasSuggestProviders()
-    {
-        return this.suggestProviders != null && !this.suggestProviders.isEmpty();
-    }
+   private String getExecutable() throws MojoFailureException {
+      String jLinkExec;
+      try {
+         jLinkExec = this.getJLinkExecutable();
+      } catch (final IOException e) {
+         throw new MojoFailureException("Unable to find jlink command: " + e.getMessage(), e);
+      }
+      return jLinkExec;
+   }
 
+   private void failIfParametersAreNotInTheirValidValueRanges() throws MojoFailureException {
+      if (this.compress != null && (this.compress < 0 || this.compress > 2)) {
+         final String message = "The given compress parameters " + this.compress
+               + " is not in the valid value range from 0..2";
+         this.getLog().error(message);
+         throw new MojoFailureException(message);
+      }
 
+      if (this.endian != null && (!"big".equals(this.endian) && !"little".equals(this.endian))) {
+         final String message = "The given endian parameter " + this.endian
+               + " does not contain one of the following values: 'little' or 'big'.";
+         this.getLog().error(message);
+         throw new MojoFailureException(message);
+      }
+   }
 
+   private void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException {
+      if (this.outputDirectoryImage.exists()) {
+         // Delete the output folder of JLink before we start
+         // otherwise JLink will fail with a message "Error: directory already exists:
+         // ..."
+         try {
+            this.getLog().debug("Deleting existing " + this.outputDirectoryImage.getAbsolutePath());
+            FileUtils.forceDelete(this.outputDirectoryImage);
+         } catch (final IOException e) {
+            this.getLog().error("IOException", e);
+            throw new MojoExecutionException(
+                  "Failure during deletion of " + this.outputDirectoryImage.getAbsolutePath() + " occured.");
+         }
+      }
+   }
+
+   private Commandline createJLinkCommandLine(final Collection<String> pathsOfModules,
+         final Collection<String> modulesToAdd) throws IOException {
+      final File file = new File(this.outputDirectoryImage.getParentFile(), "jlinkArgs");
+      if (!this.getLog().isDebugEnabled()) {
+         file.deleteOnExit();
+      }
+      file.getParentFile().mkdirs();
+      file.createNewFile();
+
+      final PrintStream argsFile = new PrintStream(file);
+
+      if (this.stripDebug) {
+         argsFile.println("--strip-debug");
+      }
+
+      if (this.bindServices) {
+         argsFile.println("--bind-services");
+      }
+
+      if (this.endian != null) {
+         argsFile.println("--endian");
+         argsFile.println(this.endian);
+      }
+      if (this.ignoreSigningInformation) {
+         argsFile.println("--ignore-signing-information");
+      }
+      if (this.compress != null) {
+         argsFile.println("--compress");
+         argsFile.println(this.compress);
+      }
+      if (this.launcher != null) {
+         argsFile.println("--launcher");
+         argsFile.println(this.launcher);
+      }
+
+      if (this.disablePlugin != null) {
+         argsFile.println("--disable-plugin");
+         argsFile.append('"').append(this.disablePlugin).println('"');
+
+      }
+      if (pathsOfModules != null) {
+         // @formatter:off
+         argsFile.println("--module-path");
+         argsFile.append(this.getPlatformDependSeparateList(pathsOfModules).replace("\\", "\\\\")).println("");
+         // @formatter:off
+      }
+
+      if (this.noHeaderFiles) {
+         argsFile.println("--no-header-files");
+      }
+
+      if (this.noManPages) {
+         argsFile.println("--no-man-pages");
+      }
+
+      if (this.hasSuggestProviders()) {
+         argsFile.println("--suggest-providers");
+         final String sb = this.getCommaSeparatedList(this.suggestProviders);
+         argsFile.println(sb);
+      }
+
+      if (this.hasLimitModules()) {
+         argsFile.println("--limit-modules");
+         final String sb = this.getCommaSeparatedList(this.limitModules);
+         argsFile.println(sb);
+      }
+
+      if (!modulesToAdd.isEmpty()) {
+         argsFile.println("--add-modules");
+         // This must be name of the module and *NOT* the name of the
+         // file! Can we somehow pre check this information to fail early?
+         final String sb = this.getCommaSeparatedList(modulesToAdd);
+         argsFile.println(sb);
+      }
+
+      if (this.pluginModulePath != null) {
+         argsFile.println("--plugin-module-path");
+         final StringBuilder sb = this
+               .convertSeparatedModulePathToPlatformSeparatedModulePath(this.pluginModulePath);
+         argsFile.println(sb);
+      }
+
+      if (this.buildDirectory != null) {
+         argsFile.println("--output");
+         argsFile.println(this.outputDirectoryImage);
+      }
+
+      if (this.verbose) {
+         argsFile.println("--verbose");
+      }
+      argsFile.close();
+
+      final Commandline cmd = new Commandline();
+      cmd.createArg().setValue('@' + file.getAbsolutePath());
+
+      return cmd;
+   }
+
+   private boolean hasSuggestProviders() {
+      return this.suggestProviders != null && !this.suggestProviders.isEmpty();
+   }
+
+   protected void initTemplates() throws MojoFailureException {
+      super.initTemplates();
+      if ("default".equals(launcherTemplate)) {
+         if (SystemUtils.IS_OS_LINUX) {
+            launcherTemplate = "resource:/templates/launcher_linux.ftl";
+         } else if (SystemUtils.IS_OS_WINDOWS) {
+            launcherTemplate = "resource:/templates/launcher_win.ftl";
+         } else if (SystemUtils.IS_OS_MAC) {
+            launcherTemplate = "resource:/templates/launcher_mac.ftl";
+         }
+      }
+      if (((launcher == null) || "".equals(launcher))
+            && ((launcherTemplateScript == null) || "".equals(launcherTemplateScript))) {
+         // if nothing specified use these defaults
+         if (SystemUtils.IS_OS_LINUX) {
+            launcherTemplateScript = launcherTemplateScriptLinux;
+         } else if (SystemUtils.IS_OS_WINDOWS) {
+            launcherTemplateScript = launcherTemplateScriptWindows;
+         } else if (SystemUtils.IS_OS_MAC) {
+            launcherTemplateScript = launcherTemplateScriptMac;
+         }
+      }
+
+      if ((launcherTemplateScript != null) && (!"".equals(launcherTemplateScript))) {
+         launcherTemplate = initTemplate(launcherTemplate, "launcherTemplate.ftl");
+      } else {
+         launcherTemplate = null;
+      }
+   }
+
+   public void generateScript() throws MojoFailureException {
+
+      if ((launcherTemplate != null) && (launcherTemplateScript != null)) {
+         File outputFile = new File(new File(outputDirectoryImage, "bin"), launcherTemplateScript);
+
+         generateFromTemplate("launcherTemplate.ftl", outputFile);
+      }
+   }
+
+   protected void updateJvmArgs() throws MojoFailureException {
+      updateJvmArgs(this.appFolderName);
+   }
 }

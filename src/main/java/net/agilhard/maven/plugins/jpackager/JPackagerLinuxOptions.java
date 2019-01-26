@@ -23,11 +23,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Linux Options for JPackager.
+ * 
  * @author Bernd Eilers
  *
  */
-public class JPackagerLinuxOptions 
-{
+public class JPackagerLinuxOptions {
 
     /**
      * Name for Linux bundle.
@@ -35,52 +35,49 @@ public class JPackagerLinuxOptions
      * <code>--linux-bundle-name &lt;bundle name&gt;</code>
      * </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter(required = false, readonly = false)
     public String bundleName;
-    
+
     /**
      * Required packages or capabilities for the application.
      * <p>
      * <code>--linux-package-deps &lt;list&gt;</code>
      * </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter(required = false, readonly = false)
     public String packageDeps;
-    
+
     /**
      * Type of the license (&quot;License: &lt;value&gt;&quot; of the RPM .spec).
      * <p>
      * <code>--linux-rpm-license-type &lt;type string&gt;</code>
      * </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter(required = false, readonly = false)
     public String rpmLicenseType;
-     
+
     /**
      * Maintainer for .deb bundle.
      * <p>
      * <code>--linux-deb-maintainer &lt;email address&gt;</code>
      * </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter(required = false, readonly = false)
     public String debMaintainer;
-    
-    
+
     /**
      * Installer type of JPackager operation on Linux.
      * <p>
-     *  Valid values for &lt;linuxType&gt; &quot;rpm&quot; and &quot;deb&quot;,
-     *  
-     *  If &lt;linuxType&gt; is omitted, all supported types of installable
-     *  packages for Linux will be generated.
-     *  
-     *  If both &lt;linuxType&gt; and  &lt;type&gt; are being 
-     *  set the value of the &lt;type&gt;
-     *  parameter is being used.
-     *  </p>
+     * Valid values for &lt;linuxType&gt; &quot;rpm&quot; and &quot;deb&quot;,
+     * 
+     * If &lt;linuxType&gt; is omitted, all supported types of installable packages
+     * for Linux will be generated.
+     * 
+     * If both &lt;linuxType&gt; and &lt;type&gt; are being set the value of the
+     * &lt;type&gt; parameter is being used.
+     * </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter(required = false, readonly = false)
     public String linuxType;
 
-    
 }

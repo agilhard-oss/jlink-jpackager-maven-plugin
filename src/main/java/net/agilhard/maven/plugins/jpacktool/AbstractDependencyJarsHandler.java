@@ -1,5 +1,24 @@
 package net.agilhard.maven.plugins.jpacktool;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -22,42 +41,42 @@ import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 
 public abstract class AbstractDependencyJarsHandler {
-	public HashSet<String> handledNodes;
-	final AbstractToolMojo mojo;
-	DependencyGraphBuilder dependencyGraphBuilder;
-	
-	public AbstractDependencyJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
-		this.mojo = mojo;
-		this.handledNodes = new HashSet<>();
-		this.dependencyGraphBuilder = dependencyGraphBuilder; 
-	}
-	
-	public Log getLog() {
-		return mojo.getLog();
-	}
-	
+    public HashSet<String> handledNodes;
+    final AbstractToolMojo mojo;
+    DependencyGraphBuilder dependencyGraphBuilder;
+    
+    public AbstractDependencyJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
+        this.mojo = mojo;
+        this.handledNodes = new HashSet<>();
+        this.dependencyGraphBuilder = dependencyGraphBuilder; 
+    }
+    
+    public Log getLog() {
+        return mojo.getLog();
+    }
+    
     protected abstract void handleNonModJar(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException;
-	
+    
     protected void handleNonModJarIfNotAlreadyHandled(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
-    	String key=dependencyNode.toNodeString();
-    	
-    	if ( ! handledNodes.contains(key) ) {
-    		handledNodes.add(key);
-    		handleNonModJar(dependencyNode, artifact, entry);
-    	}
-    	
+        String key=dependencyNode.toNodeString();
+        
+        if ( ! handledNodes.contains(key) ) {
+            handledNodes.add(key);
+            handleNonModJar(dependencyNode, artifact, entry);
+        }
+        
     }
 
     protected abstract void handleModJar(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException;
-	
+    
     protected void handleModJarIfNotAlreadyHandled(final DependencyNode dependencyNode, final Artifact artifact, Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
-    	String key=dependencyNode.toNodeString();
-    	
-    	if ( ! handledNodes.contains(key) ) {
-    		handledNodes.add(key);
-    		handleModJar(dependencyNode, artifact, entry);
-    	}
-    	
+        String key=dependencyNode.toNodeString();
+        
+        if ( ! handledNodes.contains(key) ) {
+            handledNodes.add(key);
+            handleModJar(dependencyNode, artifact, entry);
+        }
+        
     }
     
     protected void handleDependencyNode(final DependencyNode dependencyNode) throws MojoExecutionException, MojoFailureException {
@@ -101,9 +120,9 @@ public abstract class AbstractDependencyJarsHandler {
     
     public class HandleDependencyRootVisitor implements DependencyNodeVisitor {
 
-    	public MojoExecutionException mojoExecutionException;
-    	public MojoFailureException mojoFailureException;
-    	
+        public MojoExecutionException mojoExecutionException;
+        public MojoFailureException mojoFailureException;
+        
         /**
          * Starts the visit to the specified dependency node.
          *
@@ -148,13 +167,13 @@ public abstract class AbstractDependencyJarsHandler {
     
     protected void handleDependencyRoot(final DependencyNode dependencyNode) throws MojoExecutionException, MojoFailureException
     {
-    	HandleDependencyRootVisitor visitor = new HandleDependencyRootVisitor();
+        HandleDependencyRootVisitor visitor = new HandleDependencyRootVisitor();
         dependencyNode.accept(visitor);
         if ( visitor.mojoExecutionException != null) {
-        	throw visitor.mojoExecutionException;
+            throw visitor.mojoExecutionException;
         }
         if ( visitor.mojoFailureException != null) {
-        	throw visitor.mojoFailureException;
+            throw visitor.mojoFailureException;
         }
     }
 
@@ -172,7 +191,7 @@ public abstract class AbstractDependencyJarsHandler {
             // No need to filter our search. We want to resolve all artifacts.
 
             final DependencyNode dependencyNode =
-            		dependencyGraphBuilder.buildDependencyGraph(buildingRequest, null);
+                    dependencyGraphBuilder.buildDependencyGraph(buildingRequest, null);
 
             this.handleDependencyRoot(dependencyNode);
 

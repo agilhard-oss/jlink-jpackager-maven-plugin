@@ -67,6 +67,10 @@
 	<artifactId>jlink-jpackager-maven-plugin</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
+        <configuration>
+	  <mainModule>first.jar.module.info</mainModule>
+	  <mainClass>myproject.HelloWorld</mainClass>
+	</configuration>
       </plugin>
     </plugins>
   </build>

@@ -1,5 +1,24 @@
 package net.agilhard.maven.plugins.jpacktool;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -12,11 +31,11 @@ import org.apache.maven.plugin.logging.Log;
 
 public class ExecuteCommand {
 
-	private ExecuteCommand() {
-		// private constructor for utility class
-	}
+    private ExecuteCommand() {
+        // private constructor for utility class
+    }
 
-	protected static void executeCommand(final boolean verbose, final Log log, final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
+    protected static void executeCommand(final boolean verbose, final Log log, final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
         if ( log.isDebugEnabled() )
         {
             // no quoted arguments ???
@@ -37,12 +56,12 @@ public class ExecuteCommand {
             {
                 for ( final String outputLine : output.split( "\\n" ) )
                 {
-                	if ( outputLine.length() > 0) {
-                		printStream.println(outputLine);
-                		if ( verbose ) { 
-                			log.info( outputLine );
-                		}
-                	}
+                    if ( outputLine.length() > 0) {
+                        printStream.println(outputLine);
+                        if ( verbose ) { 
+                            log.info( outputLine );
+                        }
+                    }
                 }
             }
             printStream.close();

@@ -1,18 +1,24 @@
-/**
- * Copyright Fr.Meyer's Sohn Logistics 2019. All Rights Reserved
 
- * $Date:  $
- * $Author:  $
- * $Revision:  $
- * $Source:  $
- * $State: Exp $ - $Locker:  $
- * **********************
- * auto generated header
- *
- * Project : jlink-jpackager-maven-plugin
- * Created by bei, 20.01.2019
- */
 package net.agilhard.maven.plugins.jpacktool;
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,210 +51,212 @@ import org.codehaus.plexus.util.cli.Commandline;
  */
 public abstract class AbstractToolMojo extends AbstractMojo {
 
-	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool", required = true, readonly = true)
-	protected File outputDirectoryJPacktool;
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool", required = true, readonly = true)
+    protected File outputDirectoryJPacktool;
 
-	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/automatic", required = true, readonly = true)
-	protected File outputDirectoryAutomaticJars;
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool//automatic", required = true, readonly = true)
+    protected File outputDirectoryAutomaticJars;
 
-	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/classpath", required = true, readonly = true)
-	protected File outputDirectoryClasspathJars;
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool//classpath", required = true, readonly = true)
+    protected File outputDirectoryClasspathJars;
 
-	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/modules", required = true, readonly = true)
-	protected File outputDirectoryModules;
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool//modules", required = true, readonly = true)
+    protected File outputDirectoryModules;
 
-	@Parameter(defaultValue = "jpacktool", required = true, readonly = true)
-	protected String jpacktoolPropertyPrefix;
-	
-	@Component
-	protected LocationManager locationManager;
-	@Component
-	protected ToolchainManager toolchainManager;
+    @Parameter(defaultValue = "jpacktool", required = true, readonly = true)
+    protected String jpacktoolPropertyPrefix;
 
-	@Parameter(defaultValue = "${project}", readonly = true, required = true)
-	protected MavenProject project;
-	@Parameter(defaultValue = "${session}", readonly = true, required = true)
-	protected MavenSession session;
 
-	protected List<String> systemModules;
+    
+    @Component
+    protected LocationManager locationManager;
+    @Component
+    protected ToolchainManager toolchainManager;
 
-	/**
-	 * This will turn on verbose mode.
-	 * <p>
-	 * The jlink/jpackager command line equivalent is: <code>--verbose</code>
-	 * </p>
-	 */
-	@Parameter(defaultValue = "false")
-	protected boolean verbose;
+    @Parameter(defaultValue = "${project}", readonly = true, required = true)
+    protected MavenProject project;
+    @Parameter(defaultValue = "${session}", readonly = true, required = true)
+    protected MavenSession session;
 
-	/**
-	 * <p>
-	 * Specify the requirements for this jdk toolchain. This overrules the toolchain
-	 * selected by the maven-toolchain-plugin.
-	 * </p>
-	 * <strong>note:</strong> requires at least Maven 3.3.1
-	 */
-	@Parameter
-	protected Map<String, String> jdkToolchain;
+    protected List<String> systemModules;
 
-	/**
-	 *
-	 */
-	public AbstractToolMojo() {
-		super();
-	}
+    /**
+     * This will turn on verbose mode.
+     * <p>
+     * The jlink/jpackager command line equivalent is: <code>--verbose</code>
+     * </p>
+     */
+    @Parameter(defaultValue = "false")
+    protected boolean verbose;
 
-	protected String getToolExecutable(final String toolName) throws IOException {
-		final Toolchain tc = this.getToolchain();
+    /**
+     * <p>
+     * Specify the requirements for this jdk toolchain. This overrules the toolchain
+     * selected by the maven-toolchain-plugin.
+     * </p>
+     * <strong>note:</strong> requires at least Maven 3.3.1
+     */
+    @Parameter
+    protected Map<String, String> jdkToolchain;
 
-		String toolExecutable = null;
-		if (tc != null) {
-			toolExecutable = tc.findTool(toolName);
-		}
+    /**
+     *
+     */
+    public AbstractToolMojo() {
+        super();
+    }
 
-		// TODO: Check if there exist a more elegant way?
-		final String toolCommand = toolName + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
+    protected String getToolExecutable(final String toolName) throws IOException {
+        final Toolchain tc = this.getToolchain();
 
-		File toolExe;
+        String toolExecutable = null;
+        if (tc != null) {
+            toolExecutable = tc.findTool(toolName);
+        }
 
-		if (StringUtils.isNotEmpty(toolExecutable)) {
-			toolExe = new File(toolExecutable);
+        // TODO: Check if there exist a more elegant way?
+        final String toolCommand = toolName + (SystemUtils.IS_OS_WINDOWS ? ".exe" : "");
 
-			if (toolExe.isDirectory()) {
-				toolExe = new File(toolExe, toolCommand);
-			}
+        File toolExe;
 
-			if (SystemUtils.IS_OS_WINDOWS && toolExe.getName().indexOf('.') < 0) {
-				toolExe = new File(toolExe.getPath() + ".exe");
-			}
+        if (StringUtils.isNotEmpty(toolExecutable)) {
+            toolExe = new File(toolExecutable);
 
-			if (!toolExe.isFile()) {
-				throw new IOException(
-						"The " + toolName + " executable '" + toolExe + "' doesn't exist or is not a file.");
-			}
-			return toolExe.getAbsolutePath();
-		}
+            if (toolExe.isDirectory()) {
+                toolExe = new File(toolExe, toolCommand);
+            }
 
-		// ----------------------------------------------------------------------
-		// Try to find tool from System.getProperty( "java.home" )
-		// By default, System.getProperty( "java.home" ) = JRE_HOME and JRE_HOME
-		// should be in the JDK_HOME
-		// ----------------------------------------------------------------------
-		toolExe = new File(SystemUtils.getJavaHome() + File.separator + ".." + File.separator + "bin", toolCommand);
+            if (SystemUtils.IS_OS_WINDOWS && toolExe.getName().indexOf('.') < 0) {
+                toolExe = new File(toolExe.getPath() + ".exe");
+            }
 
-		// ----------------------------------------------------------------------
-		// Try to find javadocExe from JAVA_HOME environment variable
-		// ----------------------------------------------------------------------
-		if (!toolExe.exists() || !toolExe.isFile()) {
-			final Properties env = CommandLineUtils.getSystemEnvVars();
-			final String javaHome = env.getProperty("JAVA_HOME");
-			if (StringUtils.isEmpty(javaHome)) {
-				throw new IOException("The environment variable JAVA_HOME is not correctly set.");
-			}
-			if (!new File(javaHome).getCanonicalFile().exists() || new File(javaHome).getCanonicalFile().isFile()) {
-				throw new IOException("The environment variable JAVA_HOME=" + javaHome
-						+ " doesn't exist or is not a valid directory.");
-			}
+            if (!toolExe.isFile()) {
+                throw new IOException(
+                        "The " + toolName + " executable '" + toolExe + "' doesn't exist or is not a file.");
+            }
+            return toolExe.getAbsolutePath();
+        }
 
-			toolExe = new File(javaHome + File.separator + "bin", toolCommand);
-		}
+        // ----------------------------------------------------------------------
+        // Try to find tool from System.getProperty( "java.home" )
+        // By default, System.getProperty( "java.home" ) = JRE_HOME and JRE_HOME
+        // should be in the JDK_HOME
+        // ----------------------------------------------------------------------
+        toolExe = new File(SystemUtils.getJavaHome() + File.separator + ".." + File.separator + "bin", toolCommand);
 
-		if (!toolExe.getCanonicalFile().exists() || !toolExe.getCanonicalFile().isFile()) {
-			throw new IOException("The " + toolName + " executable '" + toolExe
-					+ "' doesn't exist or is not a file. Verify the JAVA_HOME environment variable.");
-		}
+        // ----------------------------------------------------------------------
+        // Try to find javadocExe from JAVA_HOME environment variable
+        // ----------------------------------------------------------------------
+        if (!toolExe.exists() || !toolExe.isFile()) {
+            final Properties env = CommandLineUtils.getSystemEnvVars();
+            final String javaHome = env.getProperty("JAVA_HOME");
+            if (StringUtils.isEmpty(javaHome)) {
+                throw new IOException("The environment variable JAVA_HOME is not correctly set.");
+            }
+            if (!new File(javaHome).getCanonicalFile().exists() || new File(javaHome).getCanonicalFile().isFile()) {
+                throw new IOException("The environment variable JAVA_HOME=" + javaHome
+                        + " doesn't exist or is not a valid directory.");
+            }
 
-		return toolExe.getAbsolutePath();
-	}
+            toolExe = new File(javaHome + File.separator + "bin", toolCommand);
+        }
 
-	protected void executeCommand(final Commandline cmd) throws MojoExecutionException {
-		ExecuteCommand.executeCommand(verbose, this.getLog(), cmd);
-	}
+        if (!toolExe.getCanonicalFile().exists() || !toolExe.getCanonicalFile().isFile()) {
+            throw new IOException("The " + toolName + " executable '" + toolExe
+                    + "' doesn't exist or is not a file. Verify the JAVA_HOME environment variable.");
+        }
 
-	protected Toolchain getToolchain() {
-		Toolchain tc = null;
+        return toolExe.getAbsolutePath();
+    }
 
-		if (this.jdkToolchain != null) {
-			// Maven 3.3.1 has plugin execution scoped Toolchain Support
-			try {
-				final Method getToolchainsMethod = this.toolchainManager.getClass().getMethod("getToolchains",
-						MavenSession.class, String.class, Map.class);
+    protected void executeCommand(final Commandline cmd) throws MojoExecutionException {
+        ExecuteCommand.executeCommand(verbose, this.getLog(), cmd);
+    }
 
-				@SuppressWarnings("unchecked")
-				final List<Toolchain> tcs = (List<Toolchain>) getToolchainsMethod.invoke(this.toolchainManager,
-						this.session, "jdk", this.jdkToolchain);
+    protected Toolchain getToolchain() {
+        Toolchain tc = null;
 
-				if (tcs != null && tcs.size() > 0) {
-					tc = tcs.get(0);
-				}
-			} catch (final ReflectiveOperationException e) {
-				// ignore
-			} catch (final SecurityException e) {
-				// ignore
-			} catch (final IllegalArgumentException e) {
-				// ignore
-			}
-		}
+        if (this.jdkToolchain != null) {
+            // Maven 3.3.1 has plugin execution scoped Toolchain Support
+            try {
+                final Method getToolchainsMethod = this.toolchainManager.getClass().getMethod("getToolchains",
+                        MavenSession.class, String.class, Map.class);
 
-		if (tc == null) {
-			// TODO: Check if we should make the type configurable?
-			tc = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session);
-		}
+                @SuppressWarnings("unchecked")
+                final List<Toolchain> tcs = (List<Toolchain>) getToolchainsMethod.invoke(this.toolchainManager,
+                        this.session, "jdk", this.jdkToolchain);
 
-		return tc;
-	}
+                if (tcs != null && tcs.size() > 0) {
+                    tc = tcs.get(0);
+                }
+            } catch (final ReflectiveOperationException e) {
+                // ignore
+            } catch (final SecurityException e) {
+                // ignore
+            } catch (final IllegalArgumentException e) {
+                // ignore
+            }
+        }
 
-	protected MavenProject getProject() {
-		return this.project;
-	}
+        if (tc == null) {
+            // TODO: Check if we should make the type configurable?
+            tc = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session);
+        }
 
-	protected MavenSession getSession() {
-		return this.session;
-	}
+        return tc;
+    }
 
-	protected List<String> getSystemModules() throws MojoExecutionException {
-		
-		if ( !outputDirectoryJPacktool.exists() ) {
-			outputDirectoryJPacktool.mkdirs();
-		}
-		
-		if (systemModules == null) {
+    protected MavenProject getProject() {
+        return this.project;
+    }
 
-			systemModules = new ArrayList<String>();
+    protected MavenSession getSession() {
+        return this.session;
+    }
 
-			String javaExecutable;
-			try {
-				javaExecutable = getToolExecutable("java");
-			} catch (IOException e) {
-				throw new MojoExecutionException("i/o error", e);
-			}
-			
-			final Commandline cmd = new Commandline();
+    protected List<String> getSystemModules() throws MojoExecutionException {
+        
+        if ( !outputDirectoryJPacktool.exists() ) {
+            outputDirectoryJPacktool.mkdirs();
+        }
+        
+        if (systemModules == null) {
 
-			cmd.createArg().setValue("--list-modules");
-			cmd.setExecutable(javaExecutable);
+            systemModules = new ArrayList<String>();
 
-			File file = new File(outputDirectoryJPacktool, "java_modules.list");
-			try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-				ExecuteCommand.executeCommand(false, getLog(), cmd, fileOutputStream);
-			} catch (IOException ioe) {
-				throw new MojoExecutionException("i/o error", ioe);
-			}
-			try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
-				String line;
-				while ((line = br.readLine()) != null) {
-					int i = line.indexOf('@');
-					if (i > 0) {
-						line = line.substring(0, i);
-					}
-					systemModules.add(line);
-				}
-			} catch (IOException ioe) {
-				throw new MojoExecutionException("i/o error", ioe);
-			}
-		}
+            String javaExecutable;
+            try {
+                javaExecutable = getToolExecutable("java");
+            } catch (IOException e) {
+                throw new MojoExecutionException("i/o error", e);
+            }
+            
+            final Commandline cmd = new Commandline();
 
-		return systemModules;
-	}
+            cmd.createArg().setValue("--list-modules");
+            cmd.setExecutable(javaExecutable);
+
+            File file = new File(outputDirectoryJPacktool, "java_modules.list");
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                ExecuteCommand.executeCommand(false, getLog(), cmd, fileOutputStream);
+            } catch (IOException ioe) {
+                throw new MojoExecutionException("i/o error", ioe);
+            }
+            try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    int i = line.indexOf('@');
+                    if (i > 0) {
+                        line = line.substring(0, i);
+                    }
+                    systemModules.add(line);
+                }
+            } catch (IOException ioe) {
+                throw new MojoExecutionException("i/o error", ioe);
+            }
+        }
+
+        return systemModules;
+    }
 
 }

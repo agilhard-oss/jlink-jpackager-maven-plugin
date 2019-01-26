@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   Licensed to the Apache Software Foundation (ASF) under one
   or more contributor license agreements. See the NOTICE file
@@ -29,6 +28,8 @@
     <relativePath>../maven-plugins/pom.xml</relativePath>
   </parent>
 -->
+
+
   <groupId>net.agilhard.maven.plugins</groupId>
   <artifactId>jlink-jpackager-maven-plugin</artifactId>
   <version>1.0.0-SNAPSHOT</version>
@@ -48,6 +49,8 @@
     <maven.compiler.target>9</maven.compiler.target>
     <mavenPluginToolsVersion>3.5.2</mavenPluginToolsVersion>
     <version.orgApacheMavenPlugins.mavenJavadocPlugin>3.0.0-M1</version.orgApacheMavenPlugins.mavenJavadocPlugin>
+    <checkstyle.violation.ignore>RedundantThrows,NewlineAtEndOfFile,ParameterNumber,MethodLength,FileLength</checkstyle.violation.ignore>
+
   </properties>
 
 
@@ -102,6 +105,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.28</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>2.19.0</version>
@@ -118,16 +127,16 @@
   <build>
     <pluginManagement>
       <plugins>
-<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-site-plugin</artifactId>
-  <version>3.7.1</version>
-</plugin>
-<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-project-info-reports-plugin</artifactId>
-  <version>3.0.0</version>
-</plugin>
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-site-plugin</artifactId>
+	  <version>3.7.1</version>
+	</plugin>
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-project-info-reports-plugin</artifactId>
+	  <version>3.0.0</version>
+	</plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
@@ -165,12 +174,67 @@
             </execution>
           </executions>
         </plugin>
+
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <versionRange>[0.10,)</versionRange>
+                    <goals>
+                      <goal>check</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+
       </plugins>
     </pluginManagement>
+     <plugins>
+       <plugin>
+         <groupId>org.apache.rat</groupId>
+         <artifactId>apache-rat-plugin</artifactId>
+         <configuration>
+           <excludes combine.children="append">
+             <exclude>.repository/**</exclude><!-- Jenkins job with local Maven repository -->
+             <exclude>.maven/spy.log</exclude><!-- Hudson Maven3 integration log -->
+             <exclude>dependency-reduced-pom.xml</exclude><!-- Maven shade plugin -->
+             <exclude>.java-version</exclude>
+             <exclude>**/*.ftl</exclude>
+           </excludes>
+         </configuration>
+         <executions>
+           <execution>
+             <id>rat-check</id>
+             <goals>
+               <goal>check</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+     </plugins>
+
     <resources>
       <resource>
         <directory>src/main/filtered-resources</directory>
         <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
       </resource>
     </resources>
   </build>
@@ -280,8 +344,12 @@
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 <pomInclude>jlink-cli-options/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
+                <pomInclude>jpacktool-its/jpacktool-jlink/pom.xml</pomInclude>
+                
                 -->
-                <pomInclude>**/pom.xml</pomInclude>
+                
+                <pomInclude>jpacktool-its/jpacktool-jlink/pom.xml</pomInclude>
+                
                 
               </pomIncludes>
               <pomExcludes>

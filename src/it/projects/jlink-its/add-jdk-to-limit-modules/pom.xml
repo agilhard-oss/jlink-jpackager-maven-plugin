@@ -23,12 +23,12 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.agilhard.maven.plugins.jlink-jpackager.its</groupId>
-  <artifactId>jlink-cli-options-add-jdk-to-limit-modules</artifactId>
+  <artifactId>jlink-its-jdk-to-limit-modules</artifactId>
   <version>99.0</version>
   <packaging>jlink</packaging>
   <name>Maven</name>
   <url>http://maven.apache.org</url>
-  <description>Test JLink CLI Options add-jdk-to-limit-modules.</description>
+  <description>JLink Integration Test add-jdk-to-limit-modules.</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>
