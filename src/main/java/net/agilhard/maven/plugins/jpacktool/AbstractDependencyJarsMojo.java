@@ -29,7 +29,7 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
  * @author bei
  *
  */
-public abstract class AbstractDependencyJarsMojo<T extends AbstractDependencyJarsHandler> extends AbstractToolMojo {
+public abstract class AbstractDependencyJarsMojo<T extends AbstractDependencyHandler> extends AbstractToolMojo {
 
     @Component(role = DependencyGraphBuilder.class, hint = "maven31")
     public DependencyGraphBuilder dependencyGraphBuilder;

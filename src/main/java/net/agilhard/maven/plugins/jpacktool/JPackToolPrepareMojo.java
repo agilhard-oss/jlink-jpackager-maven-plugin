@@ -68,6 +68,7 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
     
     private Map<String,Object> model = new HashMap<>();
     
+    private GenClassPathHandler genClassPathHandler;
     
     private void putModel(String key, Object value)
     {
@@ -100,6 +101,13 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
         } catch (IOException e) {
             throw new MojoFailureException("i/o error", e);
         }
+
+        // copy jars first
+        CollectJarsHandler collectJarsHandler = createCopyHandler();
+        collectJarsHandler.execute();
+        
+        this.genClassPathHandler = creatGenClassPathHandler();
+        this.genClassPathHandler.execute();
         
         super.execute();
         
@@ -167,14 +175,25 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
         
     }
 
+    
+    public GenClassPathHandler creatGenClassPathHandler() {
+        return new GenClassPathHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules);
+    }
+    
+    public CollectJarsHandler createCopyHandler() {
+        return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules);
+    }
+    
     @Override
     public JPackToolHandler createHandler() throws MojoExecutionException, MojoFailureException
     {
-        return new JPackToolHandler(this, dependencyGraphBuilder, 
+        return new JPackToolHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
                 copyAutomaticJars ? outputDirectoryAutomaticJars : null,
                 copyClassPathJars ? outputDirectoryClasspathJars : null,
                 copyModuleJars ? outputDirectoryModules : null, jdepsExecutable,
-                generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps);
+                generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps,
+                this.genClassPathHandler.getClassPathElements(), this.genClassPathHandler.getJarsOnClassPath()
+        		);
         
     }
     

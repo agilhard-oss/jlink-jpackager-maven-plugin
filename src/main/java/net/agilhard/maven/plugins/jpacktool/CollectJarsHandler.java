@@ -38,28 +38,11 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
+public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
 
-/**
- * @author bei
- *
- */
-
-public class CollectJarsHandler extends AbstractDependencyJarsHandler {
-
-    protected File outputDirectoryAutomaticJars;
     
-    protected File outputDirectoryClasspathJars;
-    
-    protected File outputDirectoryModules;
-
-    protected boolean onlyNamedAreAutomatic = true;
-    
-    public CollectJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules, boolean onlyNamedAreAutomatic ) {
-        super(mojo, dependencyGraphBuilder);
-        this.outputDirectoryAutomaticJars = outputDirectoryAutomaticJars;
-        this.outputDirectoryClasspathJars = outputDirectoryClasspathJars;
-        this.outputDirectoryModules = outputDirectoryModules;
-        this.onlyNamedAreAutomatic = onlyNamedAreAutomatic;
+    public CollectJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules ) {
+		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules);	
     }
 
     /** {@inheritDoc} */
@@ -85,7 +68,10 @@ public class CollectJarsHandler extends AbstractDependencyJarsHandler {
         
         boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
         
-        if ( onlyNamedAreAutomatic && isAutomatic ) {
+        if ( isAutomatic ) {
+        	
+        	// only named are automatic
+        	
             try ( JarFile jarFile = new JarFile(artifact.getFile() ) ) {
                 Manifest manifest = jarFile.getManifest();
                 if ( manifest == null ) {

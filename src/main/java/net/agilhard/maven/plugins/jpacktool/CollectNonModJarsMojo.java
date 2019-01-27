@@ -24,7 +24,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 
@@ -37,9 +36,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     requiresProject = true)
 public class CollectNonModJarsMojo extends AbstractDependencyJarsMojo<CollectJarsHandler> {
 
-    @Parameter( defaultValue = "true", required = true, readonly=false)
-    private boolean onlyNamedAreAutomatic;
-    
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -59,7 +55,7 @@ public class CollectNonModJarsMojo extends AbstractDependencyJarsMojo<CollectJar
 
     @Override
     public CollectJarsHandler createHandler() {
-        return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, null, onlyNamedAreAutomatic);
+        return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,  outputDirectoryAutomaticJars, outputDirectoryClasspathJars, null);
     }
     
 }

@@ -49,7 +49,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -877,7 +876,8 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
     
     protected abstract void updateJvmArgs() throws MojoFailureException;
 
-    protected void updateJvmArgs(String appFolderName) throws MojoFailureException
+    @SuppressWarnings("unchecked")
+	protected void updateJvmArgs(String appFolderName) throws MojoFailureException
     {
         
         if ( jvmArgs == null ) {
@@ -928,31 +928,19 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
             
             StringBuffer sb=new StringBuffer();
             
-            AtomicBoolean b = new AtomicBoolean();
-            
-        
-            if ( appFolderName != null ) {
-                sb.append(appFolderName);
-                sb.append(File.separator);
+            boolean b=false;
+            for ( String jarOnClassPath : (List<String>) jpacktoolModel.get("jarsOnClassPath")) {
+            	if ( b ) {
+            		sb.append(':');
+            	} else {
+            		b=true;
+            	}
+            	sb.append(classPathPrefix);
+            	sb.append(File.separator);
+            	sb.append(jarOnClassPath);
             }
-            sb.append(modulesFolderName);
             
-            b.set(false);
-            try (final Stream<Path> pathStream = Files.walk(outputDirectoryClasspathJars.toPath(), FileVisitOption.FOLLOW_LINKS)) {
-                pathStream.filter((p) -> !p.toFile().isDirectory() && p.toFile().getAbsolutePath().endsWith(".jar"))
-                          .forEach(p -> {
-                              if ( b.get()) {
-                                 sb.append(":");
-                              } else {
-                                  b.set(true);
-                              }
-                              sb.append(classPathPrefix);
-                              sb.append(p.toFile().getName());
-                          });
-                    
-            } catch (final IOException e) {
-               throw new MojoFailureException("error creating classpath", e);
-            }
+        	
             String s=sb.toString();
             if ( ! "".equals(s) ) {
                 appendOrCreateJvmArgPath("--class-path", "-p", s);
@@ -964,7 +952,11 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
     
     protected void updateModel() throws MojoFailureException
     {
-        updateJvmArgs();
+        if ( jpacktoolModel == null ) {
+        	jpacktoolModel = new HashMap<String, Object>();
+        }
+        
+    	updateJvmArgs();
         
         StringBuffer sb = new StringBuffer();
         boolean b=false;

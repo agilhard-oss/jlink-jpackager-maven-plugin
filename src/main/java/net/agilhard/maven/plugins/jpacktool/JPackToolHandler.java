@@ -44,7 +44,7 @@ import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.util.cli.Commandline;
 
-public class JPackToolHandler extends CollectJarsHandler {
+public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 
 	/**
 	 * The jdeps Java Tool Executable.
@@ -57,13 +57,13 @@ public class JPackToolHandler extends CollectJarsHandler {
 
 	private boolean generateModuleJdeps;
 
-	private List<File> classPathElements = new ArrayList<>();
+	private List<File> classPathElements;
+
+	private List<String> jarsOnClassPath;
 
 	private List<String> warnings = new ArrayList<>();
 
 	private List<String> errors = new ArrayList<>();
-
-	private List<String> jarsOnClassPath = new ArrayList<>();
 
 	protected List<String> systemModules = new ArrayList<>();;
 
@@ -85,21 +85,23 @@ public class JPackToolHandler extends CollectJarsHandler {
 
 	private Map<String, List<String>> linkedSystemModulesMap = new HashMap<>();;
 
-	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryJPacktool,
 			File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules,
 			String jdepsExecutable, boolean generateAutomaticJdeps, boolean generateClassPathJdeps,
-			boolean generateModuleJdeps) throws MojoExecutionException {
+			boolean generateModuleJdeps, List<File> classPathElements, List<String> jarsOnClassPath) throws MojoExecutionException {
 
-		super(mojo, dependencyGraphBuilder, outputDirectoryAutomaticJars, outputDirectoryClasspathJars,
-				outputDirectoryModules, true);
+		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules);	
 
 		this.jdepsExecutable = jdepsExecutable;
 
 		this.generateAutomaticJdeps = generateAutomaticJdeps;
 		this.generateClassPathJdeps = generateClassPathJdeps;
 		this.generateModuleJdeps = generateModuleJdeps;
-
+		this.classPathElements = classPathElements;
+		this.jarsOnClassPath = jarsOnClassPath;
+		
 		this.systemModules = mojo.getSystemModules();
+		
 	}
 
 	/**
@@ -159,6 +161,8 @@ public class JPackToolHandler extends CollectJarsHandler {
 		cmd.createArg().setValue("--print-module-deps");
 		cmd.createArg().setValue("--ignore-missing-deps");
 
+
+		
 		try {
 			String s = sourceFile.getCanonicalPath();
 			cmd.createArg().setValue(s);
@@ -169,16 +173,25 @@ public class JPackToolHandler extends CollectJarsHandler {
 		return cmd;
 	}
 
-	protected void generateJdeps(String nodeString, File sourceFile, File targetFile)
+	protected void generateJdeps(String nodeString, File sourceFile)
 			throws MojoExecutionException, MojoFailureException {
 
+		/*
+		try {
+			Files.move(targetFile.toPath(), sourceFile.toPath(), REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new MojoFailureException("error moving file", e);
+		}
+		*/
 		Commandline cmd = this.createJDepsCommandLine(sourceFile);
+
 		cmd.setExecutable(jdepsExecutable);
 		String name = sourceFile.getName();
 		int i = name.lastIndexOf('-');
 		name = name.substring(0, i) + ".jdeps";
 
-		File file = new File(targetFile, name);
+		File file = new File(sourceFile.getParent(), name);
+				
 		try (FileOutputStream fout = new FileOutputStream(file)) {
 			executeCommand(cmd, fout);
 		} catch (IOException ioe) {
@@ -186,7 +199,7 @@ public class JPackToolHandler extends CollectJarsHandler {
 		} catch (MojoExecutionException mee) {
 			throw mee;
 		}
-
+		
 		List<String> deps = new ArrayList<>();
 		List<String> automaticDeps = new ArrayList<>();
 		List<String> linkedDeps = new ArrayList<>();
@@ -204,7 +217,18 @@ public class JPackToolHandler extends CollectJarsHandler {
 			while ((line = br.readLine()) != null) {
 				if (line.startsWith("Warning:")) {
 					if (!warnings.contains(line)) {
-						warnings.add(line);
+						if ( line.startsWith("Warning: split package:") ) {
+							String e[]=line.split(" ");
+							if ( e.length == 3 ) {
+								if ( ! e[1].equals(e[2]) ) {
+									warnings.add(line);
+								}
+							} else {
+								warnings.add(line);
+							}
+						} else {						
+							warnings.add(line);
+						}
 					}
 				} else if (line.startsWith("Error:")) {
 					if (!errors.contains(line)) {
@@ -243,10 +267,14 @@ public class JPackToolHandler extends CollectJarsHandler {
 					}
 				}
 			}
+
+			//Files.move(sourceFile.toPath(), targetFile.toPath(), REPLACE_EXISTING);
+
 		} catch (IOException ioe) {
 			throw new MojoExecutionException("i/o error", ioe);
 		}
 
+		
 		allModulesMap.put(nodeString, deps);
 		automaticModulesMap.put(nodeString, automaticDeps);
 		linkedModulesMap.put(nodeString, linkedDeps);
@@ -287,26 +315,25 @@ public class JPackToolHandler extends CollectJarsHandler {
 
 		if (Files.isRegularFile(path)) {
 
-			File target = null;
+			File sourceFile = null;
+			
 			if (isAutomatic) {
 				if (outputDirectoryAutomaticJars != null) {
 					if (generateAutomaticJdeps) {
-						generateJdeps(nodeString, artifact.getFile(), outputDirectoryAutomaticJars);
+						sourceFile = new File(outputDirectoryAutomaticJars, artifact.getFile().getName());
 					}
 				}
 			} else {
 				if (outputDirectoryClasspathJars != null) {
 					if (generateClassPathJdeps) {
-						generateJdeps(nodeString, artifact.getFile(), outputDirectoryClasspathJars);
-					}
-					target = new File(outputDirectoryClasspathJars, artifact.getFile().getName());
-
-					if (!classPathElements.contains(target)) {
-						classPathElements.add(target);
-						jarsOnClassPath.add(artifact.getFile().getName());
+						sourceFile = new File(outputDirectoryClasspathJars, artifact.getFile().getName());
 					}
 				}
 			}
+			if ( sourceFile != null ) {
+				generateJdeps(nodeString, sourceFile);
+			}
+			
 		}
 
 		if (isAutomatic) {
@@ -316,8 +343,6 @@ public class JPackToolHandler extends CollectJarsHandler {
 				automaticModules.add(name);
 			}
 		}
-
-		super.handleNonModJar(dependencyNode, artifact, entry);
 
 	}
 
@@ -333,7 +358,10 @@ public class JPackToolHandler extends CollectJarsHandler {
 		}
 
 		if (generateModuleJdeps) {
-			generateJdeps(nodeString, artifact.getFile(), outputDirectoryModules);
+			File sourceFile = new File(outputDirectoryModules, artifact.getFile().getName());
+
+			generateJdeps(nodeString, sourceFile);
+
 		}
 
 		String name = entry.getValue().name();
@@ -341,9 +369,7 @@ public class JPackToolHandler extends CollectJarsHandler {
 		if (!linkedModules.contains(name)) {
 			linkedModules.add(name);
 		}
-
-		super.handleModJar(dependencyNode, artifact, entry);
-
+		
 	}
 
 	protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
@@ -353,7 +379,7 @@ public class JPackToolHandler extends CollectJarsHandler {
 	public List<File> getClassPathElements() {
 		return classPathElements;
 	}
-
+	
 	public List<String> getSystemModules() {
 		return systemModules;
 	}
