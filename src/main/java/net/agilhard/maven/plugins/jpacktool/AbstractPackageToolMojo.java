@@ -275,7 +275,7 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
     /**
      * Flag if to move real modules from jpacktool-prepare goal
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(defaultValue = "true")
     protected boolean jPacktoolMoveRealModules;
 
     /**
