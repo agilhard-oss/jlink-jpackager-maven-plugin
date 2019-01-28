@@ -1,13 +1,6 @@
 #!/bin/sh
 
-j_res="$0"
-while [ -h "$j_res" ] ; do
-    cd "`dirname "$j_res"`"
-    j_basename=`basename "$j_res"`
-    j_res=`ls -l "$j_basename" | sed "s/.*$j_basename -> //g"`
-done
-cd "`dirname "$j_res"`"
-cd ..
+cd $(dirname $(dirname $(readlink -f "$0")))
 
 <#if mainJar??>
 bin/java ${jvmArgs!} -jar ${mainJar} $* ${arguments!} 
