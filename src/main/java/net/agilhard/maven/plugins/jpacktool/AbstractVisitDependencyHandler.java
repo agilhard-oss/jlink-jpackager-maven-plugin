@@ -90,9 +90,9 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 
 	public AbstractVisitDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts );
 	}
 
 	@Override

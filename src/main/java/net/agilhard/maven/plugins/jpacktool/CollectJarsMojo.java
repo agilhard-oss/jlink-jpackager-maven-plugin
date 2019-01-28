@@ -66,7 +66,7 @@ public class CollectJarsMojo extends AbstractDependencyJarsMojo<CollectJarsHandl
     @Override
     public CollectJarsHandler createHandler() {
 		return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
     }
     
 }

@@ -77,8 +77,6 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.java.DefaultJavaToolChain;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
@@ -329,6 +327,7 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
      */
     @Parameter(defaultValue = "modules")
     protected String modulesFolderName;
+
 
     /**
      * Flag if jpacktool-prepare goal has been used before

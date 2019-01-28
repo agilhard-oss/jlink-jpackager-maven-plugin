@@ -44,9 +44,9 @@ public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
 
 	public CollectJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
 	/** {@inheritDoc} */
@@ -71,6 +71,10 @@ public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
 
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
 
+		if ( (classpathArtifacts != null) && (classpathArtifacts.contains(artifact))) {
+			isAutomatic = false;
+		}
+		
 		if (isAutomatic) {
 
 			// only named are automatic

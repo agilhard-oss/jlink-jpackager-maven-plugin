@@ -46,9 +46,9 @@ public class GenClassPathHandler extends AbstractVisitDependencyHandler {
 
 	public GenClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
 	@Override
@@ -58,7 +58,11 @@ public class GenClassPathHandler extends AbstractVisitDependencyHandler {
 		getLog().debug("handleNonModJar:" + artifact.getFile());
 
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
-
+		
+		if ( (classpathArtifacts != null) && (classpathArtifacts.contains(artifact))) {
+			isAutomatic = false;
+		}
+		
 		if (isAutomatic) {
 			try (JarFile jarFile = new JarFile(artifact.getFile())) {
 				Manifest manifest = jarFile.getManifest();

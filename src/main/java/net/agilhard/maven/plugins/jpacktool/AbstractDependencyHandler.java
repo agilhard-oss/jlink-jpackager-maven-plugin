@@ -53,13 +53,16 @@ public abstract class AbstractDependencyHandler {
 
 	protected List<ArtifactParameter> excludedArtifacts;
 
+	protected List<ArtifactParameter> classpathArtifacts;
+
+	
 	public HashSet<String> handledNodes;
 	final AbstractToolMojo mojo;
 	DependencyGraphBuilder dependencyGraphBuilder;
 
 	public AbstractDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
 		this.mojo = mojo;
 		this.handledNodes = new HashSet<>();
 		this.dependencyGraphBuilder = dependencyGraphBuilder;
@@ -68,6 +71,7 @@ public abstract class AbstractDependencyHandler {
 		this.outputDirectoryClasspathJars = outputDirectoryClasspathJars;
 		this.outputDirectoryModules = outputDirectoryModules;
 		this.excludedArtifacts = excludedArtifacts;
+		this.classpathArtifacts = classpathArtifacts;
 	}
 
 	public Log getLog() {
@@ -126,7 +130,9 @@ public abstract class AbstractDependencyHandler {
 				throw new MojoExecutionException("handleDependencyNode: IOException", e);
 			}
 
-			if (resolvePathsResult.getPathElements().entrySet().size() == 0) {
+			if ( (resolvePathsResult.getPathElements().entrySet().size() == 0)
+					|| ( (classpathArtifacts != null) && classpathArtifacts.contains(artifact)) ) {
+
 				this.handleNonModJarIfNotAlreadyHandled(dependencyNode, artifact, null);
 
 			} else {

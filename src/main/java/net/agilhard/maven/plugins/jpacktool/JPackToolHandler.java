@@ -37,7 +37,6 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
@@ -86,15 +85,19 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 
 	private Map<String, List<String>> linkedSystemModulesMap = new HashMap<>();;
 
+	private boolean ignoreMissingDeps;
+	
 	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, String jdepsExecutable, boolean generateAutomaticJdeps,
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts,
+			String jdepsExecutable, boolean generateAutomaticJdeps,
 			boolean generateClassPathJdeps, boolean generateModuleJdeps, List<File> classPathElements,
-			List<String> jarsOnClassPath) throws MojoExecutionException {
+			List<String> jarsOnClassPath, boolean ignoreMissingDeps) throws MojoExecutionException {
 
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts );
 
+		this.ignoreMissingDeps = ignoreMissingDeps;
 		this.jdepsExecutable = jdepsExecutable;
 
 		this.generateAutomaticJdeps = generateAutomaticJdeps;
@@ -162,8 +165,11 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		}
 
 		cmd.createArg().setValue("--print-module-deps");
-		cmd.createArg().setValue("--ignore-missing-deps");
 
+		if ( ignoreMissingDeps ) {
+			cmd.createArg().setValue("--ignore-missing-deps");
+		}
+		
 		try {
 			String s = sourceFile.getCanonicalPath();
 			cmd.createArg().setValue(s);
@@ -285,7 +291,11 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		getLog().debug("handleNonModJar:" + artifact.getFile());
 
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
-
+		
+		if ( (classpathArtifacts != null) && (classpathArtifacts.contains(artifact))) {
+			isAutomatic = false;
+		}
+		
 		String nodeString = dependencyNode.toNodeString();
 
 		if (!nodeStrings.contains(nodeString)) {

@@ -67,8 +67,17 @@ public abstract class AbstractToolMojo extends AbstractMojo {
     @Parameter(defaultValue = "jpacktool", required = true, readonly = true)
     protected String jpacktoolPropertyPrefix;
 
+    /**
+     * Artifacts that should be excluded
+     */
     @Parameter
     protected List<ArtifactParameter> excludedArtifacts;
+    
+    /**
+     * Artifacts that should be explicitly on the classpath
+     */
+    @Parameter
+    List<ArtifactParameter> classpathArtifacts;
     
     @Component
     protected LocationManager locationManager;

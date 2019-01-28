@@ -56,6 +56,13 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
 	private boolean generateModuleJdeps;
+	
+    /**
+     * Flag if --ignore-missing-deps should be used on the jdeps calls to analyze module dependencies
+     */
+    @Parameter(defaultValue = "true")
+    protected boolean ignoreMissingDeps;
+
 	/**
 	 * The jdeps Java Tool Executable.
 	 */
@@ -176,12 +183,12 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 
 	public GenClassPathHandler creatGenClassPathHandler() {
 		return new GenClassPathHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
 	public CollectJarsHandler createCopyHandler() {
 		return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
+				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
 	@Override
@@ -189,8 +196,8 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 		return new JPackToolHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
 				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
 				copyClassPathJars ? outputDirectoryClasspathJars : null, copyModuleJars ? outputDirectoryModules : null,
-				excludedArtifacts, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps,
-				this.genClassPathHandler.getClassPathElements(), this.genClassPathHandler.getJarsOnClassPath());
+				excludedArtifacts, classpathArtifacts, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps,
+				this.genClassPathHandler.getClassPathElements(), this.genClassPathHandler.getJarsOnClassPath(), ignoreMissingDeps);
 
 	}
 
