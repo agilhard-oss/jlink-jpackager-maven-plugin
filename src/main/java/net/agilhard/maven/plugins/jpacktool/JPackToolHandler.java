@@ -241,6 +241,13 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 					}
 				} else {
 					for (String dep : line.split(",")) {
+						
+					    // remove optional package name, if any
+					    int ndx = dep.indexOf('/');
+					    if (ndx > 0) {
+					    	dep = dep.substring(0, ndx);
+					    }
+					    
 						if (!deps.contains(dep)) {
 							deps.add(dep);
 						}
