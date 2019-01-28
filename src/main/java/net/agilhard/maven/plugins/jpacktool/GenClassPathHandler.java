@@ -31,6 +31,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
@@ -43,10 +44,11 @@ public class GenClassPathHandler extends AbstractVisitDependencyHandler {
 
 	private List<String> jarsOnClassPath = new ArrayList<>();
 
-	public GenClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryJPacktool,
-			File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules) {
-		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars, outputDirectoryClasspathJars,
-				outputDirectoryModules);
+	public GenClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
+		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
 	}
 
 	@Override
@@ -79,8 +81,8 @@ public class GenClassPathHandler extends AbstractVisitDependencyHandler {
 		if (Files.isRegularFile(path)) {
 
 			File target = null;
-			
-			if (! isAutomatic) { // automatic jars are not on classpath
+
+			if (!isAutomatic) { // automatic jars are not on classpath
 
 				if (outputDirectoryClasspathJars != null) {
 					target = new File(outputDirectoryClasspathJars, artifact.getFile().getName());
@@ -111,5 +113,4 @@ public class GenClassPathHandler extends AbstractVisitDependencyHandler {
 		return jarsOnClassPath;
 	}
 
-	
 }

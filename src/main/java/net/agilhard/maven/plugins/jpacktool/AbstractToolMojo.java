@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -66,7 +67,8 @@ public abstract class AbstractToolMojo extends AbstractMojo {
     @Parameter(defaultValue = "jpacktool", required = true, readonly = true)
     protected String jpacktoolPropertyPrefix;
 
-
+    @Parameter
+    protected List<ArtifactParameter> excludedArtifacts;
     
     @Component
     protected LocationManager locationManager;

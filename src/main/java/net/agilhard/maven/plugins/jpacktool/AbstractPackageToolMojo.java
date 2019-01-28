@@ -73,14 +73,22 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.filtering.MavenFileFilter;
+import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.java.DefaultJavaToolChain;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import freemarker.template.TemplateException;
 import net.agilhard.maven.plugins.jpacktool.template.AbstractGenerator;
@@ -91,7 +99,7 @@ import net.agilhard.maven.plugins.jpacktool.template.GeneratedFile;
  *         <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>
  * @author Bernd Eilers
  */
-public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
+public abstract class AbstractPackageToolMojo extends AbstractToolMojo implements Contextualizable {
 
     public class TemplateGenerator extends AbstractGenerator {
 
@@ -105,6 +113,8 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
         }
     }
 
+    private Context context;
+    
     private TemplateGenerator templateGenerator;
 
     /**
@@ -160,6 +170,9 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
     @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/templates", required = true, readonly = true)
     protected File outputDirectoyTemplates;
 
+    @Parameter
+    protected PackagingResources packagingResources;
+    
     protected static final String JMODS = "jmods";
 
     /**
@@ -177,6 +190,22 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
     @Component(role = Archiver.class, hint = "zip")
     private ZipArchiver zipArchiver;
 
+    /**
+     * The JAR archiver needed for archiving the environments.
+     */
+    @Component
+    protected BuildContext buildContext;
+
+    
+	/**
+	 *
+	 */
+	@Component(role = MavenResourcesFiltering.class, hint = "default")
+	public MavenResourcesFiltering mavenResourcesFiltering;
+    
+	@Component(role = MavenFileFilter.class, hint = "default")
+	protected MavenFileFilter mavenFileFilter;
+	
     /**
      * Flag to ignore automatic modules.
      */
@@ -988,5 +1017,27 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo {
             jpacktoolModel.put("arguments", sb.toString());
         }
     }
+
+	/** {@inheritDoc} */
+	public void contextualize(Context context) throws ContextException {
+		this.context = context;
+	}
+    
+    protected void executeResources(File outputDirectory) throws MojoExecutionException {
+    	if ( packagingResources != null ) {
+    		ResourcesExecutor resourcesExecutor = new ResourcesExecutor(this, packagingResources, getTemplateMap());
+    		if ( context != null ) {
+    			try {
+					resourcesExecutor.contextualize(context);
+				} catch (ContextException e) {
+					throw new MojoExecutionException("can not apply context");
+				}
+    		}
+    		resourcesExecutor.setOutputDirectory(outputDirectory);
+    		resourcesExecutor.execute();
+    	}
+    }
+    
+    protected abstract void executeResources() throws MojoExecutionException;
 
 }

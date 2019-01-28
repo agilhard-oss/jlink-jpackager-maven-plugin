@@ -59,6 +59,7 @@
         <extensions>true</extensions>
         <configuration>
 	  <packagingResources>
+            <includeEmptyDirs>true</includeEmptyDirs>
             <resources>
 	      <resource>
 		<directory>src/jpacktool/resources</directory>

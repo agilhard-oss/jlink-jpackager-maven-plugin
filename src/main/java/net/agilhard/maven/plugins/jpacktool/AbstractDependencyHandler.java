@@ -22,9 +22,11 @@ package net.agilhard.maven.plugins.jpacktool;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
@@ -41,26 +43,31 @@ import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 
 public abstract class AbstractDependencyHandler {
 
-    protected File outputDirectoryJPacktool;
+	protected File outputDirectoryJPacktool;
 
-    protected File outputDirectoryAutomaticJars;
-    
-    protected File outputDirectoryClasspathJars;
-    
-    protected File outputDirectoryModules;
+	protected File outputDirectoryAutomaticJars;
+
+	protected File outputDirectoryClasspathJars;
+
+	protected File outputDirectoryModules;
+
+	protected List<ArtifactParameter> excludedArtifacts;
 
 	public HashSet<String> handledNodes;
 	final AbstractToolMojo mojo;
 	DependencyGraphBuilder dependencyGraphBuilder;
 
-	public AbstractDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules) {
+	public AbstractDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
 		this.mojo = mojo;
 		this.handledNodes = new HashSet<>();
 		this.dependencyGraphBuilder = dependencyGraphBuilder;
-		this.outputDirectoryJPacktool=outputDirectoryJPacktool;
+		this.outputDirectoryJPacktool = outputDirectoryJPacktool;
 		this.outputDirectoryAutomaticJars = outputDirectoryAutomaticJars;
-        this.outputDirectoryClasspathJars = outputDirectoryClasspathJars;
-        this.outputDirectoryModules = outputDirectoryModules;
+		this.outputDirectoryClasspathJars = outputDirectoryClasspathJars;
+		this.outputDirectoryModules = outputDirectoryModules;
+		this.excludedArtifacts = excludedArtifacts;
 	}
 
 	public Log getLog() {

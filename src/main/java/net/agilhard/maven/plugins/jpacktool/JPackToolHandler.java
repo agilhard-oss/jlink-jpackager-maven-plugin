@@ -37,6 +37,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
@@ -85,12 +86,14 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 
 	private Map<String, List<String>> linkedSystemModulesMap = new HashMap<>();;
 
-	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder, File outputDirectoryJPacktool,
-			File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars, File outputDirectoryModules,
-			String jdepsExecutable, boolean generateAutomaticJdeps, boolean generateClassPathJdeps,
-			boolean generateModuleJdeps, List<File> classPathElements, List<String> jarsOnClassPath) throws MojoExecutionException {
+	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, String jdepsExecutable, boolean generateAutomaticJdeps,
+			boolean generateClassPathJdeps, boolean generateModuleJdeps, List<File> classPathElements,
+			List<String> jarsOnClassPath) throws MojoExecutionException {
 
-		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules);	
+		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
 
 		this.jdepsExecutable = jdepsExecutable;
 
@@ -99,9 +102,9 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		this.generateModuleJdeps = generateModuleJdeps;
 		this.classPathElements = classPathElements;
 		this.jarsOnClassPath = jarsOnClassPath;
-		
+
 		this.systemModules = mojo.getSystemModules();
-		
+
 	}
 
 	/**
@@ -161,8 +164,6 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		cmd.createArg().setValue("--print-module-deps");
 		cmd.createArg().setValue("--ignore-missing-deps");
 
-
-		
 		try {
 			String s = sourceFile.getCanonicalPath();
 			cmd.createArg().setValue(s);
@@ -177,12 +178,10 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 			throws MojoExecutionException, MojoFailureException {
 
 		/*
-		try {
-			Files.move(targetFile.toPath(), sourceFile.toPath(), REPLACE_EXISTING);
-		} catch (IOException e) {
-			throw new MojoFailureException("error moving file", e);
-		}
-		*/
+		 * try { Files.move(targetFile.toPath(), sourceFile.toPath(), REPLACE_EXISTING);
+		 * } catch (IOException e) { throw new MojoFailureException("error moving file",
+		 * e); }
+		 */
 		Commandline cmd = this.createJDepsCommandLine(sourceFile);
 
 		cmd.setExecutable(jdepsExecutable);
@@ -191,7 +190,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		name = name.substring(0, i) + ".jdeps";
 
 		File file = new File(sourceFile.getParent(), name);
-				
+
 		try (FileOutputStream fout = new FileOutputStream(file)) {
 			executeCommand(cmd, fout);
 		} catch (IOException ioe) {
@@ -199,7 +198,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		} catch (MojoExecutionException mee) {
 			throw mee;
 		}
-		
+
 		List<String> deps = new ArrayList<>();
 		List<String> automaticDeps = new ArrayList<>();
 		List<String> linkedDeps = new ArrayList<>();
@@ -217,16 +216,16 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 			while ((line = br.readLine()) != null) {
 				if (line.startsWith("Warning:")) {
 					if (!warnings.contains(line)) {
-						if ( line.startsWith("Warning: split package:") ) {
-							String e[]=line.split(" ");
-							if ( e.length == 3 ) {
-								if ( ! e[1].equals(e[2]) ) {
+						if (line.startsWith("Warning: split package:")) {
+							String e[] = line.split(" ");
+							if (e.length == 3) {
+								if (!e[1].equals(e[2])) {
 									warnings.add(line);
 								}
 							} else {
 								warnings.add(line);
 							}
-						} else {						
+						} else {
 							warnings.add(line);
 						}
 					}
@@ -268,13 +267,12 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 				}
 			}
 
-			//Files.move(sourceFile.toPath(), targetFile.toPath(), REPLACE_EXISTING);
+			// Files.move(sourceFile.toPath(), targetFile.toPath(), REPLACE_EXISTING);
 
 		} catch (IOException ioe) {
 			throw new MojoExecutionException("i/o error", ioe);
 		}
 
-		
 		allModulesMap.put(nodeString, deps);
 		automaticModulesMap.put(nodeString, automaticDeps);
 		linkedModulesMap.put(nodeString, linkedDeps);
@@ -316,7 +314,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		if (Files.isRegularFile(path)) {
 
 			File sourceFile = null;
-			
+
 			if (isAutomatic) {
 				if (outputDirectoryAutomaticJars != null) {
 					if (generateAutomaticJdeps) {
@@ -330,10 +328,10 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 					}
 				}
 			}
-			if ( sourceFile != null ) {
+			if (sourceFile != null) {
 				generateJdeps(nodeString, sourceFile);
 			}
-			
+
 		}
 
 		if (isAutomatic) {
@@ -369,7 +367,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 		if (!linkedModules.contains(name)) {
 			linkedModules.add(name);
 		}
-		
+
 	}
 
 	protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
@@ -379,7 +377,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 	public List<File> getClassPathElements() {
 		return classPathElements;
 	}
-	
+
 	public List<String> getSystemModules() {
 		return systemModules;
 	}

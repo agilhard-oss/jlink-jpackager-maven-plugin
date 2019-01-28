@@ -60,11 +60,21 @@
         <artifactId>maven-plugin-annotations</artifactId>
         <version>3.6.0</version>
         <scope>provided</scope>
-      </dependency>
+    </dependency>
+    <dependency>
+   		<groupId>org.sonatype.plexus</groupId>
+   		<artifactId>plexus-build-api</artifactId>
+   		<version>0.0.7</version>
+ 	</dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-dependency-tree</artifactId>
       <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-filtering</artifactId>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -213,6 +223,8 @@
              <exclude>dependency-reduced-pom.xml</exclude><!-- Maven shade plugin -->
              <exclude>.java-version</exclude>
              <exclude>**/*.ftl</exclude>
+             <exclude>**/*.txt</exclude>
+             <exclude>**/*.sh</exclude>
            </excludes>
          </configuration>
          <executions>
@@ -339,15 +351,16 @@
                 <pomInclude>**/pom.xml</pomInclude>
                 
                 <pomInclude>jpacktool-its/jpacktool-prepare/pom.xml</pomInclude>
-                <pomInclude>jpackager-its/**/pom.xml</pomInclude>
+                <pomInclude>jlink-its/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 <pomInclude>jlink-cli-options/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/jpacktool-jlink/pom.xml</pomInclude>
+                <pomInclude>jlink-its/jlink-resources/pom.xml</pomInclude>
                 
                 -->
-                
                 <pomInclude>**/pom.xml</pomInclude>
+                
                 
                 
               </pomIncludes>

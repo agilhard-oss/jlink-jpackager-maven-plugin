@@ -20,9 +20,11 @@ package net.agilhard.maven.plugins.jpacktool;
  */
 
 import java.io.File;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
@@ -48,6 +50,9 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		 */
 		public boolean visit(final DependencyNode node) {
 			boolean b = !node.toNodeString().endsWith(":test");
+			if ( excludedArtifacts != null ) {
+				b = b && (!excludedArtifacts.contains(node.getArtifact()));
+			}
 			return b;
 		}
 
@@ -65,7 +70,9 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 
 			String type = node.getArtifact().getType();
 			boolean b = !node.toNodeString().endsWith(":test");
-
+			if ( excludedArtifacts != null ) {
+				b = b && (!excludedArtifacts.contains(node.getArtifact()));
+			}
 			if (b) {
 				if ("jar".equals(type) || "jmod".equals(type)) {
 
@@ -86,9 +93,9 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 
 	public AbstractEndVisitDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules) {
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts) {
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules);
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts);
 	}
 
 	@Override
