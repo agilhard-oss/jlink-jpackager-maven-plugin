@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
