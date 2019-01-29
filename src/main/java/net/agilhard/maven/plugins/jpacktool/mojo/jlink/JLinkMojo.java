@@ -253,12 +253,6 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 			this.addSystemModulesToLimitModules();
 		}
 
-		if (limitModulesDirs != null) {
-			for (File dir : limitModulesDirs) {
-				this.addModulesToLimitModules(dir.toPath());
-			}
-		}
-
 		this.ifOutputDirectoryExistsDeleteIt();
 
 		prepareModules(jmodsFolder);

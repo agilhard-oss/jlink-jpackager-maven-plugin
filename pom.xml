@@ -45,8 +45,8 @@
 
   <properties>
     <mavenVersion>3.0</mavenVersion>
-    <maven.compiler.source>9</maven.compiler.source>
-    <maven.compiler.target>9</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
     <mavenPluginToolsVersion>3.5.2</mavenPluginToolsVersion>
     <version.orgApacheMavenPlugins.mavenJavadocPlugin>3.0.0-M1</version.orgApacheMavenPlugins.mavenJavadocPlugin>
 
@@ -356,10 +356,13 @@
                 <pomInclude>jlink-cli-options/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
                 <pomInclude>jpacktool-its/jpacktool-jlink/pom.xml</pomInclude>
+                <pomInclude>jpacktool-its/jpacktool-jpackager/pom.xml</pomInclude>
                 <pomInclude>jpackager-its/jpackager-resources/pom.xml</pomInclude>
+                <pomInclude>**/pom.xml</pomInclude>
                 
                 -->
-                <pomInclude>jpacktool-its/jpacktool-jpackager/pom.xml</pomInclude>
+                <pomInclude>**/pom.xml</pomInclude>
+
                 
               </pomIncludes>
               <pomExcludes>

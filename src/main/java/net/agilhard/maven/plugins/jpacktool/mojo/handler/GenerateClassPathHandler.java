@@ -53,6 +53,13 @@ public class GenerateClassPathHandler extends AbstractVisitDependencyHandler {
 				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		getLog().info("generate-classpath");
+		super.execute();
+	}
+	
 	@Override
 	protected void handleNonModJar(DependencyNode dependencyNode, Artifact artifact,
 			Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {

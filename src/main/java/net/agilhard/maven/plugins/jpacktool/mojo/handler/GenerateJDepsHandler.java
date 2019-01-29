@@ -114,6 +114,13 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		getLog().info("generate-jdeps");
+		super.execute();
+	}
+	
 	/**
 	 * Convert a list into a
 	 * 
@@ -184,7 +191,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		return cmd;
 	}
 
-	protected void generateJdeps(String nodeString, File sourceFile)
+	protected void generateJdeps(String nodeString, File sourceFile, boolean automaticDep)
 			throws MojoExecutionException, MojoFailureException {
 
 		/*
@@ -228,8 +235,13 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 					if (!warnings.contains(line)) {
 						if (line.startsWith("Warning: split package:")) {
 							String e[] = line.split(" ");
-							if (e.length == 3) {
-								if (!e[1].equals(e[2])) {
+							if (e.length == 6) {
+								String a1=e[4].substring(e[4].lastIndexOf(File.separatorChar));
+								String a2=e[5].substring(e[5].lastIndexOf(File.separatorChar));
+								if (!a1.equals(a2)) {
+									warnings.add("e.length="+e.length);
+									warnings.add("a1="+a1);
+									warnings.add("a2="+a2);
 									warnings.add(line);
 								}
 							} else {
@@ -266,7 +278,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 								linkedSystemDeps.add(dep);
 							}
 						} else {
-							if (automaticModules.contains(dep)) {
+							if ( automaticDep ) {
 								if (!automaticDeps.contains(dep)) {
 									automaticDeps.add(dep);
 								}
@@ -350,7 +362,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 				}
 			}
 			if (sourceFile != null) {
-				generateJdeps(nodeString, sourceFile);
+				generateJdeps(nodeString, sourceFile, isAutomatic);
 			}
 
 		}
@@ -379,7 +391,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		if (generateModuleJdeps) {
 			File sourceFile = new File(outputDirectoryModules, artifact.getFile().getName());
 
-			generateJdeps(nodeString, sourceFile);
+			generateJdeps(nodeString, sourceFile, false);
 
 		}
 
@@ -392,7 +404,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 	}
 
 	protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
-		ExecuteCommand.executeCommand(mojo.isVerbose(), this.getLog(), cmd, outputStream);
+		ExecuteCommand.executeCommand(false, this.getLog(), cmd, outputStream);
 	}
 
 	public List<File> getClassPathElements() {

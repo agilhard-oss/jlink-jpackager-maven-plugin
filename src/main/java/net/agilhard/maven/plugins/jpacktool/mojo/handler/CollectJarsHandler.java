@@ -54,13 +54,20 @@ public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
 	/** {@inheritDoc} */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if (!outputDirectoryAutomaticJars.exists()) {
+		getLog().info("collect-jars");
+		
+		if ( (outputDirectoryAutomaticJars != null) && (!outputDirectoryAutomaticJars.exists()) ) {
 			if (!outputDirectoryAutomaticJars.mkdirs()) {
 				throw new MojoExecutionException("directory can not be created:" + outputDirectoryAutomaticJars);
 			}
 		}
-		if (!outputDirectoryClasspathJars.exists()) {
+		if ( (outputDirectoryClasspathJars != null ) && (!outputDirectoryClasspathJars.exists()) ) {
 			if (!outputDirectoryClasspathJars.mkdirs()) {
+				throw new MojoExecutionException("directory can not be created:" + outputDirectoryClasspathJars);
+			}
+		}
+		if ( (outputDirectoryModules != null) && (!outputDirectoryModules.exists()) ) {
+			if (!outputDirectoryModules.mkdirs()) {
 				throw new MojoExecutionException("directory can not be created:" + outputDirectoryClasspathJars);
 			}
 		}
@@ -112,7 +119,7 @@ public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
 					}
 				}
 				if (target != null) {
-					this.getLog().info("copy jar " + path + " to " + target.toString());
+					this.getLog().debug("copy jar " + path + " to " + target.toString());
 					Files.copy(path, target, REPLACE_EXISTING);
 				}
 			} catch (final IOException e) {

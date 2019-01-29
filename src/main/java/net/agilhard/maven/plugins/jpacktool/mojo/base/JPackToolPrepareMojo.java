@@ -60,12 +60,16 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
 	private boolean generateModuleJdeps;
-	
-    /**
-     * Flag if --ignore-missing-deps should be used on the jdeps calls to analyze module dependencies
-     */
-    @Parameter(defaultValue = "true")
-    protected boolean ignoreMissingDeps;
+
+	@Parameter(defaultValue = "false", required = true, readonly = false)
+	private boolean showAllDeps;
+
+	/**
+	 * Flag if --ignore-missing-deps should be used on the jdeps calls to analyze
+	 * module dependencies
+	 */
+	@Parameter(defaultValue = "true")
+	protected boolean ignoreMissingDeps;
 
 	/**
 	 * The jdeps Java Tool Executable.
@@ -122,22 +126,23 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 		String pfx = this.jpacktoolPropertyPrefix;
 		props.put(pfx + ".used", Boolean.TRUE);
 
-		for (String nodeString : handler.getNodeStrings()) {
-			getLog().info("--------------------");
-			getLog().info("Dependencies for " + nodeString);
+		if (showAllDeps) {
+			for (String nodeString : handler.getNodeStrings()) {
+				getLog().info("--------------------");
+				getLog().info("Dependencies for " + nodeString);
 
-			getLog().info("Dependency Modules:" + (handler.getAllModulesMap().get(nodeString) == null ? ""
-					: String.join(",", handler.getAllModulesMap().get(nodeString))));
-			getLog().info(
-					"Dependency System Modules:" + (handler.getLinkedSystemModulesMap().get(nodeString) == null ? ""
-							: String.join(",", handler.getLinkedSystemModulesMap().get(nodeString))));
-			getLog().info("Dependency Linked Modules:" + (handler.getLinkedModulesMap().get(nodeString) == null ? ""
-					: String.join(",", handler.getLinkedModulesMap().get(nodeString))));
-			getLog().info(
-					"Dependency Automatic Modules:" + (handler.getAutomaticModulesMap().get(nodeString) == null ? ""
-							: String.join(",", handler.getAutomaticModulesMap().get(nodeString))));
+				getLog().info("Modules Dependencies:" + (handler.getAllModulesMap().get(nodeString) == null ? ""
+						: String.join(",", handler.getAllModulesMap().get(nodeString))));
+				getLog().info(
+						"System Modules Dependencies:" + (handler.getLinkedSystemModulesMap().get(nodeString) == null ? ""
+								: String.join(",", handler.getLinkedSystemModulesMap().get(nodeString))));
+				getLog().info("Linked Modules Dependencies:" + (handler.getLinkedModulesMap().get(nodeString) == null ? ""
+						: String.join(",", handler.getLinkedModulesMap().get(nodeString))));
+				getLog().info(
+						"Automatic Modules Dependencies:" + (handler.getAutomaticModulesMap().get(nodeString) == null ? ""
+								: String.join(",", handler.getAutomaticModulesMap().get(nodeString))));
+			}
 		}
-
 		putModel("allModulesMap", handler.getAllModulesMap());
 		putModel("linkedSystemModulesMap", handler.getLinkedSystemModulesMap());
 		putModel("linkedModulesMap", handler.getLinkedModulesMap());
@@ -145,21 +150,23 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 
 		putModel("nodeStrings", handler.getNodeStrings());
 
-		getLog().info("--------------------");
-
-		getLog().info("All Modules:" + String.join(",", handler.getAllModules()));
+		if ( verbose || showAllDeps ) {
+			getLog().info("--------------------");
+			if ( showAllDeps ) {
+				getLog().info("All Modules Dependencies:" + String.join(",", handler.getAllModules()));
+			}
+			getLog().info("Linked System Modules Dependencies:" + String.join(",", handler.getLinkedSystemModules()));
+			getLog().info("Linked Modules Dependencies:" + String.join(",", handler.getLinkedModules()));
+			getLog().info("Automatic Modules Dependencies:" + String.join(",", handler.getAutomaticModules()));
+			if ( showAllDeps ) {
+				getLog().info("Jars on Classpath:" + String.join(",", handler.getJarsOnClassPath()));
+			}
+		}
+		
 		putModel("allModules", handler.getAllModules());
-
-		getLog().info("Linked System Modules:" + String.join(",", handler.getLinkedSystemModules()));
 		putModel("linkedSystemModules", handler.getLinkedSystemModules());
-
-		getLog().info("Linked Modules:" + String.join(",", handler.getLinkedModules()));
 		putModel("linkedModules", handler.getLinkedModules());
-
-		getLog().info("Automatic Modules:" + String.join(",", handler.getAutomaticModules()));
 		putModel("automaticModules", handler.getAutomaticModules());
-
-		getLog().info("Jars on Classpath:" + String.join(",", handler.getJarsOnClassPath()));
 		putModel("jarsOnClassPath", handler.getJarsOnClassPath());
 
 		props.put(pfx + ".model", model);
@@ -187,12 +194,14 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 
 	public GenerateClassPathHandler creatGenClassPathHandler() {
 		return new GenerateClassPathHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
+				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts,
+				classpathArtifacts);
 	}
 
 	public CollectJarsHandler createCopyHandler() {
 		return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
+				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts,
+				classpathArtifacts);
 	}
 
 	@Override
@@ -200,8 +209,9 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 		return new GenerateJDepsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
 				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
 				copyClassPathJars ? outputDirectoryClasspathJars : null, copyModuleJars ? outputDirectoryModules : null,
-				excludedArtifacts, classpathArtifacts, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps,
-				this.genClassPathHandler.getClassPathElements(), this.genClassPathHandler.getJarsOnClassPath(), ignoreMissingDeps);
+				excludedArtifacts, classpathArtifacts, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps,
+				generateModuleJdeps, this.genClassPathHandler.getClassPathElements(),
+				this.genClassPathHandler.getJarsOnClassPath(), ignoreMissingDeps);
 
 	}
 

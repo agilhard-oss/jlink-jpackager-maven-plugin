@@ -80,6 +80,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
     
     @Component
     protected LocationManager locationManager;
+ 
     @Component
     protected ToolchainManager toolchainManager;
 

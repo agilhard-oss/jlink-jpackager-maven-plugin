@@ -170,7 +170,7 @@ public abstract class AbstractDependencyHandler {
 
 		buildingRequest.setProject(project);
 
-		this.getLog().info("building dependency graph for project " + project.getArtifact());
+		this.getLog().debug("building dependency graph for project " + project.getArtifact());
 
 		try {
 
