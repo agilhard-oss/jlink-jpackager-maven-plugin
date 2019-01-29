@@ -48,7 +48,7 @@ import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
 import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 import net.agilhard.maven.plugins.jpacktool.mojo.base.ExecuteCommand;
 
-public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
+public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 
 	/**
 	 * The jdeps Java Tool Executable.
@@ -91,7 +91,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 
 	private boolean ignoreMissingDeps;
 	
-	public JPackToolHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+	public GenerateJDepsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
 			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts,
 			String jdepsExecutable, boolean generateAutomaticJdeps,

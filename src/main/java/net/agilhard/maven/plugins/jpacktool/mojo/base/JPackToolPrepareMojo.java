@@ -33,15 +33,15 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import net.agilhard.maven.plugins.jpacktool.mojo.handler.CollectJarsHandler;
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenClassPathHandler;
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.JPackToolHandler;
+import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateClassPathHandler;
+import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateJDepsHandler;
 
 /**
  * @author bei
  *
  */
 @Mojo(name = "jpacktool-prepare", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true)
-public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHandler> {
+public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDepsHandler> {
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
 	private boolean copyAutomaticJars;
@@ -74,7 +74,7 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 
 	private Map<String, Object> model = new HashMap<>();
 
-	private GenClassPathHandler genClassPathHandler;
+	private GenerateClassPathHandler genClassPathHandler;
 
 	private void putModel(String key, Object value) {
 		model.put(key, value);
@@ -115,7 +115,7 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 
 		super.execute();
 
-		JPackToolHandler handler = getHandler();
+		GenerateJDepsHandler handler = getHandler();
 
 		Properties props = this.project.getProperties();
 
@@ -185,8 +185,8 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 
 	}
 
-	public GenClassPathHandler creatGenClassPathHandler() {
-		return new GenClassPathHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
+	public GenerateClassPathHandler creatGenClassPathHandler() {
+		return new GenerateClassPathHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
 				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
@@ -196,8 +196,8 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<JPackToolHa
 	}
 
 	@Override
-	public JPackToolHandler createHandler() throws MojoExecutionException, MojoFailureException {
-		return new JPackToolHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
+	public GenerateJDepsHandler createHandler() throws MojoExecutionException, MojoFailureException {
+		return new GenerateJDepsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
 				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
 				copyClassPathJars ? outputDirectoryClasspathJars : null, copyModuleJars ? outputDirectoryModules : null,
 				excludedArtifacts, classpathArtifacts, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps, generateModuleJdeps,

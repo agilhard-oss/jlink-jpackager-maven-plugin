@@ -26,10 +26,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
@@ -157,23 +159,27 @@ public abstract class AbstractDependencyHandler {
 			throws MojoExecutionException, MojoFailureException;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		// No need to filter our search. We want to resolve all artifacts.
+		execute(mojo.getProject(), null);
+	}
+	
+	public void execute(MavenProject project, ArtifactFilter artifactFilter) throws MojoExecutionException, MojoFailureException {
 
 		final ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(
 				mojo.getSession().getProjectBuildingRequest());
 
-		buildingRequest.setProject(mojo.getProject());
+		buildingRequest.setProject(project);
 
-		this.getLog().info("building dependency graph for project " + mojo.getProject().getArtifact());
+		this.getLog().info("building dependency graph for project " + project.getArtifact());
 
 		try {
-			// No need to filter our search. We want to resolve all artifacts.
 
-			final DependencyNode dependencyNode = dependencyGraphBuilder.buildDependencyGraph(buildingRequest, null);
+			final DependencyNode dependencyNode = dependencyGraphBuilder.buildDependencyGraph(buildingRequest, artifactFilter);
 
 			this.handleDependencyRoot(dependencyNode);
 
 		} catch (final DependencyGraphBuilderException e) {
-			throw new MojoExecutionException("Could not resolve dependencies for project: " + mojo.getProject(), e);
+			throw new MojoExecutionException("Could not resolve dependencies for project: " + project, e);
 		}
 	}
 }

@@ -40,13 +40,13 @@ import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
 import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
-public class GenClassPathHandler extends AbstractVisitDependencyHandler {
+public class GenerateClassPathHandler extends AbstractVisitDependencyHandler {
 
 	private List<File> classPathElements = new ArrayList<>();
 
 	private List<String> jarsOnClassPath = new ArrayList<>();
 
-	public GenClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+	public GenerateClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
 			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
