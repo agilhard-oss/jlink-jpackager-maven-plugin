@@ -1,5 +1,4 @@
-
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,14 +19,13 @@ package net.agilhard.maven.plugins.jpacktool;
  * under the License.
  */
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -39,45 +37,35 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
-public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
+import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
-	public CollectJarsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
+public class GenClassPathHandler extends AbstractVisitDependencyHandler {
+
+	private List<File> classPathElements = new ArrayList<>();
+
+	private List<String> jarsOnClassPath = new ArrayList<>();
+
+	public GenClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
 			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
 			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
 		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
 				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
 	}
 
-	/** {@inheritDoc} */
 	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		if (!outputDirectoryAutomaticJars.exists()) {
-			if (!outputDirectoryAutomaticJars.mkdirs()) {
-				throw new MojoExecutionException("directory can not be created:" + outputDirectoryAutomaticJars);
-			}
-		}
-		if (!outputDirectoryClasspathJars.exists()) {
-			if (!outputDirectoryClasspathJars.mkdirs()) {
-				throw new MojoExecutionException("directory can not be created:" + outputDirectoryClasspathJars);
-			}
-		}
-		super.execute();
-	}
+	protected void handleNonModJar(DependencyNode dependencyNode, Artifact artifact,
+			Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
 
-	@Override
-	protected void handleNonModJar(final DependencyNode dependencyNode, final Artifact artifact,
-			Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
+		getLog().debug("handleNonModJar:" + artifact.getFile());
 
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
-
+		
 		if ( (classpathArtifacts != null) && (classpathArtifacts.contains(artifact))) {
 			isAutomatic = false;
 		}
 		
 		if (isAutomatic) {
-
-			// only named are automatic
-
 			try (JarFile jarFile = new JarFile(artifact.getFile())) {
 				Manifest manifest = jarFile.getManifest();
 				if (manifest == null) {
@@ -97,48 +85,38 @@ public class CollectJarsHandler extends AbstractEndVisitDependencyHandler {
 		Path path = artifact.getFile().toPath();
 
 		if (Files.isRegularFile(path)) {
-			try {
-				Path target = null;
-				if (isAutomatic) {
-					if (outputDirectoryAutomaticJars != null) {
-						target = outputDirectoryAutomaticJars.toPath().resolve(path.getFileName());
-					}
-				} else {
-					if (outputDirectoryClasspathJars != null) {
-						target = outputDirectoryClasspathJars.toPath().resolve(path.getFileName());
+
+			File target = null;
+
+			if (!isAutomatic) { // automatic jars are not on classpath
+
+				if (outputDirectoryClasspathJars != null) {
+					target = new File(outputDirectoryClasspathJars, artifact.getFile().getName());
+
+					if (!classPathElements.contains(target)) {
+						classPathElements.add(target);
+						jarsOnClassPath.add(artifact.getFile().getName());
 					}
 				}
-				if (target != null) {
-					this.getLog().info("copy jar " + path + " to " + target.toString());
-					Files.copy(path, target, REPLACE_EXISTING);
-				}
-			} catch (final IOException e) {
-				this.getLog().error("IOException", e);
-				throw new MojoExecutionException("Failure during copying of " + path + " occured.");
 			}
 		}
+
 	}
 
-	protected void handleModJar(final DependencyNode dependencyNode, final Artifact artifact,
-			Map.Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
-		Path path = artifact.getFile().toPath();
+	@Override
+	protected void handleModJar(DependencyNode dependencyNode, Artifact artifact,
+			Entry<File, JavaModuleDescriptor> entry) throws MojoExecutionException, MojoFailureException {
 
-		if (Files.isRegularFile(path)) {
-			try {
-				Path target = null;
-				if (outputDirectoryModules != null) {
-					target = outputDirectoryModules.toPath().resolve(path.getFileName());
-				}
-				if (target != null) {
-					this.getLog().info("copy jar " + path + " to " + target.toString());
-					Files.copy(path, target, REPLACE_EXISTING);
-				}
-			} catch (final IOException e) {
-				this.getLog().error("IOException", e);
-				throw new MojoExecutionException("Failure during copying of " + path + " occured.");
-			}
-		}
+		// module jars are not on classpath
 
+	}
+
+	public List<File> getClassPathElements() {
+		return classPathElements;
+	}
+
+	public List<String> getJarsOnClassPath() {
+		return jarsOnClassPath;
 	}
 
 }

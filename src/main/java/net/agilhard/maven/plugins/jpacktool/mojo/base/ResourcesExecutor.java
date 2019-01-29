@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -99,12 +99,12 @@ public class ResourcesExecutor implements Contextualizable {
 
     protected Map<String, Object> templateMap;
 	
-	ResourcesExecutor(AbstractPackageToolMojo mojo, PackagingResources packagingResources, Map<String, Object> templateMap) {
+	public ResourcesExecutor(AbstractPackageToolMojo mojo, PackagingResources packagingResources, Map<String, Object> templateMap) {
 		this.mojo = mojo;
-		this.session = mojo.session;
-		this.project = mojo.project;
+		this.session = mojo.getSession();
+		this.project = mojo.getProject();
 		this.mavenResourcesFiltering = mojo.mavenResourcesFiltering;
-		this.mavenFileFilter = mojo.mavenFileFilter;
+		this.mavenFileFilter = mojo.getMavenFileFilter();
 		this.data = packagingResources;
 		this.templateMap = templateMap;
 	}

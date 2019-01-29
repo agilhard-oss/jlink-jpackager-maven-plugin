@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -273,9 +273,10 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
     protected boolean jPacktoolMoveAutomaticModules;
 
     /**
-     * Flag if to move real modules from jpacktool-prepare goal
+     * Flag if to move real modules from jpacktool-prepare goal. 
+     * This can not be set to true when using jpackager because jpackager explicitly disallows modules in input directories.
      */
-    @Parameter(defaultValue = "true")
+    @Parameter(defaultValue = "false")
     protected boolean jPacktoolMoveRealModules;
 
     /**
@@ -1017,6 +1018,144 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
         }
     }
 
+    
+    
+	public Context getContext() {
+		return context;
+	}
+
+	public List<String> getJvmArgs() {
+		return jvmArgs;
+	}
+
+	public List<String> getUserJvmArgs() {
+		return userJvmArgs;
+	}
+
+	public List<String> getArguments() {
+		return arguments;
+	}
+
+	public String getJvmArgsTemplate() {
+		return jvmArgsTemplate;
+	}
+
+	public String getArgumentsTemplate() {
+		return argumentsTemplate;
+	}
+
+	public File getOutputDirectoyTemplates() {
+		return outputDirectoyTemplates;
+	}
+
+	public PackagingResources getPackagingResources() {
+		return packagingResources;
+	}
+
+	public List<String> getDeps() {
+		return deps;
+	}
+
+	public String getFinalName() {
+		return finalName;
+	}
+
+	public ZipArchiver getZipArchiver() {
+		return zipArchiver;
+	}
+
+	public BuildContext getBuildContext() {
+		return buildContext;
+	}
+
+	public MavenResourcesFiltering getMavenResourcesFiltering() {
+		return mavenResourcesFiltering;
+	}
+
+	public MavenFileFilter getMavenFileFilter() {
+		return mavenFileFilter;
+	}
+
+	public boolean isIgnoreAutomaticModules() {
+		return ignoreAutomaticModules;
+	}
+
+	public List<String> getModulePaths() {
+		return modulePaths;
+	}
+
+	public List<String> getLimitModules() {
+		return limitModules;
+	}
+
+	public Collection<String> getModulesToAdd() {
+		return modulesToAdd;
+	}
+
+	public Collection<String> getPathsOfModules() {
+		return pathsOfModules;
+	}
+
+	public Collection<String> getPathsOfArtifacts() {
+		return pathsOfArtifacts;
+	}
+
+	public File getBuildDirectory() {
+		return buildDirectory;
+	}
+
+	public File getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public List<File> getLimitModulesDirs() {
+		return limitModulesDirs;
+	}
+
+	public boolean isAddJDKToLimitModules() {
+		return addJDKToLimitModules;
+	}
+
+	public boolean isjPacktoolMoveClassPathJars() {
+		return jPacktoolMoveClassPathJars;
+	}
+
+	public boolean isjPacktoolMoveAutomaticModules() {
+		return jPacktoolMoveAutomaticModules;
+	}
+
+	public boolean isjPacktoolMoveRealModules() {
+		return jPacktoolMoveRealModules;
+	}
+
+	public List<String> getAddModules() {
+		return addModules;
+	}
+
+	public List<File> getAddModulesDirs() {
+		return addModulesDirs;
+	}
+
+	public String getClassPathFolderName() {
+		return classPathFolderName;
+	}
+
+	public String getAutomaticModulesFolderName() {
+		return automaticModulesFolderName;
+	}
+
+	public String getModulesFolderName() {
+		return modulesFolderName;
+	}
+
+	public boolean isJpacktoolPrepareUsed() {
+		return jpacktoolPrepareUsed;
+	}
+
+	public Map<String, Object> getJpacktoolModel() {
+		return jpacktoolModel;
+	}
+
 	/** {@inheritDoc} */
 	public void contextualize(Context context) throws ContextException {
 		this.context = context;
@@ -1036,6 +1175,8 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
     		resourcesExecutor.execute();
     	}
     }
+ 
+    
     
     protected abstract void executeResources() throws MojoExecutionException;
 

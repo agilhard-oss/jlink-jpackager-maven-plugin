@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,11 +23,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
-import org.apache.maven.plugin.logging.Log;
 
 public class ExecuteCommand {
 
@@ -35,7 +35,7 @@ public class ExecuteCommand {
         // private constructor for utility class
     }
 
-    protected static void executeCommand(final boolean verbose, final Log log, final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
+    public static void executeCommand(final boolean verbose, final Log log, final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
         if ( log.isDebugEnabled() )
         {
             // no quoted arguments ???
@@ -88,7 +88,7 @@ public class ExecuteCommand {
 
     }
 
-    protected static void executeCommand(final boolean verbose, final Log log, final Commandline cmd) throws MojoExecutionException {
+    public static void executeCommand(final boolean verbose, final Log log, final Commandline cmd) throws MojoExecutionException {
         if ( log.isDebugEnabled() )
         {
             // no quoted arguments ???

@@ -1,5 +1,5 @@
 
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,6 +24,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+
+import net.agilhard.maven.plugins.jpacktool.mojo.handler.AbstractDependencyHandler;
 
 /**
  * @author bei

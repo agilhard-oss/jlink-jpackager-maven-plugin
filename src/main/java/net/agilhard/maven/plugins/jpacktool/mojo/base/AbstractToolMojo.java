@@ -1,5 +1,5 @@
 
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -54,13 +54,13 @@ public abstract class AbstractToolMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool", required = true, readonly = true)
     protected File outputDirectoryJPacktool;
 
-    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool//automatic", required = true, readonly = true)
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/jar-automatic", required = true, readonly = true)
     protected File outputDirectoryAutomaticJars;
 
-    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool//classpath", required = true, readonly = true)
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/jar", required = true, readonly = true)
     protected File outputDirectoryClasspathJars;
 
-    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool//modules", required = true, readonly = true)
+    @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/jmods", required = true, readonly = true)
     protected File outputDirectoryModules;
 
     @Parameter(defaultValue = "jpacktool", required = true, readonly = true)
@@ -76,7 +76,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
      * Artifacts that should be explicitly on the classpath
      */
     @Parameter
-    List<ArtifactParameter> classpathArtifacts;
+    protected List<ArtifactParameter> classpathArtifacts;
     
     @Component
     protected LocationManager locationManager;
@@ -85,6 +85,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     protected MavenProject project;
+ 
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
     protected MavenSession session;
 
@@ -183,7 +184,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
         ExecuteCommand.executeCommand(verbose, this.getLog(), cmd);
     }
 
-    protected Toolchain getToolchain() {
+    public Toolchain getToolchain() {
         Toolchain tc = null;
 
         if (this.jdkToolchain != null) {
@@ -216,15 +217,61 @@ public abstract class AbstractToolMojo extends AbstractMojo {
         return tc;
     }
 
-    protected MavenProject getProject() {
+    public MavenProject getProject() {
         return this.project;
     }
 
-    protected MavenSession getSession() {
+    public MavenSession getSession() {
         return this.session;
     }
 
-    protected List<String> getSystemModules() throws MojoExecutionException {
+    
+    
+    public File getOutputDirectoryJPacktool() {
+		return outputDirectoryJPacktool;
+	}
+
+	public File getOutputDirectoryAutomaticJars() {
+		return outputDirectoryAutomaticJars;
+	}
+
+	public File getOutputDirectoryClasspathJars() {
+		return outputDirectoryClasspathJars;
+	}
+
+	public File getOutputDirectoryModules() {
+		return outputDirectoryModules;
+	}
+
+	public String getJpacktoolPropertyPrefix() {
+		return jpacktoolPropertyPrefix;
+	}
+
+	public List<ArtifactParameter> getExcludedArtifacts() {
+		return excludedArtifacts;
+	}
+
+	public List<ArtifactParameter> getClasspathArtifacts() {
+		return classpathArtifacts;
+	}
+
+	public LocationManager getLocationManager() {
+		return locationManager;
+	}
+
+	public ToolchainManager getToolchainManager() {
+		return toolchainManager;
+	}
+
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public Map<String, String> getJdkToolchain() {
+		return jdkToolchain;
+	}
+
+	public List<String> getSystemModules() throws MojoExecutionException {
         
         if ( !outputDirectoryJPacktool.exists() ) {
             outputDirectoryJPacktool.mkdirs();
@@ -268,5 +315,6 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 
         return systemModules;
     }
+
 
 }

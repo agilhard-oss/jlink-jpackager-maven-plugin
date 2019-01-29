@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,6 +30,9 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
+
+import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
 public abstract class AbstractEndVisitDependencyHandler extends AbstractDependencyHandler {
 

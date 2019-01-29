@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -39,6 +39,9 @@ import org.apache.maven.toolchain.java.DefaultJavaToolChain;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
+
+import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
 public abstract class AbstractDependencyHandler {
 
@@ -123,7 +126,7 @@ public abstract class AbstractDependencyHandler {
 			}
 			ResolvePathsResult<File> resolvePathsResult;
 			try {
-				resolvePathsResult = mojo.locationManager.resolvePaths(request);
+				resolvePathsResult = mojo.getLocationManager().resolvePaths(request);
 			} catch (final IOException e) {
 				this.getLog().error("handleDependencyNode -> IOException", e);
 				throw new MojoExecutionException("handleDependencyNode: IOException", e);
@@ -156,11 +159,11 @@ public abstract class AbstractDependencyHandler {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		final ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(
-				mojo.session.getProjectBuildingRequest());
+				mojo.getSession().getProjectBuildingRequest());
 
-		buildingRequest.setProject(mojo.project);
+		buildingRequest.setProject(mojo.getProject());
 
-		this.getLog().info("building dependency graph for project " + mojo.project.getArtifact());
+		this.getLog().info("building dependency graph for project " + mojo.getProject().getArtifact());
 
 		try {
 			// No need to filter our search. We want to resolve all artifacts.
@@ -170,7 +173,7 @@ public abstract class AbstractDependencyHandler {
 			this.handleDependencyRoot(dependencyNode);
 
 		} catch (final DependencyGraphBuilderException e) {
-			throw new MojoExecutionException("Could not resolve dependencies for project: " + mojo.project, e);
+			throw new MojoExecutionException("Could not resolve dependencies for project: " + mojo.getProject(), e);
 		}
 	}
 }

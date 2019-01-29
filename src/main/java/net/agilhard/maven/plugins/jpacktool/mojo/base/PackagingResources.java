@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 
 public class PackagingResources {

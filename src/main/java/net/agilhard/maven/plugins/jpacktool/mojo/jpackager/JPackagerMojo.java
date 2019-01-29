@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpackager;
+package net.agilhard.maven.plugins.jpacktool.mojo.jpackager;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -64,7 +64,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import net.agilhard.maven.plugins.jpacktool.AbstractPackageToolMojo;
+import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractPackageToolMojo;
 
 /**
  * The JPackager goal is intended to create a native installer package file based on

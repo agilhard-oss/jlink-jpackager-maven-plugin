@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpackager;
+package net.agilhard.maven.plugins.jpacktool.mojo.jpackager;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -77,7 +77,7 @@ public class JPackagerLinuxOptions {
      * &lt;type&gt; parameter is being used.
      * </p>
      */
-    @Parameter(required = false, readonly = false)
+    @Parameter(required = false, readonly = false, defaultValue="rpm")
     public String linuxType;
 
 }

@@ -1,5 +1,5 @@
 
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,6 +31,10 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+
+import net.agilhard.maven.plugins.jpacktool.mojo.handler.CollectJarsHandler;
+import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenClassPathHandler;
+import net.agilhard.maven.plugins.jpacktool.mojo.handler.JPackToolHandler;
 
 /**
  * @author bei

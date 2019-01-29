@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool;
+package net.agilhard.maven.plugins.jpacktool.mojo.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -43,6 +43,10 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.util.cli.Commandline;
+
+import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
+import net.agilhard.maven.plugins.jpacktool.mojo.base.ExecuteCommand;
 
 public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 
@@ -388,7 +392,7 @@ public class JPackToolHandler extends AbstractEndVisitDependencyHandler {
 	}
 
 	protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
-		ExecuteCommand.executeCommand(mojo.verbose, this.getLog(), cmd, outputStream);
+		ExecuteCommand.executeCommand(mojo.isVerbose(), this.getLog(), cmd, outputStream);
 	}
 
 	public List<File> getClassPathElements() {
