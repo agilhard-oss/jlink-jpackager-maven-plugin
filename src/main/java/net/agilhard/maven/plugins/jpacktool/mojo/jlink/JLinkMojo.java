@@ -291,6 +291,9 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 				this.outputDirectoryImage);
 
 		this.getProject().getArtifact().setFile(createZipArchiveFromImage);
+
+        publishJPacktoolProperties();
+
 	}
 
 	protected void updateModel() throws MojoFailureException {

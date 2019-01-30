@@ -51,6 +51,9 @@ import org.codehaus.plexus.util.cli.Commandline;
  */
 public abstract class AbstractToolMojo extends AbstractMojo {
 
+	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
+	protected File buildDirectory;
+	
     @Parameter(defaultValue = "${project.build.directory}/maven-jpacktool", required = true, readonly = true)
     protected File outputDirectoryJPacktool;
 
@@ -127,8 +130,20 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 
     	    String version = System.getProperty("java.version");    		
     	    int pos = version.indexOf('.');
-    	    pos = version.indexOf('.', pos+1);
-    	    javaVersion=Double.parseDouble (version.substring (0, pos));
+    	    if ( pos > -1 ) {
+    	    	pos = version.indexOf('.', pos+1);
+    	    	if ( pos == -1 ) {
+        	    	pos=version.length();
+    	    	}
+    	    } else {
+    	    	pos=version.length();
+    	    }
+    	    version=version.substring (0, pos);
+    	    pos = version.indexOf('-');
+    	    if ( pos > -1 ) {
+        	    version=version.substring (0, pos);
+    	    }
+    	    javaVersion=Double.parseDouble (version);
     	}
     	
     	return javaVersion;
@@ -334,5 +349,54 @@ public abstract class AbstractToolMojo extends AbstractMojo {
         return systemModules;
     }
 
+
+	/**
+	 * Returns the artifact file to generate, based on an optional classifier.
+	 *
+	 * @param basedir    the output directory
+	 * @param finalName  the name of the ear file
+	 * @param classifier an optional classifier
+	 * @param ext The extension of the file.
+	 * @return the file to generate
+	 */
+	protected File getArtifactFile(final File basedir, final String finalName, final String classifier,
+			final String ext) {
+		if (basedir == null) {
+			throw new IllegalArgumentException("basedir is not allowed to be null");
+		}
+		if (finalName == null) {
+			throw new IllegalArgumentException("finalName is not allowed to be null");
+		}
+		if (ext == null) {
+			throw new IllegalArgumentException("archiveExt is not allowed to be null");
+		}
+
+		if (finalName.isEmpty()) {
+			throw new IllegalArgumentException("finalName is not allowed to be empty.");
+		}
+		if (ext.isEmpty()) {
+			throw new IllegalArgumentException("archiveExt is not allowed to be empty.");
+		}
+
+		final StringBuilder fileName = new StringBuilder(finalName);
+
+		if (this.hasClassifier(classifier)) {
+			fileName.append("-").append(classifier);
+		}
+
+		fileName.append('.');
+		fileName.append(ext);
+
+		return new File(basedir, fileName.toString());
+	}
+
+	protected boolean hasClassifier(final String classifier) {
+		boolean result = false;
+		if (classifier != null && classifier.trim().length() > 0) {
+			result = true;
+		}
+
+		return result;
+	}
 
 }

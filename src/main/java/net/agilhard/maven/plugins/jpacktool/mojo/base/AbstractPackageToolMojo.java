@@ -70,6 +70,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.toolchain.Toolchain;
@@ -174,8 +175,6 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 	 * Name of the generated ZIP file in the <code>target</code> directory. This
 	 * will not change the name of the installed/deployed file.
 	 */
-	List<String> deps = new ArrayList<>();
-
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	protected String finalName;
 
@@ -190,6 +189,12 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 	 */
 	@Component
 	protected BuildContext buildContext;
+
+    /**
+     * The MavenProjectHelper
+     */
+    @Component
+    protected MavenProjectHelper mavenProjectHelper;
 
 	/**
 	 *
@@ -237,8 +242,6 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 	protected Collection<String> pathsOfModules = new ArrayList<>();
 	protected Collection<String> pathsOfArtifacts = new ArrayList<>();
 
-	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
-	protected File buildDirectory;
 
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true, readonly = true)
 	protected File outputDirectory;
@@ -701,7 +704,7 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 			throws MojoExecutionException {
 		this.zipArchiver.addDirectory(outputDirectoryImage);
 
-		final File resultArchive = this.getArchiveFile(outputDirectory, this.finalName, null, "zip");
+		final File resultArchive = this.getArtifactFile(outputDirectory, this.finalName, null, "zip");
 
 		this.zipArchiver.setDestFile(resultArchive);
 		try {
@@ -737,54 +740,6 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 		return this.limitModules != null && !this.limitModules.isEmpty();
 	}
 
-	/**
-	 * Returns the archive file to generate, based on an optional classifier.
-	 *
-	 * @param basedir    the output directory
-	 * @param finalName  the name of the ear file
-	 * @param classifier an optional classifier
-	 * @param archiveExt The extension of the file.
-	 * @return the file to generate
-	 */
-	protected File getArchiveFile(final File basedir, final String finalName, final String classifier,
-			final String archiveExt) {
-		if (basedir == null) {
-			throw new IllegalArgumentException("basedir is not allowed to be null");
-		}
-		if (finalName == null) {
-			throw new IllegalArgumentException("finalName is not allowed to be null");
-		}
-		if (archiveExt == null) {
-			throw new IllegalArgumentException("archiveExt is not allowed to be null");
-		}
-
-		if (finalName.isEmpty()) {
-			throw new IllegalArgumentException("finalName is not allowed to be empty.");
-		}
-		if (archiveExt.isEmpty()) {
-			throw new IllegalArgumentException("archiveExt is not allowed to be empty.");
-		}
-
-		final StringBuilder fileName = new StringBuilder(finalName);
-
-		if (this.hasClassifier(classifier)) {
-			fileName.append("-").append(classifier);
-		}
-
-		fileName.append('.');
-		fileName.append(archiveExt);
-
-		return new File(basedir, fileName.toString());
-	}
-
-	protected boolean hasClassifier(final String classifier) {
-		boolean result = false;
-		if (classifier != null && classifier.trim().length() > 0) {
-			result = true;
-		}
-
-		return result;
-	}
 
 	protected void addToLimitModules(String name) {
 		if (limitModules == null) {
@@ -1010,10 +965,6 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 		return packagingResources;
 	}
 
-	public List<String> getDeps() {
-		return deps;
-	}
-
 	public String getFinalName() {
 		return finalName;
 	}
@@ -1132,4 +1083,10 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 
 	protected abstract void executeResources() throws MojoExecutionException;
 
+	protected void publishJPacktoolProperties() {
+		File propertiesFile = this.getArtifactFile(buildDirectory, this.finalName, "jpacktool", "properties");
+		if ( propertiesFile.exists() )  {
+			this.mavenProjectHelper.attachArtifact( this.project, "properties", "jpacktool", propertiesFile );
+		}
+	}
 }

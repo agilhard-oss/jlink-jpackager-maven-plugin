@@ -362,8 +362,8 @@
                 <pomInclude>**/pom.xml</pomInclude>
                 
                 -->
-                <pomInclude>jpacktool-its/jpacktool-prepare/pom.xml</pomInclude>
-
+                <pomInclude>jpacktool-its/jpacktool-jlink/pom.xml</pomInclude>
+                <pomInclude>jpacktool-its/jpacktool-jpackager/pom.xml</pomInclude>
                 
               </pomIncludes>
               <pomExcludes>

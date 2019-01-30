@@ -1,6 +1,10 @@
 
 package net.agilhard.maven.plugins.jpacktool.mojo.base;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,6 +25,7 @@ package net.agilhard.maven.plugins.jpacktool.mojo.base;
  */
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,7 +70,14 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	
 	@Parameter(defaultValue = "false")
 	protected boolean useListDeps;
-	
+
+	/**
+	 * Name of the generated properties file in the <code>target</code> directory. This
+	 * will not change the name of the installed/deployed file.
+	 */
+	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
+	protected String finalName;
+
 	/**
 	 * The jdeps Java Tool Executable.
 	 */
@@ -200,6 +212,24 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 			throw new MojoFailureException("errors on jdep calls");
 		}
 
+		
+		File propertiesFile = this.getArtifactFile(buildDirectory, this.finalName, "jpacktool", "properties");
+
+		try (FileOutputStream fout = new FileOutputStream(propertiesFile); PrintStream pout=new PrintStream(fout)) {
+			
+			pout.println("all_deps=" + String.join(",", handler.getAllModules()));
+			pout.println("system_deps="+ String.join(",", handler.getLinkedSystemModules()));
+			pout.println("linked_deps=" + String.join(",", handler.getLinkedModules()));
+			pout.println("automatic_deps=" + String.join(",", handler.getAutomaticModules()));
+			pout.println("classpath_jars=" + String.join(",", handler.getJarsOnClassPath()));
+	
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public GenerateClassPathHandler creatGenClassPathHandler() {

@@ -55,12 +55,10 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
@@ -78,11 +76,6 @@ import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractPackageToolMojo;
 public class JPackagerMojo extends AbstractPackageToolMojo
 {
 
-    /**
-     * The MavenProjectHelper
-     */
-    @Component
-    protected MavenProjectHelper mavenProjectHelper;
 
     /**
      * Mode of JPackager operation.
@@ -531,8 +524,8 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             this.getProject().getArtifact().setFile( createZipArchiveFromPackage );
         }
 
-        this.publishClassifierArtifacts();
-
+        publishPackageArtifacts();
+        publishJPacktoolProperties();
     }
 
     
@@ -630,7 +623,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
 
-    private void publishClassifierArtifacts()
+    private void publishPackageArtifacts()
     {
         final String[] extensions = {
                 "msi", "exe", "rpm", "deb", "dmg",
