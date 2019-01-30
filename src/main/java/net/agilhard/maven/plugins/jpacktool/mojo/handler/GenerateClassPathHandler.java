@@ -38,7 +38,6 @@ import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
 import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
-import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
 public class GenerateClassPathHandler extends AbstractVisitDependencyHandler {
 
@@ -46,11 +45,8 @@ public class GenerateClassPathHandler extends AbstractVisitDependencyHandler {
 
 	private List<String> jarsOnClassPath = new ArrayList<>();
 
-	public GenerateClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
-		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
+	public GenerateClassPathHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
+		super(mojo, dependencyGraphBuilder);
 	}
 
 	/** {@inheritDoc} */

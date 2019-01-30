@@ -111,6 +111,9 @@ public abstract class AbstractToolMojo extends AbstractMojo {
     @Parameter
     protected Map<String, String> jdkToolchain;
 
+    
+    private double javaVersion = 0;
+    
     /**
      *
      */
@@ -118,6 +121,20 @@ public abstract class AbstractToolMojo extends AbstractMojo {
         super();
     }
 
+    public double getJavaVersion() {
+    	
+    	if ( javaVersion == 0 ) {
+
+    	    String version = System.getProperty("java.version");    		
+    	    int pos = version.indexOf('.');
+    	    pos = version.indexOf('.', pos+1);
+    	    javaVersion=Double.parseDouble (version.substring (0, pos));
+    	}
+    	
+    	return javaVersion;
+    }
+    
+    
     protected String getToolExecutable(final String toolName) throws IOException {
         final Toolchain tc = this.getToolchain();
 

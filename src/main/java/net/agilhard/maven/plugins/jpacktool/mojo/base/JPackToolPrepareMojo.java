@@ -37,20 +37,11 @@ import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateClassPathHandle
 import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateJDepsHandler;
 
 /**
- * @author bei
+ * @author beicontent
  *
  */
 @Mojo(name = "jpacktool-prepare", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true)
 public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDepsHandler> {
-
-	@Parameter(defaultValue = "true", required = true, readonly = false)
-	private boolean copyAutomaticJars;
-
-	@Parameter(defaultValue = "true", required = true, readonly = false)
-	private boolean copyClassPathJars;
-
-	@Parameter(defaultValue = "true", required = true, readonly = false)
-	private boolean copyModuleJars;
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
 	private boolean generateAutomaticJdeps;
@@ -71,6 +62,10 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	@Parameter(defaultValue = "true")
 	protected boolean ignoreMissingDeps;
 
+	
+	@Parameter(defaultValue = "false")
+	protected boolean useListDeps;
+	
 	/**
 	 * The jdeps Java Tool Executable.
 	 */
@@ -88,17 +83,32 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
-		if ((!outputDirectoryAutomaticJars.exists()) && copyAutomaticJars) {
+		if ( getToolchain() == null ) {
+			double v = getJavaVersion();
+
+			if ( ignoreMissingDeps && (v == 9.0 || v == 10.0 || v == 11.0) ){
+				this.getLog().warn("ignoreMissingDeps=true can not be used with java version "+v+" disabling it.");
+				ignoreMissingDeps = false;
+			}
+			
+			if ( (!useListDeps) && ( v == 9.0 ) ) {
+				this.getLog().warn("useListDeps=false can not be used with java version "+v+" enableing it.");
+				useListDeps = true;
+
+			}
+		}
+		
+		if (!outputDirectoryAutomaticJars.exists()) {
 			if (!outputDirectoryAutomaticJars.mkdirs()) {
 				throw new MojoExecutionException("directory can not be created:" + outputDirectoryAutomaticJars);
 			}
 		}
-		if ((!outputDirectoryClasspathJars.exists()) && copyClassPathJars) {
+		if (!outputDirectoryClasspathJars.exists()) {
 			if (!outputDirectoryClasspathJars.mkdirs()) {
 				throw new MojoExecutionException("directory can not be created:" + outputDirectoryClasspathJars);
 			}
 		}
-		if ((!outputDirectoryModules.exists()) && copyModuleJars) {
+		if (!outputDirectoryModules.exists()) {
 			if (!outputDirectoryModules.mkdirs()) {
 				throw new MojoExecutionException("directory can not be created:" + outputDirectoryModules);
 			}
@@ -193,25 +203,18 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	}
 
 	public GenerateClassPathHandler creatGenClassPathHandler() {
-		return new GenerateClassPathHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts,
-				classpathArtifacts);
+		return new GenerateClassPathHandler(this, dependencyGraphBuilder);
 	}
 
 	public CollectJarsHandler createCopyHandler() {
-		return new CollectJarsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				outputDirectoryAutomaticJars, outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts,
-				classpathArtifacts);
+		return new CollectJarsHandler(this, dependencyGraphBuilder);
 	}
 
 	@Override
 	public GenerateJDepsHandler createHandler() throws MojoExecutionException, MojoFailureException {
-		return new GenerateJDepsHandler(this, dependencyGraphBuilder, outputDirectoryJPacktool,
-				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
-				copyClassPathJars ? outputDirectoryClasspathJars : null, copyModuleJars ? outputDirectoryModules : null,
-				excludedArtifacts, classpathArtifacts, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps,
+		return new GenerateJDepsHandler(this, dependencyGraphBuilder, jdepsExecutable, generateAutomaticJdeps, generateClassPathJdeps,
 				generateModuleJdeps, this.genClassPathHandler.getClassPathElements(),
-				this.genClassPathHandler.getJarsOnClassPath(), ignoreMissingDeps);
+				this.genClassPathHandler.getJarsOnClassPath(), ignoreMissingDeps, useListDeps);
 
 	}
 

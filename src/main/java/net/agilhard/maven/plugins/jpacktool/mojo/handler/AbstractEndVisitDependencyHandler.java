@@ -20,7 +20,6 @@ package net.agilhard.maven.plugins.jpacktool.mojo.handler;
  */
 
 import java.io.File;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.maven.artifact.Artifact;
@@ -32,7 +31,6 @@ import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
 import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
-import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
 public abstract class AbstractEndVisitDependencyHandler extends AbstractDependencyHandler {
 
@@ -44,7 +42,9 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		/**
 		 * Starts the visit to the specified dependency node.
 		 *
-		 * @param node the dependency node to visit
+		 * @param node the dependency node to v,
+			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
+			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifactsisit
 		 * @return <code>true</code> to visit the
 		 *         specifiedAbstractEndVIsitDependencyHandler dependency node's
 		 *         children, <code>false</code> to skip the.resolvePat specified
@@ -93,11 +93,8 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		}
 	}
 
-	public AbstractEndVisitDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
-		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts);
+	public AbstractEndVisitDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
+		super(mojo, dependencyGraphBuilder);
 	}
 
 	@Override

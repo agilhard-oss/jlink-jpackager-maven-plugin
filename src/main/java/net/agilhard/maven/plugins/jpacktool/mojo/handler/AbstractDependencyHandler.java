@@ -64,18 +64,16 @@ public abstract class AbstractDependencyHandler {
 	final AbstractToolMojo mojo;
 	DependencyGraphBuilder dependencyGraphBuilder;
 
-	public AbstractDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
+	public AbstractDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
 		this.mojo = mojo;
 		this.handledNodes = new HashSet<>();
 		this.dependencyGraphBuilder = dependencyGraphBuilder;
-		this.outputDirectoryJPacktool = outputDirectoryJPacktool;
-		this.outputDirectoryAutomaticJars = outputDirectoryAutomaticJars;
-		this.outputDirectoryClasspathJars = outputDirectoryClasspathJars;
-		this.outputDirectoryModules = outputDirectoryModules;
-		this.excludedArtifacts = excludedArtifacts;
-		this.classpathArtifacts = classpathArtifacts;
+		this.outputDirectoryJPacktool = mojo.getOutputDirectoryJPacktool();
+		this.outputDirectoryAutomaticJars = mojo.getOutputDirectoryAutomaticJars();
+		this.outputDirectoryClasspathJars = mojo.getOutputDirectoryClasspathJars();
+		this.outputDirectoryModules = mojo.getOutputDirectoryModules();
+		this.excludedArtifacts = mojo.getExcludedArtifacts();
+		this.classpathArtifacts = mojo.getClasspathArtifacts();
 	}
 
 	public Log getLog() {

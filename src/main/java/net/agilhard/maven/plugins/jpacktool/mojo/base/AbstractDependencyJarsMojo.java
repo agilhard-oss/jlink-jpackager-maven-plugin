@@ -61,6 +61,10 @@ public abstract class AbstractDependencyJarsMojo<T extends AbstractDependencyHan
         return handler;
     }
 
+	public DependencyGraphBuilder getDependencyGraphBuilder() {
+		return dependencyGraphBuilder;
+	}
+
 
 
 }

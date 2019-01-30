@@ -45,7 +45,6 @@ import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
-import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 import net.agilhard.maven.plugins.jpacktool.mojo.base.ExecuteCommand;
 
 public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
@@ -90,18 +89,18 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 	private Map<String, List<String>> linkedSystemModulesMap = new HashMap<>();;
 
 	private boolean ignoreMissingDeps;
-	
+
+	private boolean useListDeps;
+
 	public GenerateJDepsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts,
 			String jdepsExecutable, boolean generateAutomaticJdeps,
 			boolean generateClassPathJdeps, boolean generateModuleJdeps, List<File> classPathElements,
-			List<String> jarsOnClassPath, boolean ignoreMissingDeps) throws MojoExecutionException {
+			List<String> jarsOnClassPath, boolean ignoreMissingDeps, boolean useListDeps) throws MojoExecutionException {
 
-		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts );
+		super(mojo, dependencyGraphBuilder);
 
 		this.ignoreMissingDeps = ignoreMissingDeps;
+		this.useListDeps = useListDeps;
 		this.jdepsExecutable = jdepsExecutable;
 
 		this.generateAutomaticJdeps = generateAutomaticJdeps;
@@ -175,8 +174,12 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 
 		}
 
-		cmd.createArg().setValue("--print-module-deps");
-
+		if ( useListDeps ) {
+			cmd.createArg().setValue("--list-deps");
+		} else {
+			cmd.createArg().setValue("--print-module-deps");
+		}
+		
 		if ( ignoreMissingDeps ) {
 			cmd.createArg().setValue("--ignore-missing-deps");
 		}
@@ -231,6 +234,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line;
 			while ((line = br.readLine()) != null) {
+				line = line.trim();
 				if (line.startsWith("Warning:")) {
 					if (!warnings.contains(line)) {
 						if (line.startsWith("Warning: split package:")) {
@@ -254,6 +258,10 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 				} else if (line.startsWith("Error:")) {
 					if (!errors.contains(line)) {
 						errors.add(line);
+					}
+				} else if ( useListDeps && line.contains(" ") ) {
+					if ( ! line.contains("unamed module:") ) {
+						warnings.add(line);
 					}
 				} else {
 					for (String dep : line.split(",")) {

@@ -304,6 +304,7 @@
   </reporting>
 
   <profiles>
+    
     <profile>
       <id>run-its</id>
       <build>
@@ -361,11 +362,92 @@
                 <pomInclude>**/pom.xml</pomInclude>
                 
                 -->
-                <pomInclude>**/pom.xml</pomInclude>
+                <pomInclude>jpacktool-its/jpacktool-prepare/pom.xml</pomInclude>
 
                 
               </pomIncludes>
               <pomExcludes>
+                <!--
+                  ! Currently this Test does not work correctly either based
+                  ! on wrong implementation or my limited knowledge of suggest-providers
+                  ! and how the work.
+                -->
+                <pomExclude>jlink-cli-options/suggest-providers/pom.xml</pomExclude>
+              </pomExcludes>
+              <settingsFile>src/it/mrm/settings.xml</settingsFile>
+              <filterProperties>
+                <mrm.repository.url>${mrm.repository.url}</mrm.repository.url>
+              </filterProperties>
+              <goals>
+                <goal>clean</goal>
+                <goal>package</goal>
+              </goals>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-test</id>
+                <goals>
+                  <goal>install</goal>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    
+    <profile>
+      <id>run-its9</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>mrm-maven-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>start</goal>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <propertyName>mrm.repository.url</propertyName>
+              <repositories>
+                <mockRepo>
+                  <source>src/it/mrm/repository</source>
+                </mockRepo>
+                <proxyRepo />
+              </repositories>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <configuration>
+              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <postBuildHookScript>verify</postBuildHookScript>
+              <environmentVariables>
+                <!--
+                  ! Prevent reading the .mavenrc or maven_pre.bat on Windows 
+                  ! in integration tests.
+                -->
+                <MAVEN_SKIP_RC>1</MAVEN_SKIP_RC>
+              </environmentVariables>
+              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <projectsDirectory>src/it/projects</projectsDirectory>
+              <pomIncludes>
+                
+                <pomInclude>jlink-its/**/pom.xml</pomInclude>
+                <pomInclude>jpacktool-its/**/pom.xml</pomInclude>
+                
+              </pomIncludes>
+              <pomExcludes>
+                <pomExclude>jpacktool-its/jpacktool-jpackager/pom.xml</pomExclude>
                 <!--
                   ! Currently this Test does not work correctly either based
                   ! on wrong implementation or my limited knowledge of suggest-providers

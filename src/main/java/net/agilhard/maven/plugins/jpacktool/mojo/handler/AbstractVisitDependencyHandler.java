@@ -20,7 +20,6 @@ package net.agilhard.maven.plugins.jpacktool.mojo.handler;
  */
 
 import java.io.File;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.maven.artifact.Artifact;
@@ -32,7 +31,6 @@ import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
 import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
-import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
 
 public abstract class AbstractVisitDependencyHandler extends AbstractDependencyHandler {
 
@@ -77,10 +75,14 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 
 		/**
 		 * Ends the visit to to the specified dependency
-		 * node.AbstractEndVIsitDependencyHandler
+		 * node.AbstractEndVIsitDependencyHandler, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
+				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts
 		 *
 		 * @param node the dependency node to visit
-		 * @return <code>true</code> to visit the specified dependency node's next
+		 * @retur outputDirectoryJPacktool,
+				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
+				copyClassPathJars ? outputDirectoryClasspathJars : null, copyModuleJars ? outputDirectoryModules : null,
+				excludedArtifacts, classpathArtifacts,n <code>true</code> to visit the specified dependency node's next
 		 *         sibling, <code>false</code> to skip the specified dependency node's
 		 *         next siblings and proceed to its parent
 		 */
@@ -90,11 +92,8 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 		}
 	}
 
-	public AbstractVisitDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifacts) {
-		super(mojo, dependencyGraphBuilder, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts );
+	public AbstractVisitDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
+		super(mojo, dependencyGraphBuilder);
 	}
 
 	@Override
