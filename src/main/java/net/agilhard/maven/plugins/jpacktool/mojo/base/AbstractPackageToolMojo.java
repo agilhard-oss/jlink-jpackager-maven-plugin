@@ -70,13 +70,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.java.DefaultJavaToolChain;
-import org.codehaus.plexus.archiver.Archiver;
-import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
@@ -112,7 +109,7 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 	private Context context;
 
 	private TemplateGenerator templateGenerator;
-
+	
 	/**
 	 * JVM flags and options to pass to the application.
 	 *
@@ -181,20 +178,8 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 	/**
 	 * The JAR archiver needed for archiving the environments.
 	 */
-	@Component(role = Archiver.class, hint = "zip")
-	private ZipArchiver zipArchiver;
-
-	/**
-	 * The JAR archiver needed for archiving the environments.
-	 */
 	@Component
 	protected BuildContext buildContext;
-
-    /**
-     * The MavenProjectHelper
-     */
-    @Component
-    protected MavenProjectHelper mavenProjectHelper;
 
 	/**
 	 *
@@ -700,26 +685,6 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 
 	}
 
-	protected File createZipArchiveFromImage(final File outputDirectory, final File outputDirectoryImage)
-			throws MojoExecutionException {
-		this.zipArchiver.addDirectory(outputDirectoryImage);
-
-		final File resultArchive = this.getArtifactFile(outputDirectory, this.finalName, null, "zip");
-
-		this.zipArchiver.setDestFile(resultArchive);
-		try {
-			this.zipArchiver.createArchive();
-		} catch (final ArchiverException e) {
-			this.getLog().error(e.getMessage(), e);
-			throw new MojoExecutionException(e.getMessage(), e);
-		} catch (final IOException e) {
-			this.getLog().error(e.getMessage(), e);
-			throw new MojoExecutionException(e.getMessage(), e);
-		}
-
-		return resultArchive;
-
-	}
 
 	protected void failIfProjectHasAlreadySetAnArtifact() throws MojoExecutionException {
 		if (this.projectHasAlreadySetAnArtifact()) {
@@ -1083,10 +1048,6 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 
 	protected abstract void executeResources() throws MojoExecutionException;
 
-	protected void publishJPacktoolProperties() {
-		File propertiesFile = this.getArtifactFile(buildDirectory, this.finalName, "jpacktool", "properties");
-		if ( propertiesFile.exists() )  {
-			this.mavenProjectHelper.attachArtifact( this.project, "properties", "jpacktool", propertiesFile );
-		}
-	}
+	
+
 }

@@ -227,7 +227,15 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		return this.getToolExecutable("jlink");
 	}
 
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void checkShouldSkip() {
+		try {
+			getExecutable();
+		} catch (MojoFailureException e) {
+			setShouldSkipReason("Unable to find jlink command");
+		}
+	}
+	
+	public void executeToolMain() throws MojoExecutionException, MojoFailureException {
 
 		initJPacktoolModel();
 		initTemplates();
@@ -287,10 +295,10 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 
 		executeResources();
 		
-		final File createZipArchiveFromImage = createZipArchiveFromImage(this.buildDirectory,
+		File createZipArchiveFromDirectory= createZipArchiveFromDirectory(this.buildDirectory,
 				this.outputDirectoryImage);
 
-		this.getProject().getArtifact().setFile(createZipArchiveFromImage);
+		this.getProject().getArtifact().setFile(createZipArchiveFromDirectory);
 
         publishJPacktoolProperties();
 

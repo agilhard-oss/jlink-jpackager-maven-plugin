@@ -49,7 +49,7 @@ public abstract class AbstractDependencyJarsMojo<T extends AbstractDependencyHan
     
     /** {@inheritDoc} */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void executeToolMain() throws MojoExecutionException, MojoFailureException
     {
         
         this.handler = createHandler();

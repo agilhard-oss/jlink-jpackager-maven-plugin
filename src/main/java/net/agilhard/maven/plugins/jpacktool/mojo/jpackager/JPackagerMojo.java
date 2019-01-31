@@ -439,7 +439,16 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         return this.usingJDK11Jpackager;
     }
 
-    public void execute() throws MojoExecutionException, MojoFailureException
+	public void checkShouldSkip() {
+
+		try {
+			getExecutable();
+		} catch (MojoFailureException e) {
+			setShouldSkipReason("Unable to find jpackage or jpackager command");
+		}
+	}
+    
+    public void executeToolMain() throws MojoExecutionException, MojoFailureException
     {
 
         initJPacktoolModel();
@@ -517,7 +526,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( "create-image".equals( this.mode ) )
         {
-            final File createZipArchiveFromPackage = this.createZipArchiveFromImage( this.buildDirectory, this.outputDirectoryPackage );
+            final File createZipArchiveFromPackage = this.createZipArchiveFromDirectory( this.buildDirectory, this.outputDirectoryPackage );
 
             this.failIfProjectHasAlreadySetAnArtifact();
 

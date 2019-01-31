@@ -45,7 +45,7 @@ public class CollectJarsMojo extends AbstractDependencyJarsMojo<CollectJarsHandl
     
     /** {@inheritDoc} */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void executeToolMain() throws MojoExecutionException, MojoFailureException
     {
         if ( ! outputDirectoryAutomaticJars.exists() ) {
             if ( ! outputDirectoryAutomaticJars.mkdirs() ) {
@@ -62,7 +62,7 @@ public class CollectJarsMojo extends AbstractDependencyJarsMojo<CollectJarsHandl
                 throw new MojoExecutionException("directory can not be created:"+outputDirectoryModules);
             }
         }
-        super.execute();
+        super.executeToolMain();
     }
 
     @Override

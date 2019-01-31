@@ -42,7 +42,7 @@ import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateClassPathHandle
 import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateJDepsHandler;
 
 /**
- * @author beicontent
+ * @author bei
  *
  */
 @Mojo(name = "jpacktool-prepare", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true)
@@ -93,7 +93,7 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 
 	/** {@inheritDoc} */
 	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void executeToolMain() throws MojoExecutionException, MojoFailureException {
 
 		if ( getToolchain() == null ) {
 			double v = getJavaVersion();
@@ -139,7 +139,7 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 		this.genClassPathHandler = creatGenClassPathHandler();
 		this.genClassPathHandler.execute();
 
-		super.execute();
+		super.executeToolMain();
 
 		GenerateJDepsHandler handler = getHandler();
 
