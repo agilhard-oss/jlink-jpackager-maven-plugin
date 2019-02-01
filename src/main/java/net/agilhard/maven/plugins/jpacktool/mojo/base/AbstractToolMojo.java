@@ -458,9 +458,9 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	protected void publishJPacktoolProperties() {
 		String finalName = getFinalName();
 		if (finalName != null) {
-			File propertiesFile = this.getArtifactFile(buildDirectory, finalName, "jpacktool", "properties");
+			File propertiesFile = this.getArtifactFile(buildDirectory, finalName, "jpacktool_jdeps", "properties");
 			if (propertiesFile.exists()) {
-				this.mavenProjectHelper.attachArtifact(this.project, "properties", "jpacktool", propertiesFile);
+				this.mavenProjectHelper.attachArtifact(this.project, "properties", "jpacktool_jdeps", propertiesFile);
 			}
 		}
 	}

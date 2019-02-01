@@ -1031,6 +1031,12 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 		this.context = context;
 	}
 
+	
+	protected abstract void generateContent() throws MojoExecutionException;
+	
+	protected void generateContent(File outputDirectory) throws MojoExecutionException {
+	}
+	
 	protected void executeResources(File outputDirectory) throws MojoExecutionException {
 		if (packagingResources != null) {
 			ResourcesExecutor resourcesExecutor = new ResourcesExecutor(this, packagingResources, getTemplateMap());

@@ -502,6 +502,8 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
         
+        generateContent();
+        
         executeResources();
         
         Commandline cmd;
@@ -2074,6 +2076,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         updateJvmArgs("app");
     }
 
+	protected void generateContent() throws MojoExecutionException {
+		generateContent(inputDirectoryPackage);
+	}
+	
 	protected void executeResources() throws MojoExecutionException {
 		executeResources(inputDirectoryPackage);
 	}

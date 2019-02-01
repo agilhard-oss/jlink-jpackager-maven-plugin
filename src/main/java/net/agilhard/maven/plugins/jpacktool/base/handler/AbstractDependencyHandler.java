@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.handler;
+package net.agilhard.maven.plugins.jpacktool.base.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -108,11 +108,15 @@ public abstract class AbstractDependencyHandler {
 
 	}
 
+	protected void handleOther(final DependencyNode dependencyNode) throws MojoExecutionException, MojoFailureException  {
+		// do nothing
+	}
+
 	protected void handleDependencyNode(final DependencyNode dependencyNode)
 			throws MojoExecutionException, MojoFailureException {
 
 		Artifact artifact = dependencyNode.getArtifact();
-		final String type = artifact.getType();
+		String type = artifact.getType();
 
 		if ("jar".equals(type) || "jmod".equals(type)) {
 
@@ -150,7 +154,13 @@ public abstract class AbstractDependencyHandler {
 					}
 				}
 			}
+			
+		} else if ( (artifact.getClassifier() != null) &&
+				(artifact.getClassifier().startsWith("jpacktool"))) {
+	
+			handleOther(dependencyNode);
 		}
+		
 	}
 
 	protected abstract void handleDependencyRoot(final DependencyNode dependencyNode)

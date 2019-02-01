@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.handler;
+package net.agilhard.maven.plugins.jpacktool.base.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -42,9 +42,10 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		/**
 		 * Starts the visit to the specified dependency node.
 		 *
-		 * @param node the dependency node to v,
-			File outputDirectoryJPacktool, File outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-			File outputDirectoryModules, List<ArtifactParameter> excludedArtifacts, List<ArtifactParameter> classpathArtifactsisit
+		 * @param node the dependency node to v, File outputDirectoryJPacktool, File
+		 *             outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
+		 *             File outputDirectoryModules, List<ArtifactParameter>
+		 *             excludedArtifacts, List<ArtifactParameter> classpathArtifactsisit
 		 * @return <code>true</code> to visit the
 		 *         specifiedAbstractEndVIsitDependencyHandler dependency node's
 		 *         children, <code>false</code> to skip the.resolvePat specified
@@ -52,7 +53,7 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		 */
 		public boolean visit(final DependencyNode node) {
 			boolean b = !node.toNodeString().endsWith(":test");
-			if ( excludedArtifacts != null ) {
+			if (excludedArtifacts != null) {
 				b = b && (!excludedArtifacts.contains(node.getArtifact()));
 			}
 			return b;
@@ -70,24 +71,21 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		@Override
 		public boolean endVisit(final DependencyNode node) {
 
-			String type = node.getArtifact().getType();
 			boolean b = !node.toNodeString().endsWith(":test");
-			if ( excludedArtifacts != null ) {
+			if (excludedArtifacts != null) {
 				b = b && (!excludedArtifacts.contains(node.getArtifact()));
 			}
 			if (b) {
-				if ("jar".equals(type) || "jmod".equals(type)) {
-
-					try {
-						handleDependencyNode(node);
-					} catch (final MojoExecutionException e) {
-						getLog().error("endVisit -> MojoExecutionException", e);
-						mojoExecutionException = e;
-					} catch (final MojoFailureException e) {
-						getLog().error("endVisit -> MojoFailureException", e);
-						mojoFailureException = e;
-					}
+				try {
+					handleDependencyNode(node);
+				} catch (final MojoExecutionException e) {
+					getLog().error("endVisit -> MojoExecutionException", e);
+					mojoExecutionException = e;
+				} catch (final MojoFailureException e) {
+					getLog().error("endVisit -> MojoFailureException", e);
+					mojoFailureException = e;
 				}
+
 			}
 			return b;
 		}

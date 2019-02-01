@@ -293,6 +293,8 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 			generateScript();
 		}
 
+		generateContent();
+
 		executeResources();
 		
 		File createZipArchiveFromDirectory= createZipArchiveFromDirectory(this.buildDirectory,
@@ -575,9 +577,13 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	protected void updateJvmArgs() throws MojoFailureException {
 		updateJvmArgs(this.appFolderName);
 	}
-
+	
 	protected void executeResources() throws MojoExecutionException {
 		executeResources(outputDirectoryImage);
+	}
+	
+	protected void generateContent() throws MojoExecutionException {
+		generateContent(outputDirectoryImage);
 	}
 
 }

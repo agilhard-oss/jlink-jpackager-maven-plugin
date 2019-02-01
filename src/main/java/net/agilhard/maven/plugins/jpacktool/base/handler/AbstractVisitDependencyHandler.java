@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.handler;
+package net.agilhard.maven.plugins.jpacktool.base.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -51,40 +51,39 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 		public boolean visit(final DependencyNode node) {
 			String type = node.getArtifact().getType();
 			boolean b = !node.toNodeString().endsWith(":test");
-			if ( excludedArtifacts != null ) {
+			if (excludedArtifacts != null) {
 				b = b && (!excludedArtifacts.contains(node.getArtifact()));
 			}
-			
+
 			if (b) {
-				if ("jar".equals(type) || "jmod".equals(type)) {
-					try {
-						handleDependencyNode(node);
-					} catch (final MojoExecutionException e) {
-						getLog().error("endVisit -> MojoExecutionException", e);
-						mojoExecutionException = e;
-					} catch (final MojoFailureException e) {
-						getLog().error("endVisit -> MojoFailureException", e);
-						mojoFailureException = e;
-					}
+				try {
+					handleDependencyNode(node);
+				} catch (final MojoExecutionException e) {
+					getLog().error("endVisit -> MojoExecutionException", e);
+					mojoExecutionException = e;
+				} catch (final MojoFailureException e) {
+					getLog().error("endVisit -> MojoFailureException", e);
+					mojoFailureException = e;
 				}
-				if ("jmod".equals(type)) {
-				}
+
 			}
 			return b;
 		}
 
 		/**
 		 * Ends the visit to to the specified dependency
-		 * node.AbstractEndVIsitDependencyHandler, outputDirectoryJPacktool, outputDirectoryAutomaticJars,
-				outputDirectoryClasspathJars, outputDirectoryModules, excludedArtifacts, classpathArtifacts
+		 * node.AbstractEndVIsitDependencyHandler, outputDirectoryJPacktool,
+		 * outputDirectoryAutomaticJars, outputDirectoryClasspathJars,
+		 * outputDirectoryModules, excludedArtifacts, classpathArtifacts
 		 *
 		 * @param node the dependency node to visit
-		 * @retur outputDirectoryJPacktool,
-				copyAutomaticJars ? outputDirectoryAutomaticJars : null,
-				copyClassPathJars ? outputDirectoryClasspathJars : null, copyModuleJars ? outputDirectoryModules : null,
-				excludedArtifacts, classpathArtifacts,n <code>true</code> to visit the specified dependency node's next
-		 *         sibling, <code>false</code> to skip the specified dependency node's
-		 *         next siblings and proceed to its parent
+		 * @retur outputDirectoryJPacktool, copyAutomaticJars ?
+		 *        outputDirectoryAutomaticJars : null, copyClassPathJars ?
+		 *        outputDirectoryClasspathJars : null, copyModuleJars ?
+		 *        outputDirectoryModules : null, excludedArtifacts, classpathArtifacts,n
+		 *        <code>true</code> to visit the specified dependency node's next
+		 *        sibling, <code>false</code> to skip the specified dependency node's
+		 *        next siblings and proceed to its parent
 		 */
 		@Override
 		public boolean endVisit(final DependencyNode node) {

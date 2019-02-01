@@ -26,7 +26,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.CollectJarsHandler;
+import net.agilhard.maven.plugins.jpacktool.base.handler.CollectJarsHandler;
 
 
 /**

@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.handler;
+package net.agilhard.maven.plugins.jpacktool.base.handler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,6 +18,7 @@ package net.agilhard.maven.plugins.jpacktool.mojo.handler;
  * specific language governing permissions and limitations
  * under the License.
  */
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -93,9 +94,9 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 	private boolean useListDeps;
 
 	public GenerateJDepsHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder,
-			String jdepsExecutable, boolean generateAutomaticJdeps,
-			boolean generateClassPathJdeps, boolean generateModuleJdeps, List<File> classPathElements,
-			List<String> jarsOnClassPath, boolean ignoreMissingDeps, boolean useListDeps) throws MojoExecutionException {
+			String jdepsExecutable, boolean generateAutomaticJdeps, boolean generateClassPathJdeps,
+			boolean generateModuleJdeps, List<File> classPathElements, List<String> jarsOnClassPath,
+			boolean ignoreMissingDeps, boolean useListDeps) throws MojoExecutionException {
 
 		super(mojo, dependencyGraphBuilder);
 
@@ -119,7 +120,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		getLog().info("generate-jdeps");
 		super.execute();
 	}
-	
+
 	/**
 	 * Convert a list into a
 	 * 
@@ -174,16 +175,16 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 
 		}
 
-		if ( useListDeps ) {
+		if (useListDeps) {
 			cmd.createArg().setValue("--list-deps");
 		} else {
 			cmd.createArg().setValue("--print-module-deps");
 		}
-		
-		if ( ignoreMissingDeps ) {
+
+		if (ignoreMissingDeps) {
 			cmd.createArg().setValue("--ignore-missing-deps");
 		}
-		
+
 		try {
 			String s = sourceFile.getCanonicalPath();
 			cmd.createArg().setValue(s);
@@ -240,12 +241,12 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 						if (line.startsWith("Warning: split package:")) {
 							String e[] = line.split(" ");
 							if (e.length == 6) {
-								String a1=e[4].substring(e[4].lastIndexOf(File.separatorChar));
-								String a2=e[5].substring(e[5].lastIndexOf(File.separatorChar));
+								String a1 = e[4].substring(e[4].lastIndexOf(File.separatorChar));
+								String a2 = e[5].substring(e[5].lastIndexOf(File.separatorChar));
 								if (!a1.equals(a2)) {
-									warnings.add("e.length="+e.length);
-									warnings.add("a1="+a1);
-									warnings.add("a2="+a2);
+									warnings.add("e.length=" + e.length);
+									warnings.add("a1=" + a1);
+									warnings.add("a2=" + a2);
 									warnings.add(line);
 								}
 							} else {
@@ -259,19 +260,19 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 					if (!errors.contains(line)) {
 						errors.add(line);
 					}
-				} else if ( useListDeps && line.contains(" ") ) {
-					if ( ! line.contains("unamed module:") ) {
+				} else if (useListDeps && line.contains(" ")) {
+					if (!line.contains("unamed module:")) {
 						warnings.add(line);
 					}
 				} else {
 					for (String dep : line.split(",")) {
-						
-					    // remove optional package name, if any
-					    int ndx = dep.indexOf('/');
-					    if (ndx > 0) {
-					    	dep = dep.substring(0, ndx);
-					    }
-					    
+
+						// remove optional package name, if any
+						int ndx = dep.indexOf('/');
+						if (ndx > 0) {
+							dep = dep.substring(0, ndx);
+						}
+
 						if (!deps.contains(dep)) {
 							deps.add(dep);
 						}
@@ -286,7 +287,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 								linkedSystemDeps.add(dep);
 							}
 						} else {
-							if ( automaticDep ) {
+							if (automaticDep) {
 								if (!automaticDeps.contains(dep)) {
 									automaticDeps.add(dep);
 								}
@@ -322,11 +323,11 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		getLog().debug("handleNonModJar:" + artifact.getFile());
 
 		boolean isAutomatic = (entry == null || entry.getValue() == null) ? false : entry.getValue().isAutomatic();
-		
-		if ( (classpathArtifacts != null) && (classpathArtifacts.contains(artifact))) {
+
+		if ((classpathArtifacts != null) && (classpathArtifacts.contains(artifact))) {
 			isAutomatic = false;
 		}
-		
+
 		String nodeString = dependencyNode.toNodeString();
 
 		if (!nodeStrings.contains(nodeString)) {
@@ -410,7 +411,26 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		}
 
 	}
+	
+	protected void handleUpdate4JConfig(final DependencyNode dependencyNode)
+			throws MojoExecutionException, MojoFailureException {
+	
+		Artifact artifact = dependencyNode.getArtifact();
+		Path source = artifact.getFile().toPath();
+		Path target = outputDirectoryJPacktool
+				.toPath().resolve("conf");
+		if ( !target.toFile().exists()) {
+			target.toFile().mkdirs();
+		}
+		target = target.resolve("update4j_"+artifact.getGroupId()+"_"+artifact.getArtifactId()+".xml");
 
+		try {
+			Files.copy(source, target, REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new MojoFailureException("i/o error", e);
+		}
+	}
+	
 	protected void executeCommand(final Commandline cmd, OutputStream outputStream) throws MojoExecutionException {
 		ExecuteCommand.executeCommand(false, this.getLog(), cmd, outputStream);
 	}

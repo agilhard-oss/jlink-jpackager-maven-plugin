@@ -37,9 +37,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.CollectJarsHandler;
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateClassPathHandler;
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateJDepsHandler;
+import net.agilhard.maven.plugins.jpacktool.base.handler.CollectJarsHandler;
+import net.agilhard.maven.plugins.jpacktool.base.handler.GenerateClassPathHandler;
+import net.agilhard.maven.plugins.jpacktool.base.handler.GenerateJDepsHandler;
 
 /**
  * @author bei
@@ -49,16 +49,16 @@ import net.agilhard.maven.plugins.jpacktool.mojo.handler.GenerateJDepsHandler;
 public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDepsHandler> {
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
-	private boolean generateAutomaticJdeps;
+	protected boolean generateAutomaticJdeps;
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
-	private boolean generateClassPathJdeps;
+	protected boolean generateClassPathJdeps;
 
 	@Parameter(defaultValue = "true", required = true, readonly = false)
-	private boolean generateModuleJdeps;
+	protected boolean generateModuleJdeps;
 
 	@Parameter(defaultValue = "false", required = true, readonly = false)
-	private boolean showAllDeps;
+	protected boolean showAllDeps;
 
 	/**
 	 * Flag if --ignore-missing-deps should be used on the jdeps calls to analyze
@@ -83,14 +83,24 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	 */
 	private String jdepsExecutable;
 
-	private Map<String, Object> model = new HashMap<>();
+	protected Map<String, Object> model = new HashMap<>();
 
-	private GenerateClassPathHandler genClassPathHandler;
+	protected GenerateClassPathHandler genClassPathHandler;
 
-	private void putModel(String key, Object value) {
+	protected void putModel(String key, Object value) {
 		model.put(key, value);
 	}
 
+	/**
+	 * Hook for derived classes to execute something after the JDeps Handler has finisihed.
+	 * 
+	 * @throws MojoExecutionException
+	 * @throws MojoFailureException
+	 */
+	public void executeAfterJDeps() throws MojoExecutionException, MojoFailureException {
+		// do nothing
+	}
+	
 	/** {@inheritDoc} */
 	@Override
 	public void executeToolMain() throws MojoExecutionException, MojoFailureException {
@@ -141,8 +151,12 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 
 		super.executeToolMain();
 
+		executeAfterJDeps();
+
 		GenerateJDepsHandler handler = getHandler();
 
+		
+		
 		Properties props = this.project.getProperties();
 
 		String pfx = this.jpacktoolPropertyPrefix;
@@ -213,12 +227,12 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 		}
 
 		
-		File propertiesFile = this.getArtifactFile(buildDirectory, this.finalName, "jpacktool", "properties");
+		File propertiesFile = this.getArtifactFile(buildDirectory, this.finalName, "jpacktool_jdeps", "properties");
 
 		try (FileOutputStream fout = new FileOutputStream(propertiesFile); PrintStream pout=new PrintStream(fout)) {
 			
 			pout.println("all_deps=" + String.join(",", handler.getAllModules()));
-			pout.println("system_deps="+ String.join(",", handler.getLinkedSystemModules()));
+			pout.println("linked_system_deps="+ String.join(",", handler.getLinkedSystemModules()));
 			pout.println("linked_deps=" + String.join(",", handler.getLinkedModules()));
 			pout.println("automatic_deps=" + String.join(",", handler.getAutomaticModules()));
 			pout.println("classpath_jars=" + String.join(",", handler.getJarsOnClassPath()));

@@ -25,7 +25,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.handler.AbstractDependencyHandler;
+import net.agilhard.maven.plugins.jpacktool.base.handler.AbstractDependencyHandler;
 
 /**
  * @author bei
