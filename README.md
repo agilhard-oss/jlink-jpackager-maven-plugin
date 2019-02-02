@@ -25,8 +25,8 @@ Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugi
 
 ## Introduction
 
-  The JLink-JPackager Maven plugin is intended to create [Modular Run-Time Images](http://openjdk.java.net/jeps/220) with JDK 9
-  and above or native installable packages via [jpackage](http://openjdk.java.net/jeps/343) with JDK12 and above.
+  The JLink-JPackager Maven plugin is intended to create [Modular Run-Time Images](http://openjdk.java.net/jeps/220) with **JDK 9**
+  and above or native installable packages via [jpackage](http://openjdk.java.net/jeps/343) with **JDK 12** and above.
   
   Although the jlink and jpackage tools have some limitations in regards to using non module jars 
   and automatic module jars the JLink-JPackager Maven plugin
