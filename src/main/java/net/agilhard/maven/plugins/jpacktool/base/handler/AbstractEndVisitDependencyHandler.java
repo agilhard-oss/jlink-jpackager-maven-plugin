@@ -42,14 +42,9 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		/**
 		 * Starts the visit to the specified dependency node.
 		 *
-		 * @param node the dependency node to v, File outputDirectoryJPacktool, File
-		 *             outputDirectoryAutomaticJars, File outputDirectoryClasspathJars,
-		 *             File outputDirectoryModules, List<ArtifactParameter>
-		 *             excludedArtifacts, List<ArtifactParameter> classpathArtifactsisit
-		 * @return <code>true</code> to visit the
-		 *         specifiedAbstractEndVIsitDependencyHandler dependency node's
-		 *         children, <code>false</code> to skip the.resolvePat specified
-		 *         dependency node's children and proceed to its next sibling
+		 * @param node the dependency node to visitd
+		 * 
+		 * @return <code>true</code> 
 		 */
 		public boolean visit(final DependencyNode node) {
 			boolean b = !node.toNodeString().endsWith(":test");

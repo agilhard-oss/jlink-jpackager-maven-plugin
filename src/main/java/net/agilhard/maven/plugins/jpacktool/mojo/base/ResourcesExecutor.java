@@ -274,21 +274,21 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.resources}
+	 * @return {@link PackagingResources#resources}
 	 */
 	public List<Resource> getResources() {
 		return data.resources;
 	}
 
 	/**
-	 * @param resources set {@link #data.resources}
+	 * @param resources set {@link PackagingResources#resources}
 	 */
 	public void setResources(List<Resource> resources) {
 		this.data.resources = resources;
 	}
 
 	/**
-	 * @return {@link #data.outputDirectory}
+	 * @return {@link PackagingResources#outputDirectory}
 	 */
 	public File getOutputDirectory() {
 		return data.outputDirectory;
@@ -302,7 +302,7 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.overwrite}
+	 * @return {@link PackagingResources#overwrite}
 	 */
 	public boolean isOverwrite() {
 		return data.overwrite;
@@ -316,7 +316,7 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.includeEmptyDirs}
+	 * @return {@link PackagingResources#includeEmptyDirs}
 	 */
 	public boolean isIncludeEmptyDirs() {
 		return data.includeEmptyDirs;
@@ -330,7 +330,7 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.filters}
+	 * @return {@link PackagingResources#filters}
 	 */
 	public List<String> getFilters() {
 		return data.filters;
@@ -344,7 +344,7 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.delimiters}
+	 * @return {@link PackagingResources#delimiters}
 	 */
 	public LinkedHashSet<String> getDelimiters() {
 		return data.delimiters;
@@ -358,7 +358,7 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.useDefaultDelimiters}
+	 * @return {@link PackagingResources#useDefaultDelimiters}
 	 */
 	public boolean isUseDefaultDelimiters() {
 		return data.useDefaultDelimiters;
@@ -372,7 +372,7 @@ public class ResourcesExecutor implements Contextualizable {
 	}
 
 	/**
-	 * @return {@link #data.skip}
+	 * @return {@link PackagingResources#skip}
 	 */
 	public boolean isSkip() {
 		return data.skip;

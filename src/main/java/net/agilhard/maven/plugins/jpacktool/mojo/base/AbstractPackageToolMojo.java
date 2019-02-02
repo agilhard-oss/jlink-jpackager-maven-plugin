@@ -392,8 +392,11 @@ public abstract class AbstractPackageToolMojo extends AbstractToolMojo implement
 
 	/**
 	 * resolve to path and create directory if not exists.
-	 * 
-	 * @throws IOException
+	 * @param dir the parent directory
+	 * @param appFolderName the name of the application folder
+	 * @param folderName the name of the folder in the application folder 
+	 * @throws IOException if i/o error occured
+	 * @return the resolved path
 	 */
 	protected Path resolveAndCreate(File dir, String appFolderName, String folderName) throws IOException {
 		Path target = dir.toPath();

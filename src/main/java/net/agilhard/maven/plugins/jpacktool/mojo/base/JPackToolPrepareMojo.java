@@ -94,8 +94,8 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	/**
 	 * Hook for derived classes to execute something after the JDeps Handler has finisihed.
 	 * 
-	 * @throws MojoExecutionException
-	 * @throws MojoFailureException
+	 * @throws MojoExecutionException on plugin error
+	 * @throws MojoFailureException on plugin error
 	 */
 	public void executeAfterJDeps() throws MojoExecutionException, MojoFailureException {
 		// do nothing

@@ -48,9 +48,6 @@ public class PackagingResources {
 	 * The list of additional filter properties files to be used along with System
 	 * and project properties, which would be used for the filtering.
 	 * 
-	 * @see ResourcesMojo#filters
-	 *
-	 * @since 2.4
 	 */
 	@Parameter(defaultValue = "${project.build.filters}", readonly = true)
 	public List<String> buildFilters;
@@ -78,10 +75,6 @@ public class PackagingResources {
 	 * If false, don't use the filters specified in the build/filters section of the
 	 * POM when processing resources in this mojo execution.
 	 * 
-	 * @see ResourcesMojo#buildFilters
-	 * @see ResourcesMojo#filters
-	 *
-	 * @since 2.4
 	 */
 	@Parameter(defaultValue = "true")
 	public boolean useBuildFilters;
@@ -92,21 +85,18 @@ public class PackagingResources {
 	 * will be replaced with {@code \\value of foo}, if this parameter has been set
 	 * to the backslash.
 	 * 
-	 * @since 2.3
 	 */
 	@Parameter
 	public String escapeString;
 	/**
 	 * Overwrite existing files even if the destination files are newer.
 	 *
-	 * @since 2.3
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean overwrite;
 	/**
 	 * Copy any empty directories included in the Resources.
 	 *
-	 * @since 2.3
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean includeEmptyDirs;
@@ -114,14 +104,12 @@ public class PackagingResources {
 	 * Additional file extensions to not apply filtering (already defined are : jpg,
 	 * jpeg, gif, bmp, png)
 	 *
-	 * @since 2.3
 	 */
 	@Parameter
 	public List<String> nonFilteredFileExtensions;
 	/**
 	 * Whether to escape backslashes and colons in windows-style paths.
 	 *
-	 * @since 2.4
 	 */
 	@Parameter(defaultValue = "true")
 	public boolean escapeWindowsPaths;
@@ -147,14 +135,12 @@ public class PackagingResources {
 	 * specify {@code @*@} (though we can).
 	 * </p>
 	 *
-	 * @since 2.4
 	 */
 	@Parameter
 	public LinkedHashSet<String> delimiters;
 	/**
 	 * Use default delimiters in addition to custom delimiters, if any.
 	 *
-	 * @since 2.4
 	 */
 	@Parameter(defaultValue = "true")
 	public boolean useDefaultDelimiters;
@@ -190,7 +176,6 @@ public class PackagingResources {
 	 * &#42;&#42;/.darcs-temp-mail
 	 * </ul>
 	 *
-	 * @since 3.0.0
 	 */
 	@Parameter(defaultValue = "true")
 	public boolean addDefaultExcludes;
@@ -201,7 +186,6 @@ public class PackagingResources {
 	 * They will be executed after the resources copying/filtering.
 	 * </p>
 	 *
-	 * @since 2.4
 	 */
 	@Parameter
 	public List<String> mavenFilteringHints;
@@ -209,22 +193,20 @@ public class PackagingResources {
 	/**
 	 * stop searching endToken at the end of line
 	 *
-	 * @since 2.5
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean supportMultiLineFiltering;
 	/**
 	 * Support filtering of filenames folders etc.
 	 * 
-	 * @since 3.0.0
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean fileNameFiltering;
+
 	/**
 	 * You can skip the execution of the plugin if you need to. Its use is NOT
 	 * RECOMMENDED, but quite convenient on occasion.
 	 * 
-	 * @since 3.0.0
 	 */
 	@Parameter(property = "maven.resources.skip", defaultValue = "false")
 	public boolean skip;

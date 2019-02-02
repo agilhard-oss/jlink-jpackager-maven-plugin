@@ -27,7 +27,6 @@ import java.io.IOException;
 
 /**
  * Base class for generators.<br>
- * Holds common methods for {@link PdoGenerator} and {@link OperationGenerator}.
  */
 public class AbstractGenerator {
 

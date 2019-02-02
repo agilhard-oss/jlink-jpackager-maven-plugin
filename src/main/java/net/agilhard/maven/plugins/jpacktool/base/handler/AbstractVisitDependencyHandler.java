@@ -43,10 +43,8 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 		 * Starts the visit to the specified dependency node.
 		 *
 		 * @param node the dependency node to visit
-		 * @return <code>true</code> to visit the
-		 *         specifiedAbstractEndVIsitDependencyHandler dependency node's
-		 *         children, <code>false</code> to skip the.resolvePat specified
-		 *         dependency node's children and proceed to its next sibling
+		 * @return <code>true</code>
+		 *
 		 */
 		public boolean visit(final DependencyNode node) {
 			String type = node.getArtifact().getType();
@@ -71,19 +69,11 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 		}
 
 		/**
-		 * Ends the visit to to the specified dependency
-		 * node.AbstractEndVIsitDependencyHandler, outputDirectoryJPacktool,
-		 * outputDirectoryAutomaticJars, outputDirectoryClasspathJars,
-		 * outputDirectoryModules, excludedArtifacts, classpathArtifacts
-		 *
+		 * Ends the visit to to the specified dependency node.
+		 * 
 		 * @param node the dependency node to visit
-		 * @retur outputDirectoryJPacktool, copyAutomaticJars ?
-		 *        outputDirectoryAutomaticJars : null, copyClassPathJars ?
-		 *        outputDirectoryClasspathJars : null, copyModuleJars ?
-		 *        outputDirectoryModules : null, excludedArtifacts, classpathArtifacts,n
-		 *        <code>true</code> to visit the specified dependency node's next
-		 *        sibling, <code>false</code> to skip the specified dependency node's
-		 *        next siblings and proceed to its parent
+		 * @return <code>true</code>
+		 *
 		 */
 		@Override
 		public boolean endVisit(final DependencyNode node) {

@@ -122,10 +122,12 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 	}
 
 	/**
-	 * Convert a list into a
+	 * Convert a list of elements into a colon separted string.
 	 * 
-	 * @param modules The list of modules.
-	 * @return The string with the module list which is separated by {@code ,}.
+	 * @param elements The list of elements
+	 * @throws MojoFailureException if i/o error occured during execution
+	 *
+	 * @return The string with the element list which is separated by {@code :}.
 	 */
 	protected String getColonSeparatedList(final Collection<File> elements) throws MojoFailureException {
 		final StringBuilder sb = new StringBuilder();
