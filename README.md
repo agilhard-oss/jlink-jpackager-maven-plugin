@@ -33,8 +33,8 @@ Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugi
   can create ZIP files for [Modular Run-Time Images](http://openjdk.java.net/jeps/220)
   or package installers with Java Runtimes and mixed real and automatic modules and non modular jars.
 
-  It does this by analyzing java module depdencies of all maven dependencies using the '''jdeps''' java tool and modifying command line parameters
-  for the '''jlink''' the '''jpackage''' and the '''java''' executable based on the findings.
+  It does this by analyzing java module depdencies of all maven dependencies using the **jdeps** java tool and modifying command line parameters
+  for the **jlink** the **jpackage** and the **java** executable based on the findings.
   
   NOTE: This is an alpha release which means everything can change until we reach the first
   milestone release.
