@@ -30,7 +30,7 @@ import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractToolMojo;
 
 public abstract class AbstractVisitDependencyHandler extends AbstractDependencyHandler {
 
@@ -47,7 +47,7 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 		 *
 		 */
 		public boolean visit(final DependencyNode node) {
-			String type = node.getArtifact().getType();
+
 			boolean b = !node.toNodeString().endsWith(":test");
 			if (excludedArtifacts != null) {
 				b = b && (!excludedArtifacts.contains(node.getArtifact()));

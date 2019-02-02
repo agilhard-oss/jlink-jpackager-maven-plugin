@@ -45,8 +45,8 @@ import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
-import net.agilhard.maven.plugins.jpacktool.mojo.base.ExecuteCommand;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.ExecuteCommand;
 
 public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 

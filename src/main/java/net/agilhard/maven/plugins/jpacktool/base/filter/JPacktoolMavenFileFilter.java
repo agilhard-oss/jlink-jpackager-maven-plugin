@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.filter;
+package net.agilhard.maven.plugins.jpacktool.base.filter;
 
 import java.io.BufferedReader;
 
@@ -48,8 +48,8 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import freemarker.template.TemplateException;
-import net.agilhard.maven.plugins.jpacktool.template.AbstractGenerator;
-import net.agilhard.maven.plugins.jpacktool.template.GeneratedFile;
+import net.agilhard.maven.plugins.jpacktool.base.template.AbstractGenerator;
+import net.agilhard.maven.plugins.jpacktool.base.template.GeneratedFile;
 
 import org.apache.maven.shared.utils.StringUtils;
 import org.apache.maven.shared.utils.io.FileUtils;

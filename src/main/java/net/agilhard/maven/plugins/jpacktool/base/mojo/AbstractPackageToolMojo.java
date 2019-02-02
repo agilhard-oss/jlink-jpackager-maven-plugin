@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.base;
+package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -84,8 +84,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import freemarker.template.TemplateException;
-import net.agilhard.maven.plugins.jpacktool.template.AbstractGenerator;
-import net.agilhard.maven.plugins.jpacktool.template.GeneratedFile;
+import net.agilhard.maven.plugins.jpacktool.base.template.AbstractGenerator;
+import net.agilhard.maven.plugins.jpacktool.base.template.GeneratedFile;
 
 /**
  * @author Karl Heinz Marbaise

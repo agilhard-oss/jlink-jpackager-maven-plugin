@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.base;
+package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

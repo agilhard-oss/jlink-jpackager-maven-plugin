@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.jlink;
+package net.agilhard.maven.plugins.jpacktool.base.mojo.jlink;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -37,7 +37,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractPackageToolMojo;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractPackageToolMojo;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 

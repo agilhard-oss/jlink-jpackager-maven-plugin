@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.base;
+package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractPackageToolMojo;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractPackageToolMojo;
 
 /**
  * @author Karl Heinz Marbaise <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>

@@ -1,5 +1,5 @@
 
-package net.agilhard.maven.plugins.jpacktool.mojo.base;
+package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,7 +72,12 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 	
 	@Parameter(defaultValue = "false")
 	protected boolean useListDeps;
-
+	
+	protected boolean skipJDeps;
+	
+	protected boolean skipCopy;
+	
+	
 	/**
 	 * Name of the generated properties file in the <code>target</code> directory. This
 	 * will not change the name of the installed/deployed file.
@@ -93,8 +98,19 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 		model.put(key, value);
 	}
 
+	
 	/**
-	 * Hook for derived classes to execute something after the JDeps Handler has finisihed.
+	 * Hook for derived classes to execute something before has CollectJarsHandler is being called.
+	 * 
+	 * @throws MojoExecutionException on plugin execution failure
+	 * @throws MojoFailureException on misc plugin failure
+	 */
+	public void executeBeforeCopy() throws MojoExecutionException, MojoFailureException {
+		// do nothing
+	}
+	
+	/**
+	 * Hook for derived classes to execute something after the JDeps Handler has finished.
 	 * 
 	 * @throws MojoExecutionException on plugin error
 	 * @throws MojoFailureException on plugin error
@@ -144,15 +160,23 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 			throw new MojoFailureException("i/o error", e);
 		}
 
-		// copy jars first
-		CollectJarsHandler collectJarsHandler = createCopyHandler();
-		collectJarsHandler.execute();
-
+		executeBeforeCopy();
+		
+		if ( ! skipCopy ) {
+			// copy jars first
+			CollectJarsHandler collectJarsHandler = createCopyHandler();
+			collectJarsHandler.execute();
+		}
+		
 		this.genClassPathHandler = creatGenClassPathHandler();
 		this.genClassPathHandler.execute();
 
-		super.executeToolMain();
-
+		if ( ! isSkipJDeps() ) {
+			super.executeToolMain();
+		} else {
+	        this.handler = createHandler();
+		}
+		
 		executeAfterJDeps();
 
 		GenerateJDepsHandler handler = getHandler();
@@ -246,6 +270,24 @@ public class JPackToolPrepareMojo extends AbstractDependencyJarsMojo<GenerateJDe
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	
+	
+	public boolean isSkipJDeps() {
+		return skipJDeps;
+	}
+
+	public void setSkipJDeps(boolean skipJDeps) {
+		this.skipJDeps = skipJDeps;
+	}
+
+	public boolean isSkipCopy() {
+		return skipCopy;
+	}
+
+	public void setSkipCopy(boolean skipCopy) {
+		this.skipCopy = skipCopy;
 	}
 
 	public GenerateClassPathHandler creatGenClassPathHandler() {

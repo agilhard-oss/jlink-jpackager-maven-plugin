@@ -1,5 +1,5 @@
 
-package net.agilhard.maven.plugins.jpacktool.template;
+package net.agilhard.maven.plugins.jpacktool.base.template;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file

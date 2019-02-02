@@ -1,4 +1,4 @@
-package net.agilhard.maven.plugins.jpacktool.mojo.base;
+package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -48,7 +48,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
 
-import net.agilhard.maven.plugins.jpacktool.filter.JPacktoolMavenFileFilter;
+import net.agilhard.maven.plugins.jpacktool.base.filter.JPacktoolMavenFileFilter;
 
 /**
  * Copy resources for the main source code to the main output directory. Always

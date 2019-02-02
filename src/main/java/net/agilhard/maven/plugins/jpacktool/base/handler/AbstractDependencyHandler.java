@@ -42,8 +42,8 @@ import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
-import net.agilhard.maven.plugins.jpacktool.mojo.base.ArtifactParameter;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.ArtifactParameter;
 
 public abstract class AbstractDependencyHandler {
 

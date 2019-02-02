@@ -37,7 +37,7 @@ import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.codehaus.plexus.languages.java.jpms.JavaModuleDescriptor;
 
-import net.agilhard.maven.plugins.jpacktool.mojo.base.AbstractToolMojo;
+import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractToolMojo;
 
 public class GenerateClassPathHandler extends AbstractVisitDependencyHandler {
 

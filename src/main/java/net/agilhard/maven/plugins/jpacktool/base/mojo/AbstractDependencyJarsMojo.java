@@ -1,5 +1,5 @@
 
-package net.agilhard.maven.plugins.jpacktool.mojo.base;
+package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,7 +36,7 @@ public abstract class AbstractDependencyJarsMojo<T extends AbstractDependencyHan
     @Component(role = DependencyGraphBuilder.class, hint = "maven31")
     public DependencyGraphBuilder dependencyGraphBuilder;
 
-    private T handler;
+    protected T handler;
 
     /**
      * Constructor
