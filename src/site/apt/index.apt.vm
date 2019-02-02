@@ -20,26 +20,50 @@
 
 ${project.name}
 
-  The JLink-JPackager Maven Plugin is intended to create {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
-  via {{{http://openjdk.java.net/jeps/282}jlink}} 
-  or native installable packages via {{{http://openjdk.java.net/jeps/343}jpackage}} 
-    
+  The <<JLink-JPackager Maven Plugin>> is intended to create {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
+  via {{{http://openjdk.java.net/jeps/282}jlink}} with <<JDK 9>> and above 
+  or native installable packages via {{{http://openjdk.java.net/jeps/343}jpackage}} with <<JDK 12>> and above.
+
+  Although the <<jlink>> and <<jpackage>> tools have some limitations in regards to using non module jars
+  and automatic module jars the <<JLink-JPackager Maven Plugin>> can create ZIP files
+  for {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}} or package installers with Java Runtimes 
+  and mixed real and automatic modules and non modular jars.
+
+  It does this by analyzing java <<module dependencies>> of all <<maven>> dependencies using the <<jdeps>> 
+  java tool and modifying command line parameters for the <<jlink>> the <<jpackage>> 
+  and the <<java>> executable based on the findings.  
+ 
+  The resulting <<Java Runtime>> contains all java <<system module dependencies>> of all <<real modules>>,
+  all <<automatic modules>> and all <<non-modular>> JAR files which are put on the classpath.
+
   NOTE: This is an alpha release which means everything can change until we reach the first
   milestone release.
 
   The JLink-JPackager Maven Plugin is available on GitHub: {{{https://github.com/agilhard-oss/jlink-jpackager-maven-plugin}jlink-jpackager-maven-plugin}}
 
+  It is based on the Apache {{{https://github.com/apache/maven-jlink-plugin}maven-jlink-plugin}}
+
+  The intended artifacts to be linked together into a Modular Run-Time Image 
+  are the <<jmod>> and <<jar>> files. JMod files can be created by using the
+  {{{../maven-jmod-plugin/}Maven JMod Plugin}} and <<jar>> files can be
+  created by using the {{{../maven-jar-plugin/}Maven JAR Plugin}}.
+
 * Goals Overview
 
-  The JLink-JPackager Maven Plugin has three goals:
+  The JLink-JPackager Maven Plugin has six goals:
 
   * {{{./jlink-mojo.html}jlink-jpackager:jlink}} create a Java Run Time Image from <<jar>>/<<jmod>> files.
 
   * {{{./jpackager-mojo.html}jlink-jpackager:jpackager}} create a native installer package with the <<jpackage>> tool.
 
+  * {{{./jpacktool-prepare-mojo.html"}jlink-jpackager:jpacktool-prepare}} Prepare execution of the jlink and jpackager goals by analyzing java module dependencies and copying files from maven dependecies.
+
   * {{{./help-mojo.html}jlink-jpackager:help}} displays help information on maven-jlink-plugin.
 
-  []
+  * {{{/collect-jars-mojo.html"}jlink-jpackager:collect-jars}} Collect jars and jmods from maven dependencies and copy them to a target folder.
+
+  * {{{./collect-nonmod-jars-mojo.html"}jlink-jpackager:collect-nonmod-jars}} Collect jars from maven dependencies which contain no module-info and copy them to a target folder.
+
 
 * Usage
 
