@@ -120,3 +120,8 @@ Example for jlink-jpackager-maven-plugin how to build a distroless docker image 
 Minimalistic Example for jlink-jpackager-maven-plugin how to build a installable package using the Java jpackage tool:
 
 [jpackager-maven-example](https://github.com/agilhard-oss/jpackager-maven-example)
+
+You can also see what can be done with the plugin by having a look
+at the [Integration Tests](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin/tree/master/src/it/projects) in the source code for the plugin.
+
+
