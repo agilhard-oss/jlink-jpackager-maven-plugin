@@ -23,11 +23,30 @@ Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugi
 
 [Maven Plugin Documentation](https://agilhard-oss.github.io/jlink-jpackager-maven-plugin/site/index.html)
 
+## Introduction
+
+  The JLink-JPackager Maven plugin is intended to create [Modular Run-Time Images](http://openjdk.java.net/jeps/220) with JDK 9
+  and above or native installable packages via [jpackage](http://openjdk.java.net/jeps/343) with JDK12 and above.
+  
+  Although the jlink and jpackage tools have some limitations in regards to using non module jars 
+  and automatic module jars the JLink-JPackager Maven plugin
+  can create ZIP files for [Modular Run-Time Images](http://openjdk.java.net/jeps/220)
+  or package installers with Java Runtimes and mixed real and automatic modules and non modular jars.
+
+  It does this by analyzing java module depdencies of all maven dependencies using the '''jdeps''' java tool and modifying command line parameters
+  for the '''jlink''' the '''jpackage''' and the '''java''' executable based on the findings.
+  
+  NOTE: This is an alpha release which means everything can change until we reach the first
+  milestone release.
+
+  The JLink-JPackager Maven Plugin is available on GitHub: [jlink-jpackager-maven-plugin](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin)
+
 ## Usage of the JLink-JPackager Maven Plugin
 
 Usually you will use the Maven JLink-JPackager Maven Plugin to create
 a Run Time Image or an installable Package from one or more modules within 
 a multi module build.
+
 In other words it is not possible to create a Run Time Image or Installation Package
 from a single Maven Project within the same single Maven Project.
 

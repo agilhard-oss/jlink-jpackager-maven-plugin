@@ -31,6 +31,8 @@ import net.agilhard.maven.plugins.jpacktool.base.handler.CollectJarsHandler;
 
 
 /**
+ * Collect jars and jmods from maven dependencies and copy them to a target folder.
+ *
  * @author bei
  *
  */
@@ -39,10 +41,6 @@ import net.agilhard.maven.plugins.jpacktool.base.handler.CollectJarsHandler;
     requiresProject = true)
 public class CollectJarsMojo extends AbstractDependencyJarsMojo<CollectJarsHandler> {
 
-    @Parameter( defaultValue = "true", required = true, readonly=false)
-    private boolean onlyNamedAreAutomatic;
-    
-    
     /** {@inheritDoc} */
     @Override
     public void executeToolMain() throws MojoExecutionException, MojoFailureException

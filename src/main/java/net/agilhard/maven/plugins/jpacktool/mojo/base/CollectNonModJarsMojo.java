@@ -30,6 +30,8 @@ import net.agilhard.maven.plugins.jpacktool.base.handler.CollectJarsHandler;
 
 
 /**
+ * Collect jars from maven dependencies which contain no module-info and copy them to a target folder.
+ *
  * @author bei
  *
  */
