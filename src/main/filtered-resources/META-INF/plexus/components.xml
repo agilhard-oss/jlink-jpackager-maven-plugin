@@ -292,7 +292,7 @@
     <component>
       <role>org.apache.maven.shared.filtering.MavenFileFilter</role>
       <role-hint>default</role-hint>
-      <implementation>net.agilhard.maven.plugins.jpacktool.filter.JPacktoolMavenFileFilter</implementation>
+      <implementation>net.agilhard.maven.plugins.jpacktool.base.filter.JPacktoolMavenFileFilter</implementation>
       <description></description>
       <isolated-realm>false</isolated-realm>
       <requirements>
@@ -312,7 +312,7 @@
     <component>
       <role>org.apache.maven.shared.filtering.MavenFileFilter</role>
       <role-hint>default</role-hint>
-      <implementation>net.agilhard.maven.plugins.jpacktool.filter.JPacktoolMavenFileFilter</implementation>
+      <implementation>net.agilhard.maven.plugins.jpacktool.base.filter.JPacktoolMavenFileFilter</implementation>
       <description></description>
       <isolated-realm>false</isolated-realm>
       <requirements>
