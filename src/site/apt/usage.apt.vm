@@ -416,7 +416,7 @@ on the package type and the extension for the package format, eg. .rpm .msi
     <artifactId>parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <packaging>jlink</packaging>
+  <packaging>jpackage-jpackager</packaging>
   <artifactId>mod-jlink</artifactId>
    [...]
 </project>
