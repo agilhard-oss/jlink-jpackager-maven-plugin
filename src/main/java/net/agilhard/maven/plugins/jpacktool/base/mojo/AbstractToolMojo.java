@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,8 @@ import org.codehaus.plexus.util.cli.Commandline;
  */
 public abstract class AbstractToolMojo extends AbstractMojo {
 
+
+	
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	protected File buildDirectory;
 
@@ -139,6 +142,10 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 
 	private String shouldSkipReason;
 	
+	protected Map<String, Object> jpacktoolModel;
+
+	protected Map<String, Object> templateMap;
+	
 	/**
 	 *
 	 */
@@ -168,6 +175,20 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	public void executeToolFinish() throws MojoExecutionException, MojoFailureException {
 		// can be overriden in derivced clases
 	}
+	
+	public String getPluginVersion() throws MojoFailureException {
+		String v = null;
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("META-INF/maven/net.agilhard.maven.plugins/jpacktool-maven-plugin/pom.properties") ) {
+			Properties props = new Properties();
+			props.load(is);
+			v=props.getProperty("version");
+		} catch (IOException e) {
+			throw new MojoFailureException("i/o error", e);
+		}
+		
+		return v;
+	}
+	
 	
 	public void checkShouldSkip() {
 		if ( skip ) {
@@ -494,4 +515,5 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	public String getFinalName() {
 		return null;
 	}
+	
 }

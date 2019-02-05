@@ -536,7 +536,9 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	}
 
 	protected void initTemplates() throws MojoFailureException {
+		
 		super.initTemplates();
+		
 		if ("default".equals(launcherTemplate)) {
 			if (SystemUtils.IS_OS_LINUX) {
 				launcherTemplate = "resource:/templates/launcher_linux.ftl";
@@ -546,6 +548,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 				launcherTemplate = "resource:/templates/launcher_mac.ftl";
 			}
 		}
+		
 		if (((launcher == null) || "".equals(launcher))
 				&& ((launcherTemplateScript == null) || "".equals(launcherTemplateScript))) {
 			// if nothing specified use these defaults
