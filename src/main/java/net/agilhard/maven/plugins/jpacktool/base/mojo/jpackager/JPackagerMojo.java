@@ -463,8 +463,16 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         // Really Hacky...do we have a better solution to find the jmods directory of the JDK?
         final File jPackagerParent = jPackagerExecuteable.getParentFile().getParentFile();
-        final File jmodsFolder = new File( jPackagerParent, JMODS );
 
+		File jmodsFolder;
+        if ( sourceJdkModules != null && sourceJdkModules.isDirectory() )
+        {
+            jmodsFolder = new File ( sourceJdkModules, JMODS );
+        }
+        else
+        {
+            jmodsFolder = new File( jPackagerParent, JMODS );
+        }
         this.maySetPlatformDefaultType();
 
         this.failIfParametersAreNotValid();

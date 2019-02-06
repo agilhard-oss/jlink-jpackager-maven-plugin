@@ -119,6 +119,12 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	@Parameter
 	protected PackagingResources packagingResources;
 
+    /**
+     * Set the JDK location to create a Java custom runtime image.
+     */
+    @Parameter
+    protected File sourceJdkModules;
+	
 	protected static final String JMODS = "jmods";
 
 	/**

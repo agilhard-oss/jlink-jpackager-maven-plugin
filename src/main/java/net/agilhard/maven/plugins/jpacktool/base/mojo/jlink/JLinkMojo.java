@@ -250,7 +250,16 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		// Really Hacky...do we have a better solution to find the jmods directory of
 		// the JDK?
 		final File jLinkParent = jLinkExecuteable.getParentFile().getParentFile();
-		final File jmodsFolder = new File(jLinkParent, JMODS);
+
+		File jmodsFolder;
+        if ( sourceJdkModules != null && sourceJdkModules.isDirectory() )
+        {
+            jmodsFolder = new File ( sourceJdkModules, JMODS );
+        }
+        else
+        {
+            jmodsFolder = new File( jLinkParent, JMODS );
+        }
 
 		this.getLog().debug(" Parent: " + jLinkParent.getAbsolutePath());
 		this.getLog().debug(" jmodsFolder: " + jmodsFolder.getAbsolutePath());
