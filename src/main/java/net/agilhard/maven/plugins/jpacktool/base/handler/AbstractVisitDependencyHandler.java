@@ -53,6 +53,12 @@ public abstract class AbstractVisitDependencyHandler extends AbstractDependencyH
 				b = b && (!excludedArtifacts.contains(node.getArtifact()));
 			}
 
+			String classifier=node.getArtifact().getClassifier();
+
+			if ( "jpacktool_jdeps".equals(classifier) ) {
+				b=false;
+			}
+
 			if (b) {
 				try {
 					handleDependencyNode(node);

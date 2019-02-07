@@ -62,7 +62,8 @@ public abstract class AbstractDependencyHandler {
 	
 	public HashSet<String> handledNodes;
 	final AbstractToolMojo mojo;
-	DependencyGraphBuilder dependencyGraphBuilder;
+	
+	protected DependencyGraphBuilder dependencyGraphBuilder;
 
 	public AbstractDependencyHandler(AbstractToolMojo mojo, DependencyGraphBuilder dependencyGraphBuilder) {
 		this.mojo = mojo;

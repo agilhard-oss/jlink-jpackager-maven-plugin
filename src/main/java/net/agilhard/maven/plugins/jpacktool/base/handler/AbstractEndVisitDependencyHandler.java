@@ -42,15 +42,23 @@ public abstract class AbstractEndVisitDependencyHandler extends AbstractDependen
 		/**
 		 * Starts the visit to the specified dependency node.
 		 *
-		 * @param node the dependency node to visitd
+		 * @param node the dependency node to visit
 		 * 
 		 * @return <code>true</code> 
 		 */
 		public boolean visit(final DependencyNode node) {
 			boolean b = !node.toNodeString().endsWith(":test");
+						
 			if (excludedArtifacts != null) {
 				b = b && (!excludedArtifacts.contains(node.getArtifact()));
 			}
+			
+			String classifier=node.getArtifact().getClassifier();
+
+			if ( "jpacktool_jdeps".equals(classifier) ) {
+				b=false;
+			}
+
 			return b;
 		}
 

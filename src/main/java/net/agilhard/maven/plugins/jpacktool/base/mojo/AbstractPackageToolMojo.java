@@ -42,6 +42,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.toolchain.Toolchain;
@@ -54,6 +55,8 @@ import org.codehaus.plexus.languages.java.jpms.ResolvePathsRequest;
 import org.codehaus.plexus.languages.java.jpms.ResolvePathsResult;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.sonatype.plexus.build.incremental.BuildContext;
+
+import net.agilhard.maven.plugins.jpacktool.base.handler.CollectArtifactsToLinkHandler;
 
 /**
  * @author Karl Heinz Marbaise
@@ -148,6 +151,10 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 	@Component(role = MavenFileFilter.class, hint = "default")
 	protected MavenFileFilter mavenFileFilter;
+
+    @Component(role = DependencyGraphBuilder.class, hint = "maven31")
+    protected DependencyGraphBuilder dependencyGraphBuilder;
+	
 
 	/**
 	 * Flag to ignore automatic modules.
@@ -395,17 +402,35 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 		return sb.toString();
 	}
 
-	private List<File> getCompileClasspathElements(final MavenProject project) {
+	protected List<File> getCompileClasspathElements(final MavenProject project) {
 		final List<File> list = new ArrayList<>(project.getArtifacts().size() + 1);
 
 		for (final Artifact a : project.getArtifacts()) {
-			this.getLog().debug("Artifact: " + a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion());
+			this.getLog().debug("Artifact: " + a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion() + ":" + a.getClassifier()+":"+a.getType());
 			list.add(a.getFile());
 		}
 		return list;
 	}
 
-	private Map<String, File> getModulePathElements() throws MojoFailureException {
+
+	protected List<File> getDependenciesToLink(final MavenProject project) throws MojoExecutionException, MojoFailureException {
+
+		getLog().debug("dependencyGraphBuilder="+dependencyGraphBuilder);
+		CollectArtifactsToLinkHandler handler = new CollectArtifactsToLinkHandler(this, dependencyGraphBuilder);
+		handler.execute();
+	
+		List<Artifact> artifacts = handler.getElements();
+		
+		final List<File> list = new ArrayList<>(artifacts.size() + 1);
+
+		for (final Artifact a : artifacts ) {
+			this.getLog().debug("Artifact: " + a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion() + ":" + a.getClassifier()+":"+a.getType());
+			list.add(a.getFile());
+		}
+		return list;
+	}
+	
+	protected Map<String, File> getModulePathElements() throws MojoFailureException, MojoExecutionException {
 		// For now only allow named modules. Once we can create a graph with ASM we can
 		// specify exactly the modules
 		// and we can detect if auto modules are used. In that case,
@@ -415,8 +440,10 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 		final Map<String, File> modulepathElements = new HashMap<>();
 
 		try {
-			final Collection<File> dependencyArtifacts = this.getCompileClasspathElements(this.getProject());
+			//final Collection<File> dependencyArtifacts = this.getCompileClasspathElements(this.getProject());
+			final Collection<File> dependencyArtifacts = this.getDependenciesToLink(this.getProject());
 
+			
 			final ResolvePathsRequest<File> request = ResolvePathsRequest.ofFiles(dependencyArtifacts);
 
 			final Toolchain toolchain = this.getToolchain();
@@ -510,12 +537,12 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 		return modulepathElements;
 	}
 
-	protected void prepareModules(final File jmodsFolder) throws MojoFailureException {
+	protected void prepareModules(final File jmodsFolder) throws MojoFailureException, MojoExecutionException {
 		this.prepareModules(jmodsFolder, false, false, null);
 	}
 
 	protected void prepareModules(final File jmodsFolder, final boolean useDirectory, final boolean copyArtifacts,
-			final File moduleTempDirectory) throws MojoFailureException {
+			final File moduleTempDirectory) throws MojoFailureException, MojoExecutionException {
 
 		if (this.addModules != null) {
 			this.modulesToAdd.addAll(this.addModules);
