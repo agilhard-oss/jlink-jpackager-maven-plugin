@@ -44,7 +44,7 @@ import net.agilhard.maven.plugins.jpacktool.base.handler.GenerateJDepsHandler;
 /**
  * Prepare execution of the jlink and jpackager goals by analyzing java module dependencies and copying files.
  *
- * @author bei
+ * @author Bernd Eilers
  *
  */
 @Mojo(name = "jpacktool-prepare", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true)

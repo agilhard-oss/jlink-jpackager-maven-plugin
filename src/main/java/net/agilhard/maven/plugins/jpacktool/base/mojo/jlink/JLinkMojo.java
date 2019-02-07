@@ -50,6 +50,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  *
  * @author Karl Heinz Marbaise
  *         <a href="mailto:khmarbaise@apache.org">khmarbaise@apache.org</a>
+ *
+ * @author Bernd Eilers
  */
 // CHECKSTYLE_OFF: LineLength
 @Mojo(name = "jlink", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true)

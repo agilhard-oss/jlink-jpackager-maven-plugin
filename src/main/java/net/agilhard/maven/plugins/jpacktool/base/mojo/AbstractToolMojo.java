@@ -124,7 +124,9 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false")
 	protected boolean verbose;
 
-	
+	/**
+	 * skip plugin execution.
+	 */
 	@Parameter(defaultValue = "false")
 	protected boolean skip;
 	
@@ -154,6 +156,10 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	}
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		
+		if ( skip ) {
+			return;
+		}
 		
 		checkShouldSkip();
 		

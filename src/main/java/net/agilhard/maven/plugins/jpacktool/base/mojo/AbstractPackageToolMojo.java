@@ -102,23 +102,8 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	protected List<String> arguments;
 
 	/**
-	 * Filename or URL to template file for jvmArgs
+	 * Resources to package into the image or installable package.
 	 */
-	@Parameter(required = false, readonly = false, defaultValue = "resource:/templates/jpacktool_jvmArgs.ftl")
-	protected String jvmArgsTemplate;
-
-	/**
-	 * Filename or URL to template file for userJvmArgs
-	 */
-	@Parameter(required = false, readonly = false, defaultValue = "resource:/templates/jpacktool_userJvmArgs.ftl")
-	protected String userJvmArgsTemplate;
-
-	/**
-	 * Filename or URL to template file for commandline arguments
-	 */
-	@Parameter(required = false, readonly = false, defaultValue = "resource:/templates/jpacktool_arguments.ftl")
-	protected String argumentsTemplate;
-
 	@Parameter
 	protected PackagingResources packagingResources;
 
@@ -301,9 +286,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 
 	protected void initTemplates() throws MojoFailureException {
-		jvmArgsTemplate = initTemplate(jvmArgsTemplate, "jpacktool_jvmArgs.ftl");
-		userJvmArgsTemplate = initTemplate(userJvmArgsTemplate, "jpacktool_userJvmArgs.ftl");
-		argumentsTemplate = initTemplate(argumentsTemplate, "jpacktool_arguments.ftl");
+		// no default templates
 	}
 
 	/**
@@ -813,14 +796,6 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 	public List<String> getArguments() {
 		return arguments;
-	}
-
-	public String getJvmArgsTemplate() {
-		return jvmArgsTemplate;
-	}
-
-	public String getArgumentsTemplate() {
-		return argumentsTemplate;
 	}
 
 	public File getOutputDirectoyTemplates() {
