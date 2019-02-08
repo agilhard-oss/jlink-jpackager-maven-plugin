@@ -124,4 +124,13 @@ Minimalistic Example for jlink-jpackager-maven-plugin how to build a installable
 You can also see what can be done with the plugin by having a look
 at the [Integration Tests](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin/tree/master/src/it/projects) in the source code for the plugin.
 
+## Use a a java library for other Maven Plugins
+
+Besides by being used on it´s own the jlink-jpackager-maven-plugin can also be used as a java library
+for another maven plugin implementing special packaging needs.
+
+The java classes for the maven goals of this maven plugin
+can be used as base classes for other maven goals and provide some hooks
+to be overloaded by derived classes.
+
 
