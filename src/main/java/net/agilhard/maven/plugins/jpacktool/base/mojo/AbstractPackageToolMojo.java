@@ -65,9 +65,6 @@ import net.agilhard.maven.plugins.jpacktool.base.handler.CollectArtifactsToLinkH
  */
 public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo implements Contextualizable {
 
-
-	private Context context;
-
 	
 	/**
 	 * JVM flags and options to pass to the application.
@@ -103,6 +100,22 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 	/**
 	 * Resources to package into the image or installable package.
+	 * 
+	 * <p>
+	 * You can use almost any configuration option that the 
+	 * <a href="https://maven.apache.org/plugins/maven-resources-plugin/">Apache Maven Resources Plugin</a> 
+	 * has on this setting.
+	 * </p>
+	 * <p>
+	 * When filtering is set to true on a resource the 
+	 * <a href="https://freemarker.apache.org/">Freemarker Java Template Engine</a>
+	 * is being used to filter the contents and some variables set by the packaging process
+	 * are available to it.
+	 * </p>
+	 * <p>
+	 * Hava a look at the <a href="https://freemarker.apache.org/docs/dgui.html">Template Author's Guide</a>
+	 * for details on how to write templates.
+	 * </p>
 	 */
 	@Parameter
 	protected PackagingResources packagingResources;
@@ -112,7 +125,10 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
      */
     @Parameter
     protected File sourceJdkModules;
-	
+
+    /**
+     * Just a constant for the jmods directory name.
+     */
 	protected static final String JMODS = "jmods";
 
 	/**
@@ -120,26 +136,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	 * will not change the name of the installed/deployed file.
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
-	protected String finalName;
-
-	/**
-	 * The JAR archiver needed for archiving the environments.
-	 */
-	@Component
-	protected BuildContext buildContext;
-
-	/**
-	 *
-	 */
-	@Component(role = MavenResourcesFiltering.class, hint = "default")
-	public MavenResourcesFiltering mavenResourcesFiltering;
-
-	@Component(role = MavenFileFilter.class, hint = "default")
-	protected MavenFileFilter mavenFileFilter;
-
-    @Component(role = DependencyGraphBuilder.class, hint = "maven31")
-    protected DependencyGraphBuilder dependencyGraphBuilder;
-	
+	protected String finalName;	
 
 	/**
 	 * Flag to ignore automatic modules.
@@ -174,11 +171,6 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	@Parameter
 	protected List<String> limitModules;
 
-	protected Collection<String> modulesToAdd = new ArrayList<>();
-	protected Collection<String> pathsOfModules = new ArrayList<>();
-	protected Collection<String> pathsOfArtifacts = new ArrayList<>();
-
-
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true, readonly = true)
 	protected File outputDirectory;
 
@@ -208,7 +200,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	 */
 	@Parameter(defaultValue = "false")
 	protected boolean jPacktoolMoveRealModules;
-
+	
 	/**
 	 * <p>
 	 * Usually this is not necessary, cause this is handled automatically by the
@@ -260,6 +252,47 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	protected String modulesFolderName;
 
 	/**
+	 * Fall back to using old unfiltered maven dependency handling.
+	 */
+	@Parameter(defaultValue = "false")
+	protected boolean unfilteredDependencyHandling;
+
+	
+	/**
+	 * The JAR archiver needed for archiving the environments.
+	 */
+	@Component
+	protected BuildContext buildContext;
+
+	private Context context;
+
+	/**
+	 * The MavenResourcesFiltering Component.
+	 */
+	@Component(role = MavenResourcesFiltering.class, hint = "default")
+	public MavenResourcesFiltering mavenResourcesFiltering;
+
+	/**
+	 * The MavenFileFilter component.
+	 */
+	@Component(role = MavenFileFilter.class, hint = "default")
+	protected MavenFileFilter mavenFileFilter;
+
+	/**
+	 * The DependencyGraphBuilder component.
+	 */
+    @Component(role = DependencyGraphBuilder.class, hint = "maven31")
+    protected DependencyGraphBuilder dependencyGraphBuilder;
+
+
+    protected Collection<String> modulesToAdd = new ArrayList<>();
+	
+    protected Collection<String> pathsOfModules = new ArrayList<>();
+	
+    protected Collection<String> pathsOfArtifacts = new ArrayList<>();
+
+    
+	/**
 	 * Flag if jpacktool-prepare goal has been used before
 	 */
 	protected boolean jpacktoolPrepareUsed;
@@ -284,10 +317,6 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 		}
 	}
 
-
-	protected void initTemplates() throws MojoFailureException {
-		// no default templates
-	}
 
 	/**
 	 * resolve to path and create directory if not exists.
@@ -385,6 +414,16 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 		return sb.toString();
 	}
 
+	/**
+	 * Get  project dependencies as List of files to the artifacts.
+	 * 
+	 * <p>
+	 * This is the old unfiltered maven dependency handling behaviour turn on
+	 * with the {@link #unfilteredDependencyHandling} Parameter.
+	 * </p>
+	 * @param project the maven project
+	 * @return list of file elements for artifacts.
+	 */
 	protected List<File> getCompileClasspathElements(final MavenProject project) {
 		final List<File> list = new ArrayList<>(project.getArtifacts().size() + 1);
 
@@ -396,7 +435,16 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	}
 
 
-	protected List<File> getDependenciesToLink(final MavenProject project) throws MojoExecutionException, MojoFailureException {
+	/**
+	 * Get project dependencies as List of files to the artifacts.
+	 * 
+	 * <p>
+	 * This is the new filtered maven dependency behaviour which can be turned off
+	 * with the {@link #unfilteredDependencyHandling} Parameter.
+	 * </p>
+	 * @return list of file elements for artifacts.
+	 */
+	protected List<File> getDependenciesToLink() throws MojoExecutionException, MojoFailureException {
 
 		getLog().debug("dependencyGraphBuilder="+dependencyGraphBuilder);
 		CollectArtifactsToLinkHandler handler = new CollectArtifactsToLinkHandler(this, dependencyGraphBuilder);
@@ -424,8 +472,14 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 		try {
 			//final Collection<File> dependencyArtifacts = this.getCompileClasspathElements(this.getProject());
-			final Collection<File> dependencyArtifacts = this.getDependenciesToLink(this.getProject());
-
+			Collection<File> dependencyArtifacts;
+			
+			if ( unfilteredDependencyHandling ) {
+				// fallback to old old unfiltered maven dependency handling
+				dependencyArtifacts= this.getCompileClasspathElements(this.getProject());
+			} else {
+				dependencyArtifacts= this.getDependenciesToLink();
+			}
 			
 			final ResolvePathsRequest<File> request = ResolvePathsRequest.ofFiles(dependencyArtifacts);
 
@@ -930,6 +984,5 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 	protected abstract void executeResources() throws MojoExecutionException;
 
-	
 
 }

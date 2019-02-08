@@ -1,5 +1,24 @@
 package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,27 +39,26 @@ import freemarker.template.TemplateException;
 import net.agilhard.maven.plugins.jpacktool.base.template.AbstractGenerator;
 import net.agilhard.maven.plugins.jpacktool.base.template.GeneratedFile;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
+/**
+ * Base class for Mojos operating with templates.
+ * 
+ * <p>
+ * The <a href="https://freemarker.apache.org/">Freemarker Java Template Engine</a>
+ * is used for the templates.
+ * </p>
+ * 
+ * @author Bernd Eilers
+ *
+ */
 public abstract class AbstractTemplateToolMojo extends AbstractToolMojo {
 
+
+	/**
+	 * Internal class for the template generator.
+	 * @author bei
+	 *
+	 */
 	public class TemplateGenerator extends AbstractGenerator {
 
 		public TemplateGenerator() {
@@ -53,15 +71,34 @@ public abstract class AbstractTemplateToolMojo extends AbstractToolMojo {
 		}
 	}
 
+	
+	/**
+	 * Output directory where templates are stored when they have been read from internal resource: URLs.
+	 */
 	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/templates", required = true, readonly = true)
 	protected File outputDirectoyTemplates;
 
 	protected TemplateGenerator templateGenerator;
 
-	public AbstractTemplateToolMojo() {
 
+	/**
+	 * Constructor.
+	 */
+	public AbstractTemplateToolMojo() {
+		
 	}
 
+	/**
+	 * Initialize Templates copy them from resource: URLs to the filesystem.
+	 * 
+	 * <p>
+	 * Can be implemented in derived classes the base class method does nothing.
+	 * </p>
+	 */
+	protected void initTemplates() throws MojoFailureException {
+		// no default templates
+	}
+	
 	private String loadResourceFileIntoString(String path) throws MojoFailureException {
 		InputStream inputStream = getClass().getResourceAsStream(path);
 		if (inputStream == null) {
@@ -70,8 +107,6 @@ public abstract class AbstractTemplateToolMojo extends AbstractToolMojo {
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
 		return buffer.lines().collect(Collectors.joining(System.getProperty("line.separator")));
 	}
-
-	protected abstract void initTemplates() throws MojoFailureException;
 
 	protected String initTemplate(String res, String template) throws MojoFailureException {
 		if (res == null) {

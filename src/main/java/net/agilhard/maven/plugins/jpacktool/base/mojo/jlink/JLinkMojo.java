@@ -129,9 +129,14 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	/**
 	 * Should the plugin generate a launcher script by means of its own template
 	 * mechanism.
-	 * 
+	 * <p>
 	 * Can contain either the value &quot;default&quot; or a resource: URL or a path
 	 * to a file.
+	 * </p>
+	 * <p>
+	 * The <a href="https://freemarker.apache.org/">Freemarker Java Template Engine</a>
+	 * is used for the template.
+	 * </p>
 	 */
 	@Parameter(defaultValue = "default")
 	private String launcherTemplate;
@@ -199,7 +204,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	private boolean noManPages;
 
 	/**
-	 * Name of the app folder
+	 * Name of the &quot;app&quot; folder.
 	 */
 	@Parameter(defaultValue = "app")
 	protected String appFolderName;
