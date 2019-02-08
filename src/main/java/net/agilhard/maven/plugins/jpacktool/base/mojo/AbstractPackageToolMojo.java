@@ -226,13 +226,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	 */
 	@Parameter
 	protected List<String> addModules;
-
-	/**
-	 * Directory with .jar modules to add to --add-modules
-	 */
-	@Parameter
-	protected List<File> addModulesDirs;
-
+	
 	/**
 	 * Name of the classpath folder
 	 */
@@ -932,10 +926,6 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 	public List<String> getAddModules() {
 		return addModules;
-	}
-
-	public List<File> getAddModulesDirs() {
-		return addModulesDirs;
 	}
 
 	public String getClassPathFolderName() {
