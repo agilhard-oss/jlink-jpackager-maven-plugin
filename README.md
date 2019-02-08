@@ -17,7 +17,7 @@
 
 # jlink-jpackager-maven-plugin
 
-Combined maven plugin to call the new jlink and jpackager tools from maven.
+Combined maven plugin to call the new jlink and jpackager tools from maven and java library for other packaging maven plugins.
 
 Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugin)
 
@@ -124,10 +124,12 @@ Minimalistic Example for jlink-jpackager-maven-plugin how to build a installable
 You can also see what can be done with the plugin by having a look
 at the [Integration Tests](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin/tree/master/src/it/projects) in the source code for the plugin.
 
+
+
 ## Use a a java library for other Maven Plugins
 
-Besides by being used on it´s own the jlink-jpackager-maven-plugin can also be used as a java library
-for another maven plugin implementing special packaging needs.
+Besides being used on its own as a maven plugin the jlink-jpackager-maven-plugin can also be used as a java library
+for another maven plugin implementing special packaging needs for java applications.
 
 The java classes for the maven goals of this maven plugin
 can be used as base classes for other maven goals and provide some hooks
