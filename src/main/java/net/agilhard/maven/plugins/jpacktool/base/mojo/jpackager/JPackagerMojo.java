@@ -1393,10 +1393,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     /**
      * Build Commandline for JDK11 backported jpackager command
      *
-     * @param pathsOfModules
-     * @param modulesToAdd
-     * @return
-     * @throws IOException
+     * @param pathsOfModules collected paths of modules
+     * @param modulesToAdd collected modules to add
+     * @return a Commandline
+     * @throws IOException on i/o error
      */
     protected Commandline createJPackagerCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
         throws IOException
