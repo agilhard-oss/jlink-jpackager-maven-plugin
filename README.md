@@ -126,7 +126,7 @@ at the [Integration Tests](https://github.com/agilhard-oss/jlink-jpackager-maven
 
 
 
-## Use a a java library for other Maven Plugins
+## Use as a java library for other Maven Plugins
 
 Besides being used on its own as a maven plugin the jlink-jpackager-maven-plugin can also be used as a java library
 for another maven plugin implementing special packaging needs for java applications.
