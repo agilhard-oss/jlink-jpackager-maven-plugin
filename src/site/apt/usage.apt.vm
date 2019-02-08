@@ -104,8 +104,13 @@ Usage
   Usually you will use the Maven JLink-JPackager Maven Plugin to create
   a Run Time Image or an installable Package from one or more modules within 
   a multi module build 
+
+  You will than use one submodule there with a pom.xml which uses one of the 
+  special Maven packaging types the plugin provides and a configuration for the plugin.
+
   In other words it is not possible to create a Run Time Image or Installation Package
-  from a single Maven Project within the same single Maven Project.
+  from a single Maven Project within the same single Maven Project and you usually would not call
+  the goals of the plugin by using a plugin execution configuration.
 
   Let us assume you have a multi module structure which contains two modules <<mod-1>> and <<mod-2>> 
   which you like to put into the resulting Run Time Image.
@@ -421,3 +426,28 @@ on the package type and the extension for the package format, eg. .rpm .msi
    [...]
 </project>
 +-----
+
+* Maven Packaging types
+
+  The JPacktool plugin provides the following maven packaging types
+  
+  Simple use cases:
+
++-----
+  <packaging>jlink</packaging>
++-----
+
++-----
+  <packaging>jpackager</packaging>
++-----
+
+  Use cases for projects with mixed real-modules, automatic modules and non-modular jars:
+ 
++-----
+  <packaging>jpacktool-jlink</packaging>
++-----
+
++-----
+  <packaging>jpacktool-jpackager</packaging>
++-----
+

@@ -70,6 +70,18 @@ ${project.name}
   General instructions on how to use the JLink-JPackager Plugin can be found on the {{{./usage.html}usage page}}. Some more
   specific use cases are described in the examples given below.
 
+  Usually you will use the Maven JLink-JPackager Maven Plugin to create
+  a Run Time Image or an installable Package from one or more modules within 
+  a multi module build.
+
+  You will than use one submodule there with a pom.xml which uses one of the 
+  special Maven packaging types the plugin provides and a configuration for the plugin.
+
+  In other words it is not possible to create a Run Time Image or Installation Package
+  from a single Maven Project within the same single Maven Project and you usually would not call
+  the goals of the plugin by using a plugin execution configuration.
+
+
 * Examples
 
   To provide you with better understanding on some usages of the JLink-JPackager Maven Plugin,

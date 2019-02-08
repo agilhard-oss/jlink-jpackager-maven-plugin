@@ -19,7 +19,9 @@
 
 Combined maven plugin to call the new jlink and jpackager tools from maven and java library for other packaging maven plugins.
 
-Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugin)
+Based on Apache [jlink-jpackager-maven-plugin](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin)
+
+[Apache License](http://www.apache.org/licenses/LICENSE-2.0)
 
 [Maven Plugin Documentation](https://agilhard-oss.github.io/jlink-jpackager-maven-plugin/site/index.html)
 
@@ -47,8 +49,12 @@ Usually you will use the Maven JLink-JPackager Maven Plugin to create
 a Run Time Image or an installable Package from one or more modules within 
 a multi module build.
 
+You will than use one submodule there with a pom.xml which uses one of the 
+special Maven packaging types the plugin provides and a configuration for the plugin.
+
 In other words it is not possible to create a Run Time Image or Installation Package
-from a single Maven Project within the same single Maven Project.
+from a single Maven Project within the same single Maven Project and you usually would not call
+the goals of the plugin by using a plugin execution configuration.
 
 
 ## jlink goal
@@ -81,17 +87,23 @@ Note: This is just a first SNAPSHOT not all jpackager goal Configuration Options
 - [JDK](http://jdk.java.net/)
 - [Maven](https://maven.apache.org/)
 
-You need to use the special JDK-12 Early Access build that includes JPackager support to use this example.
+Maven Runtime JDK Requirement is JDK-8 or above.
+If you are using JDK-8 as runtime for your maven you must specify your target
+JDK location by using the Maven toolchain feature.
 
-This JPackager JDK-12 Early Access build can be downloaded from 
+You need to use the special JDK-12 or above Early Access build that includes
+JPackager support to use the plugin with the jpackage(r) Java tool
+as long as the jpackage(r) tool is not officially part of the JDK.
+
+This JPackager JDK-?? Early Access build can be downloaded from 
 [https://jdk.java.net/jpackage/](https://jdk.java.net/jpackage/)
 
 Alternatively you can also use the JDK-11 backported JPackager tool wich is mentioned in
 [Filling the Packager gap - OpenJDK mailing list - Java.net](http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html)
 
-The [link-jpackager-maven-plugin](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin) is not (yet?)
+The [jlink-jpackager-maven-plugin](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin) is not (yet?)
 available on maven central you must download,
-compile and install that to your maven Repository before you can use this example.
+compile and install that to your maven Repository before you can use it.
 
 Native packages will be generated using tools on the target platform. 
 
