@@ -82,7 +82,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * One of <code>create-image</code>, <code>create-installer</code>, <code>create-jre-installer</code>.
      */
     @Parameter( defaultValue = "create-installer", required = true, readonly = false )
-    private String mode;
+    protected String mode;
 
     /**
      * Installer type of JPackager operation.
@@ -91,11 +91,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      *  &quot;dmg&quot;, &quot;pkg&quot;, &quot;pkg-app-store&quot;.
      * </p><p>
      *  If &lt;type&gt; is omitted a value from the platform specific settings
-     *  &lt;linuxType&gt, &lt;windowsType&gt; or &lt;macType&gt; is being used.
+     *  &lt;linuxType&gt;, &lt;windowsType&gt; or &lt;macType&gt; is being used.
      *  </p>
      */
     @Parameter( required = false, readonly = false )
-    private String type;
+    protected String type;
 
     /**
      * The output directory for the resulting Application Image or Package.
@@ -106,7 +106,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      */
     // TODO: is this a good final location?
     @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-out", required = true, readonly = true )
-    private File outputDirectoryPackage;
+    protected File outputDirectoryPackage;
 
     /**
      * The output directory for the resulting Application Image or Package.
@@ -117,7 +117,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      */
     // TODO: is this a good final location?
     @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-in", required = true, readonly = true )
-    private File inputDirectoryPackage;
+    protected File inputDirectoryPackage;
 
     /**
      * Directory in which to use and place temporary files.
@@ -128,14 +128,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      */
     // TODO: is this a good final location?
     @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-build", required = true, readonly = false )
-    private File buildRootPackage;
+    protected File buildRootPackage;
 
 
     /**
      * TempDirectory where artifact modules are temporarily copied too.
      */
     @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-jmods", required = true, readonly = false )
-    private File moduleTempDirectory;
+    protected File moduleTempDirectory;
 
 
     /**
@@ -148,7 +148,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      *
      */
     @Parameter( defaultValue = "true", required = true, readonly = false )
-    private boolean copyArtifacts;
+    protected boolean copyArtifacts;
 
     /**
      * List of files in the base directory. If omitted, all files from "input"
@@ -159,7 +159,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private List<String> files;
+    protected List<String> files;
 
     /**
      * Name of the application.
@@ -169,7 +169,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( defaultValue = "${project.name}", required = false, readonly = false )
-    private String name;
+    protected String name;
 
     /**
      * The main JAR of the application. This JAR should have the main-class, and is
@@ -180,7 +180,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String mainJar;
+    protected String mainJar;
 
     /**
      * Qualified name of the application class to execute.
@@ -190,7 +190,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String mainClass;
+    protected String mainClass;
 
     /**
      * Version of the application.
@@ -204,7 +204,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( defaultValue = "${project.version}", required = false, readonly = false )
-    private String appVersion;
+    protected String appVersion;
 
     /**
      * Icon of the application bundle.
@@ -214,7 +214,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private File icon;
+    protected File icon;
 
     /**
      * Prevents multiple instances of the application from launching
@@ -225,7 +225,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private boolean singleton;
+    protected boolean singleton;
 
     /**
      * Machine readable identifier of the application. The format
@@ -240,7 +240,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( defaultValue = "${project.groupId}.${project.artifactId}", required = false, readonly = false )
-    private String identifier;
+    protected String identifier;
 
     /**
      * Removes native executables from the custom run-time images.
@@ -250,7 +250,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private boolean stripNativeCommands;
+    protected boolean stripNativeCommands;
 
 
     /**
@@ -263,7 +263,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private File fileAssociations;
+    protected File fileAssociations;
 
     /**
      * Properties file that contains a collection of options for a secondary launcher.
@@ -273,7 +273,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private File secondaryLauncher;
+    protected File secondaryLauncher;
 
     /**
      * Location of the predefined runtime image that is used to build
@@ -284,7 +284,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private File runtimeImage;
+    protected File runtimeImage;
 
     /**
      * Location of the predefined application image that is used to build
@@ -295,7 +295,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private File appImage;
+    protected File appImage;
 
     /**
      * Qualified name of the application class to execute.
@@ -305,7 +305,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String installDir;
+    protected String installDir;
 
     /**
      * The license file, relative to the base directory.
@@ -315,7 +315,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private File licenseFile;
+    protected File licenseFile;
 
 
     /**
@@ -326,7 +326,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String copyright;
+    protected String copyright;
 
     /**
      * Description of the application.
@@ -336,7 +336,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter(  defaultValue = "${project.description}", required = false, readonly = false )
-    private String description;
+    protected String description;
 
     /**
      * Category or group of the application
@@ -346,7 +346,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String category;
+    protected String category;
 
     /**
      * Vendor of the application.
@@ -356,7 +356,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( defaultValue = "${project.organization}", required = false, readonly = false )
-    private String vendor;
+    protected String vendor;
 
 
     /**
@@ -368,7 +368,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    private String module;
+    protected String module;
 
     /**
      * Linux Options.
@@ -412,7 +412,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * <a href="http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html">Filling the Packager gap</a>
      */
  // CHECKSTYLE_ON: LineLength
-    private boolean usingJDK11Jpackager;
+    protected boolean usingJDK11Jpackager;
 
     
     protected Exception lastException;
@@ -548,28 +548,28 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
     
-    private void moveJarToInputClasspath(Path source) throws IOException {
+    protected void moveJarToInputClasspath(Path source) throws IOException {
         Path target = resolveAndCreate(inputDirectoryPackage, null, classPathFolderName);
 
         target = target.resolve(source.getFileName());
         Files.move(source, target, REPLACE_EXISTING);
     }
     
-    private void moveJarToInputAutomatic(Path source) throws IOException  {
+    protected void moveJarToInputAutomatic(Path source) throws IOException  {
         Path target = resolveAndCreate(inputDirectoryPackage, null, automaticModulesFolderName);
 
         target = target.resolve(source.getFileName());
         Files.move(source, target, REPLACE_EXISTING);
     }
     
-    private void moveJarToInputModule(Path source) throws IOException  {
+    protected void moveJarToInputModule(Path source) throws IOException  {
         Path target = resolveAndCreate(inputDirectoryPackage, null, modulesFolderName);
 
         target = target.resolve(source.getFileName());
         Files.move(source, target, REPLACE_EXISTING);
     }
     
-    private void moveJPacktoolJars() throws Exception {
+    protected void moveJPacktoolJars() throws Exception {
         
         lastException = null;
         
@@ -624,7 +624,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
     
-    private void maySetPlatformDefaultType()
+    protected void maySetPlatformDefaultType()
     {
         if ( ( ( this.type == null ) || ( "".equals( this.type ) ) )
         && ( ! "create-image".equals(this.mode)) )
@@ -642,7 +642,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
 
-    private void publishPackageArtifacts()
+    protected void publishPackageArtifacts()
     {
         final String[] extensions = {
                 "msi", "exe", "rpm", "deb", "dmg",
@@ -661,11 +661,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
 
-    private File findPackageFile( final String extension )
+    protected File findPackageFile( final String extension )
     {
         final class FindPackageResult
         {
-            private File file;
+            File file;
 
             public File getFile()
             {
@@ -706,7 +706,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
 
-    private void copyArtifactsToModuleTempDirectory() throws MojoExecutionException
+    protected void copyArtifactsToModuleTempDirectory() throws MojoExecutionException
     {
         if ( this.pathsOfArtifacts != null )
         {
@@ -732,7 +732,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
 
-    private String getExecutable() throws MojoFailureException
+    protected String getExecutable() throws MojoFailureException
     {
         String jPackagerExec;
         try
@@ -755,7 +755,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
 
-    private void ifBuildRootDirectoryDoesNotExistcreateIt() throws MojoExecutionException
+    protected void ifBuildRootDirectoryDoesNotExistcreateIt() throws MojoExecutionException
     {
         if ( ! this.buildRootPackage.exists() )
         {
@@ -773,7 +773,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
 
-    private void ifModuleTempDirectoryDoesNotExistCreateIt() throws MojoExecutionException
+    protected void ifModuleTempDirectoryDoesNotExistCreateIt() throws MojoExecutionException
     {
         if ( ! this.moduleTempDirectory.exists() )
         {
@@ -791,7 +791,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         }
     }
 
-    private void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException
+    protected void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException
     {
         if ( this.outputDirectoryPackage.exists() )
         {
@@ -813,14 +813,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     }
 
     /**
-     * Build Commandline for JDK >= 12 jpackage command
+     * Build Commandline for JDK &gt;= 12 jpackage command
      *
-     * @param pathsOfModules
-     * @param modulesToAdd
-     * @return
-     * @throws IOException
+     * @param pathsOfModules collected paths of modules
+     * @param modulesToAdd collected modules to add
+     * @return a Commandline
+     * @throws IOException on i/o error
      */
-    private Commandline createJPackageCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
+    protected Commandline createJPackageCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
         throws IOException
     {
 
@@ -1398,7 +1398,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * @return
      * @throws IOException
      */
-    private Commandline createJPackagerCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
+    protected Commandline createJPackagerCommandLine( final Collection<String> pathsOfModules, final Collection<String> modulesToAdd )
         throws IOException
     {
 
@@ -2013,7 +2013,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         return cmd;
     }
 
-    private void failIfParametersAreNotValid()
+    protected void failIfParametersAreNotValid()
             throws MojoFailureException
     {
         if ( ( this.mode == null ) && ( "".equals( this.mode ) ) )

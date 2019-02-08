@@ -94,12 +94,14 @@ public abstract class AbstractTemplateToolMojo extends AbstractToolMojo {
 	 * <p>
 	 * Can be implemented in derived classes the base class method does nothing.
 	 * </p>
+	 * 
+	 * @throws MojoFailureException on plugin failure
 	 */
 	protected void initTemplates() throws MojoFailureException {
 		// no default templates
 	}
 	
-	private String loadResourceFileIntoString(String path) throws MojoFailureException {
+	protected String loadResourceFileIntoString(String path) throws MojoFailureException {
 		InputStream inputStream = getClass().getResourceAsStream(path);
 		if (inputStream == null) {
 			throw new MojoFailureException("no such resource: " + path);

@@ -140,9 +140,9 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	@Parameter
 	protected Map<String, String> jdkToolchain;
 
-	private double javaVersion = 0;
+	protected double javaVersion = 0;
 
-	private String shouldSkipReason;
+	protected String shouldSkipReason;
 	
 	protected Map<String, Object> jpacktoolModel;
 

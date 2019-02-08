@@ -264,7 +264,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	@Component
 	protected BuildContext buildContext;
 
-	private Context context;
+	protected Context context;
 
 	/**
 	 * The MavenResourcesFiltering Component.
@@ -443,6 +443,8 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	 * with the {@link #unfilteredDependencyHandling} Parameter.
 	 * </p>
 	 * @return list of file elements for artifacts.
+	 * @throws MojoExecutionException on plugin execution error
+	 * @throws MojoFailureException on plugin failure
 	 */
 	protected List<File> getDependenciesToLink() throws MojoExecutionException, MojoFailureException {
 

@@ -64,7 +64,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * information.
 	 */
 	@Parameter(defaultValue = "false")
-	private boolean stripDebug;
+	protected boolean stripDebug;
 
 	/**
 	 * Here you can define the compression of the resources being used. The command
@@ -72,7 +72,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * for the level are: <code>0, 1, 2</code>.
 	 */
 	@Parameter
-	private Integer compress;
+	protected Integer compress;
 
 	/**
 	 * Should the plugin generate a launcher script by means of jlink? The command
@@ -82,49 +82,49 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * <code>&lt;name&gt;=&lt;module&gt;[/&lt;mainclass&gt;]</code>.
 	 */
 	@Parameter
-	private String launcher;
+	protected String launcher;
 
 	/**
 	 * Name of the script generated from launcherTemplate
 	 */
 	@Parameter
-	private String launcherTemplateScript;
+	protected String launcherTemplateScript;
 
 	/**
 	 * main class for script Generation
 	 */
 	@Parameter
-	private String mainClass;
+	protected String mainClass;
 
 	/**
 	 * main module for script Generation
 	 */
 	@Parameter
-	private String mainModule;
+	protected String mainModule;
 
 	/**
 	 * main jar for script Generation
 	 */
 	@Parameter
-	private String mainJar;
+	protected String mainJar;
 
 	/**
 	 * Name of the script generated from launcherTemplate for linux
 	 */
 	@Parameter(defaultValue = "start.sh")
-	private String launcherTemplateScriptWindows;
+	protected String launcherTemplateScriptWindows;
 
 	/**
 	 * Name of the script generated from launcherTemplate for linux
 	 */
 	@Parameter(defaultValue = "start.sh")
-	private String launcherTemplateScriptMac;
+	protected String launcherTemplateScriptMac;
 
 	/**
 	 * Name of the script generated from launcherTemplate for linux
 	 */
 	@Parameter(defaultValue = "start.sh")
-	private String launcherTemplateScriptLinux;
+	protected String launcherTemplateScriptLinux;
 
 	/**
 	 * Should the plugin generate a launcher script by means of its own template
@@ -139,7 +139,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * </p>
 	 */
 	@Parameter(defaultValue = "default")
-	private String launcherTemplate;
+	protected String launcherTemplate;
 
 	/**
 	 * Define the plugin module path to be used. There can be defined multiple
@@ -147,7 +147,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * equivalent is: <code>--plugin-module-path &lt;modulepath&gt;</code>
 	 */
 	@Parameter
-	private String pluginModulePath;
+	protected String pluginModulePath;
 
 	/**
 	 * The output directory for the resulting Run Time Image. The created Run Time
@@ -156,7 +156,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 */
 	// TODO: is this a good final location?
 	@Parameter(defaultValue = "${project.build.directory}/maven-jlink", required = true, readonly = true)
-	private File outputDirectoryImage;
+	protected File outputDirectoryImage;
 
 	/**
 	 * The byte order of the generated Java Run Time image.
@@ -166,26 +166,26 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	// TODO: Should we define either little or big as default? or should we left as
 	// it.
 	@Parameter
-	private String endian;
+	protected String endian;
 
 	/**
 	 * Add the option <code>--bind-services</code> or not.
 	 */
 	@Parameter(defaultValue = "false")
-	private boolean bindServices;
+	protected boolean bindServices;
 
 	/**
 	 * You can disable a plugin by using this option.
 	 * <code>--disable-plugin pluginName</code>.
 	 */
 	@Parameter
-	private String disablePlugin;
+	protected String disablePlugin;
 
 	/**
 	 * <code>--ignore-signing-information</code>
 	 */
 	@Parameter(defaultValue = "false")
-	private boolean ignoreSigningInformation;
+	protected boolean ignoreSigningInformation;
 
 	/**
 	 * This will suppress to have an <code>includes</code> directory in the
@@ -193,7 +193,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * <code>--no-header-files</code>
 	 */
 	@Parameter(defaultValue = "false")
-	private boolean noHeaderFiles;
+	protected boolean noHeaderFiles;
 
 	/**
 	 * This will suppress to have the <code>man</code> directory in the resulting
@@ -201,7 +201,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * <code>--no-man-pages</code>
 	 */
 	@Parameter(defaultValue = "false")
-	private boolean noManPages;
+	protected boolean noManPages;
 
 	/**
 	 * Name of the &quot;app&quot; folder.
@@ -228,7 +228,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * <code>--suggest-providers [&lt;name&gt;,...]</code>
 	 */
 	@Parameter
-	private List<String> suggestProviders;
+	protected List<String> suggestProviders;
 
 	protected String getJLinkExecutable() throws IOException {
 		return this.getToolExecutable("jlink");
@@ -338,28 +338,28 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		}
 	}
 
-	private void moveJarToJLinkOutClasspath(Path source) throws IOException {
+	protected void moveJarToJLinkOutClasspath(Path source) throws IOException {
 		Path target = resolveAndCreate(outputDirectoryImage, appFolderName, classPathFolderName);
 
 		target = target.resolve(source.getFileName());
 		Files.move(source, target, REPLACE_EXISTING);
 	}
 
-	private void moveJarToJLinkOutAutomatic(Path source) throws IOException {
+	protected void moveJarToJLinkOutAutomatic(Path source) throws IOException {
 		Path target = resolveAndCreate(outputDirectoryImage, appFolderName, automaticModulesFolderName);
 
 		target = target.resolve(source.getFileName());
 		Files.move(source, target, REPLACE_EXISTING);
 	}
 
-	private void moveJarToJLinkOutModule(Path source) throws IOException {
+	protected void moveJarToJLinkOutModule(Path source) throws IOException {
 		Path target = resolveAndCreate(outputDirectoryImage, appFolderName, modulesFolderName);
 
 		target = target.resolve(source.getFileName());
 		Files.move(source, target, REPLACE_EXISTING);
 	}
 
-	private void moveJPacktoolJars() throws Exception {
+	protected void moveJPacktoolJars() throws Exception {
 
 		lastException = null;
 
@@ -407,7 +407,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		}
 	}
 
-	private String getExecutable() throws MojoFailureException {
+	protected String getExecutable() throws MojoFailureException {
 		String jLinkExec;
 		try {
 			jLinkExec = this.getJLinkExecutable();
@@ -417,7 +417,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		return jLinkExec;
 	}
 
-	private void failIfParametersAreNotInTheirValidValueRanges() throws MojoFailureException {
+	protected void failIfParametersAreNotInTheirValidValueRanges() throws MojoFailureException {
 		if (this.compress != null && (this.compress < 0 || this.compress > 2)) {
 			final String message = "The given compress parameters " + this.compress
 					+ " is not in the valid value range from 0..2";
@@ -433,7 +433,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		}
 	}
 
-	private void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException {
+	protected void ifOutputDirectoryExistsDeleteIt() throws MojoExecutionException {
 		if (this.outputDirectoryImage.exists()) {
 			// Delete the output folder of JLink before we start
 			// otherwise JLink will fail with a message "Error: directory already exists:
@@ -449,7 +449,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		}
 	}
 
-	private Commandline createJLinkCommandLine(final Collection<String> pathsOfModules,
+	protected Commandline createJLinkCommandLine(final Collection<String> pathsOfModules,
 			final Collection<String> modulesToAdd) throws IOException {
 		final File file = new File(this.outputDirectoryImage.getParentFile(), "jlinkArgs");
 		if (!this.getLog().isDebugEnabled()) {
@@ -547,7 +547,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		return cmd;
 	}
 
-	private boolean hasSuggestProviders() {
+	protected boolean hasSuggestProviders() {
 		return this.suggestProviders != null && !this.suggestProviders.isEmpty();
 	}
 
