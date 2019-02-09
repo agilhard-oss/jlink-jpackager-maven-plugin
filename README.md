@@ -147,6 +147,9 @@ The java classes for the maven goals of this maven plugin
 can be used as base classes for other maven goals and provide some hooks
 to be overloaded by derived classes.
 
+An example for such use as a java library by another Packaging Maven Plugin can be found in the
+[JPacktool Project](https://github.com/agilhard-oss/jpacktool).
+
 [JavaDoc Documentation](https://agilhard-oss.github.io/jlink-jpackager-maven-plugin/site/apidocs/index.html)
 
 
