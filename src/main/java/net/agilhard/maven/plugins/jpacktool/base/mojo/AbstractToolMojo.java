@@ -58,7 +58,7 @@ import org.codehaus.plexus.util.cli.Commandline;
 public abstract class AbstractToolMojo extends AbstractMojo {
 
 
-	
+
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	protected File buildDirectory;
 
@@ -71,7 +71,9 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/jar", required = true, readonly = true)
 	protected File outputDirectoryClasspathJars;
 
-	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/jmods", required = true, readonly = true)
+    @Parameter(
+        defaultValue = "${project.build.directory}/maven-jpacktool/jmods", required = true,
+        readonly = true)
 	protected File outputDirectoryModules;
 
 	@Parameter(defaultValue = "jpacktool", required = true, readonly = true)
@@ -129,7 +131,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue = "false")
 	protected boolean skip;
-	
+
 	/**
 	 * <p>
 	 * Specify the requirements for this jdk toolchain. This overrules the toolchain
@@ -143,11 +145,11 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	protected double javaVersion = 0;
 
 	protected String shouldSkipReason;
-	
+
 	protected Map<String, Object> jpacktoolModel;
 
 	protected Map<String, Object> templateMap;
-	
+
 	/**
 	 *
 	 */
@@ -156,64 +158,64 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	}
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		
-		if ( skip ) {
+
+		if ( this.skip ) {
 			return;
 		}
-		
-		checkShouldSkip();
-		
-		if ( getShouldSkipReason() != null )  {
-			getLog().warn("skipped due to: " + shouldSkipReason);
+
+		this.checkShouldSkip();
+
+		if ( this.getShouldSkipReason() != null )  {
+			this.getLog().warn("skipped due to: " + this.shouldSkipReason);
 		} else {
-			executeToolStart();
-			executeToolMain();
-			executeToolFinish();
+			this.executeToolStart();
+			this.executeToolMain();
+			this.executeToolFinish();
 		}
 	}
-	
+
 	public void executeToolStart() throws MojoExecutionException, MojoFailureException {
 		// can be overriden in derivced clases
 	}
-	
+
 	public abstract void executeToolMain() throws MojoExecutionException, MojoFailureException;
-	
+
 	public void executeToolFinish() throws MojoExecutionException, MojoFailureException {
 		// can be overriden in derivced clases
 	}
-	
+
 	public String getPluginVersion() throws MojoFailureException {
 		String v = null;
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("META-INF/maven/net.agilhard.maven.plugins/jpacktool-maven-plugin/pom.properties") ) {
-			Properties props = new Properties();
+			final Properties props = new Properties();
 			props.load(is);
 			v=props.getProperty("version");
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new MojoFailureException("i/o error", e);
 		}
-		
+
 		return v;
 	}
-	
-	
+
+
 	public void checkShouldSkip() {
-		if ( skip ) {
-			setShouldSkipReason("skip parameter is true");
+		if ( this.skip ) {
+			this.setShouldSkipReason("skip parameter is true");
 		}
 	}
-	
-	
+
+
 	public String getShouldSkipReason() {
-		return shouldSkipReason;
+		return this.shouldSkipReason;
 	}
 
-	public void setShouldSkipReason(String shouldSkipReason) {
+	public void setShouldSkipReason(final String shouldSkipReason) {
 		this.shouldSkipReason = shouldSkipReason;
 	}
 
 	public double getJavaVersion() {
 
-		if (javaVersion == 0) {
+		if (this.javaVersion == 0) {
 
 			String version = System.getProperty("java.version");
 			int pos = version.indexOf('.');
@@ -230,10 +232,10 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 			if (pos > -1) {
 				version = version.substring(0, pos);
 			}
-			javaVersion = Double.parseDouble(version);
+			this.javaVersion = Double.parseDouble(version);
 		}
 
-		return javaVersion;
+		return this.javaVersion;
 	}
 
 	protected String getToolExecutable(final String toolName) throws IOException {
@@ -300,7 +302,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	}
 
 	protected void executeCommand(final Commandline cmd) throws MojoExecutionException {
-		ExecuteCommand.executeCommand(verbose, this.getLog(), cmd);
+		ExecuteCommand.executeCommand(this.verbose, this.getLog(), cmd);
 	}
 
 	public Toolchain getToolchain() {
@@ -345,63 +347,63 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	}
 
 	public File getOutputDirectoryJPacktool() {
-		return outputDirectoryJPacktool;
+		return this.outputDirectoryJPacktool;
 	}
 
 	public File getOutputDirectoryAutomaticJars() {
-		return outputDirectoryAutomaticJars;
+		return this.outputDirectoryAutomaticJars;
 	}
 
 	public File getOutputDirectoryClasspathJars() {
-		return outputDirectoryClasspathJars;
+		return this.outputDirectoryClasspathJars;
 	}
 
 	public File getOutputDirectoryModules() {
-		return outputDirectoryModules;
+		return this.outputDirectoryModules;
 	}
 
 	public String getJpacktoolPropertyPrefix() {
-		return jpacktoolPropertyPrefix;
+		return this.jpacktoolPropertyPrefix;
 	}
 
 	public List<ArtifactParameter> getExcludedArtifacts() {
-		return excludedArtifacts;
+		return this.excludedArtifacts;
 	}
 
 	public List<ArtifactParameter> getClasspathArtifacts() {
-		return classpathArtifacts;
+		return this.classpathArtifacts;
 	}
 
 	public LocationManager getLocationManager() {
-		return locationManager;
+		return this.locationManager;
 	}
 
 	public ToolchainManager getToolchainManager() {
-		return toolchainManager;
+		return this.toolchainManager;
 	}
 
 	public boolean isVerbose() {
-		return verbose;
+		return this.verbose;
 	}
 
 	public Map<String, String> getJdkToolchain() {
-		return jdkToolchain;
+		return this.jdkToolchain;
 	}
 
 	public List<String> getSystemModules() throws MojoExecutionException {
 
-		if (!outputDirectoryJPacktool.exists()) {
-			outputDirectoryJPacktool.mkdirs();
+		if (!this.outputDirectoryJPacktool.exists()) {
+			this.outputDirectoryJPacktool.mkdirs();
 		}
 
-		if (systemModules == null) {
+		if (this.systemModules == null) {
 
-			systemModules = new ArrayList<String>();
+			this.systemModules = new ArrayList<>();
 
 			String javaExecutable;
 			try {
-				javaExecutable = getToolExecutable("java");
-			} catch (IOException e) {
+				javaExecutable = this.getToolExecutable("java");
+			} catch (final IOException e) {
 				throw new MojoExecutionException("i/o error", e);
 			}
 
@@ -410,27 +412,27 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 			cmd.createArg().setValue("--list-modules");
 			cmd.setExecutable(javaExecutable);
 
-			File file = new File(outputDirectoryJPacktool, "java_modules.list");
+			final File file = new File(this.outputDirectoryJPacktool, "java_modules.list");
 			try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-				ExecuteCommand.executeCommand(false, getLog(), cmd, fileOutputStream);
-			} catch (IOException ioe) {
+				ExecuteCommand.executeCommand(false, this.getLog(), cmd, fileOutputStream);
+			} catch (final IOException ioe) {
 				throw new MojoExecutionException("i/o error", ioe);
 			}
 			try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 				String line;
 				while ((line = br.readLine()) != null) {
-					int i = line.indexOf('@');
+					final int i = line.indexOf('@');
 					if (i > 0) {
 						line = line.substring(0, i);
 					}
-					systemModules.add(line);
+					this.systemModules.add(line);
 				}
-			} catch (IOException ioe) {
+			} catch (final IOException ioe) {
 				throw new MojoExecutionException("i/o error", ioe);
 			}
 		}
 
-		return systemModules;
+		return this.systemModules;
 	}
 
 	/**
@@ -483,9 +485,9 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	}
 
 	protected void publishJPacktoolProperties() {
-		String finalName = getFinalName();
+		final String finalName = this.getFinalName();
 		if (finalName != null) {
-			File propertiesFile = this.getArtifactFile(buildDirectory, finalName, "jpacktool_jdeps", "properties");
+			final File propertiesFile = this.getArtifactFile(this.buildDirectory, finalName, "jpacktool_jdeps", "properties");
 			if (propertiesFile.exists()) {
 				this.mavenProjectHelper.attachArtifact(this.project, "properties", "jpacktool_jdeps", propertiesFile);
 			}
@@ -496,7 +498,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 			throws MojoExecutionException {
 		this.zipArchiver.addDirectory(outputDirectoryToZip);
 
-		String finalName = getFinalName();
+		final String finalName = this.getFinalName();
 		File resultArchive = null;
 
 		if (finalName != null) {
@@ -521,5 +523,5 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	public String getFinalName() {
 		return null;
 	}
-	
+
 }
