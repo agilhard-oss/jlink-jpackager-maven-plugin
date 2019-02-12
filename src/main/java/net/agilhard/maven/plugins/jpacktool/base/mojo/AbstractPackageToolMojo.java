@@ -722,7 +722,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	}
 
 	protected abstract void updateJvmArgs() throws MojoFailureException;
-
+	
 	@SuppressWarnings("unchecked")
 	protected void updateJvmArgs(String appFolderName) throws MojoFailureException {
 
