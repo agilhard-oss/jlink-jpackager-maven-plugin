@@ -316,8 +316,16 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		File createZipArchiveFromDirectory= createZipArchiveFromDirectory(this.buildDirectory,
 				this.outputDirectoryImage);
 
-		this.getProject().getArtifact().setFile(createZipArchiveFromDirectory);
-
+		if (SystemUtils.IS_OS_LINUX) {
+            this.mavenProjectHelper.attachArtifact( this.project, "zip", "linux", createZipArchiveFromDirectory );
+		} else if (SystemUtils.IS_OS_WINDOWS) {
+            this.mavenProjectHelper.attachArtifact( this.project, "zip", "windows", createZipArchiveFromDirectory );
+		} else if (SystemUtils.IS_OS_MAC) {
+            this.mavenProjectHelper.attachArtifact( this.project, "zip", "mac", createZipArchiveFromDirectory );
+		} else {
+			this.getProject().getArtifact().setFile(createZipArchiveFromDirectory);
+		}
+		
         publishJPacktoolProperties();
 
 	}
