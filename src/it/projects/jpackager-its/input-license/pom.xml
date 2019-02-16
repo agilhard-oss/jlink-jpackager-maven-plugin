@@ -28,7 +28,7 @@
   <packaging>jpackager</packaging>
   <name>jpackager-its-input-license</name>
   <url>http://maven.apache.org</url>
-  <description>JPackager Integration Tests --input --license-file.</description>
+  <description>jpackager-its-input-license</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>

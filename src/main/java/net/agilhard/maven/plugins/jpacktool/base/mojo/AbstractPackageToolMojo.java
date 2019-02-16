@@ -397,11 +397,11 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	 * @param modules The list of modules.
 	 * @return The string with the module list which is separated by {@code ,}.
 	 */
-	protected String getColonSeparatedList(final Collection<String> modules) {
+	public String getPathSeparatedList(final Collection<String> modules) {
 		final StringBuilder sb = new StringBuilder();
 		for (final String module : modules) {
 			if (sb.length() > 0) {
-				sb.append(':');
+				sb.append(File.pathSeparatorChar);
 			}
 			sb.append(module);
 		}

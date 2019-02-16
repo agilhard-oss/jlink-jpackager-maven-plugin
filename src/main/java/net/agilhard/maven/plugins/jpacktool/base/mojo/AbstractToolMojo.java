@@ -421,11 +421,13 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 			try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 				String line;
 				while ((line = br.readLine()) != null) {
-					final int i = line.indexOf('@');
-					if (i > 0) {
-						line = line.substring(0, i);
+					if ( ! "".equals(line) ) {
+						final int i = line.indexOf('@');
+						if (i > 0) {
+							line = line.substring(0, i);
+						}
+						this.systemModules.add(line);
 					}
-					this.systemModules.add(line);
 				}
 			} catch (final IOException ioe) {
 				throw new MojoExecutionException("i/o error", ioe);

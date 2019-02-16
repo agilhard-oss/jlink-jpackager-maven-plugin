@@ -315,7 +315,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     @Parameter( required = false, readonly = false )
-    protected File licenseFile;
+    protected String licenseFile;
 
 
     /**
@@ -896,7 +896,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( ! ( ( this.files == null ) || this.files.isEmpty() ) )
         {
             argsFile.println( "--files" );
-            final String sb = this.getColonSeparatedList( this.files );
+            final String sb = this.getPathSeparatedList( this.files );
             argsFile.println( sb.toString() );
         }
 
@@ -1120,7 +1120,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( this.licenseFile != null )
         {
             argsFile.println( "--license-file" );
-            argsFile.println(this.licenseFile.getCanonicalPath());
+            argsFile.println(this.licenseFile);
         }
 
         if ( this.copyright != null )
@@ -1470,7 +1470,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( ! ( ( this.files == null ) || this.files.isEmpty() ) )
         {
             cmd.createArg().setValue( "--files" );
-            final String sb = this.getColonSeparatedList( this.files );
+            final String sb = this.getPathSeparatedList( this.files );
             cmd.createArg().setValue( sb );
         }
 
@@ -1718,7 +1718,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( this.licenseFile != null )
         {
             cmd.createArg().setValue( "--license-file" );
-            cmd.createArg().setValue( this.licenseFile.getCanonicalPath() );
+            cmd.createArg().setValue( this.licenseFile);
         }
 
         if ( this.copyright != null )

@@ -28,7 +28,7 @@
   <packaging>jpackager</packaging>
   <name>jpackager-its-input-files</name>
   <url>http://maven.apache.org</url>
-  <description>JPackager Integration Tests --input --files.</description>
+  <description>jpackager-it-input-files</description>
   <properties>
     <maven.compiler.source>1.9</maven.compiler.source>
     <maven.compiler.target>1.9</maven.compiler.target>

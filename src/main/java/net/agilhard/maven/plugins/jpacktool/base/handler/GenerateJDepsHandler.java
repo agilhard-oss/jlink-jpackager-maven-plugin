@@ -129,11 +129,11 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 	 *
 	 * @return The string with the element list which is separated by {@code :}.
 	 */
-	protected String getColonSeparatedList(final Collection<File> elements) throws MojoFailureException {
+	protected String getPathSeparatedList(final Collection<File> elements) throws MojoFailureException {
 		final StringBuilder sb = new StringBuilder();
 		for (final File element : elements) {
 			if (sb.length() > 0) {
-				sb.append(':');
+				sb.append(File.pathSeparatorChar);
 			}
 			try {
 				sb.append(element.getCanonicalPath());
@@ -149,7 +149,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 
 		if (this.classPathElements.size() > 0) {
 			cmd.createArg().setValue("--class-path");
-			String s = this.getColonSeparatedList(this.classPathElements);
+			String s = this.getPathSeparatedList(this.classPathElements);
 			cmd.createArg().setValue(s);
 		}
 
@@ -165,7 +165,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 			}
 			if (outputDirectoryAutomaticJars != null) {
 				if (outputDirectoryModules != null) {
-					sb.append(':');
+					sb.append(File.pathSeparator);
 				}
 				try {
 					sb.append(outputDirectoryAutomaticJars.getCanonicalPath());
@@ -243,8 +243,16 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 						if (line.startsWith("Warning: split package:")) {
 							String e[] = line.split(" ");
 							if (e.length == 6) {
-								String a1 = e[4].substring(e[4].lastIndexOf(File.separatorChar));
-								String a2 = e[5].substring(e[5].lastIndexOf(File.separatorChar));
+								int i1=e[4].lastIndexOf(File.separatorChar);
+								if ( i1 == -1 ) {
+									i1=0;
+								}
+								String a1 = e[4].substring(i1);
+								int i2=e[5].lastIndexOf(File.separatorChar);
+								if ( i2 == -1 ) {
+									i2=0;
+								}
+								String a2 = e[5].substring(i2);
 								if (!a1.equals(a2)) {
 									warnings.add("e.length=" + e.length);
 									warnings.add("a1=" + a1);
