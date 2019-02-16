@@ -432,7 +432,7 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		if ( !target.toFile().exists()) {
 			target.toFile().mkdirs();
 		}
-		target = target.resolve("update4j_"+artifact.getGroupId()+"_"+artifact.getArtifactId()+".xml");
+		target = target.resolve("update4j_"+artifact.getArtifactId()+".xml");
 
 		try {
 			Files.copy(source, target, REPLACE_EXISTING);
