@@ -105,7 +105,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     // TODO: is this a good final location?
-    @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-out", required = true, readonly = true )
+    @Parameter( defaultValue = "${project.build.directory}/jpackager-out", required = true, readonly = true )
     protected File outputDirectoryPackage;
 
     /**
@@ -116,7 +116,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     // TODO: is this a good final location?
-    @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-in", required = true, readonly = true )
+    @Parameter( defaultValue = "${project.build.directory}/jpackager-in", required = true, readonly = true )
     protected File inputDirectoryPackage;
 
     /**
@@ -127,14 +127,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * </p>
      */
     // TODO: is this a good final location?
-    @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-build", required = true, readonly = false )
+    @Parameter( defaultValue = "${project.build.directory}/jpackager-build", required = true, readonly = false )
     protected File buildRootPackage;
 
 
     /**
      * TempDirectory where artifact modules are temporarily copied too.
      */
-    @Parameter( defaultValue = "${project.build.directory}/maven-jpackager-jmods", required = true, readonly = false )
+    @Parameter( defaultValue = "${project.build.directory}/jpackager-jmods", required = true, readonly = false )
     protected File moduleTempDirectory;
 
 

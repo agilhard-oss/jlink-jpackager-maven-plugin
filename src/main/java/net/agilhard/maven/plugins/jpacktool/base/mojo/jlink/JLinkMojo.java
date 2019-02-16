@@ -154,8 +154,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	 * Image is stored in non compressed form. This will later being packaged into a
 	 * <code>zip</code> file. <code>--output &lt;path&gt;</code>
 	 */
-	// TODO: is this a good final location?
-	@Parameter(defaultValue = "${project.build.directory}/maven-jlink", required = true, readonly = true)
+	@Parameter(defaultValue = "${project.build.directory}/jlink", required = true, readonly = true)
 	protected File outputDirectoryImage;
 
 	/**

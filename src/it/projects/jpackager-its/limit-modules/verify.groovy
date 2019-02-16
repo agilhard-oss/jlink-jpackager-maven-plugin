@@ -33,10 +33,10 @@ try
         System.err.println( "target file is missing or not a directory." );
         return false;
     }
-    File out = new File( target, "maven-jpackager-out" );
+    File out = new File( target, "jpackager-out" );
     if ( !out.exists() || !out.isDirectory() )
     {
-        System.err.println( "maven-jpackager-out file is missing or not a directory." );
+        System.err.println( "jpackager-out file is missing or not a directory." );
         return false;
     }
 

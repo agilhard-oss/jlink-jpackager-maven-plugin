@@ -75,7 +75,7 @@ public abstract class AbstractTemplateToolMojo extends AbstractToolMojo {
 	/**
 	 * Output directory where templates are stored when they have been read from internal resource: URLs.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/maven-jpacktool/templates", required = true, readonly = true)
+	@Parameter(defaultValue = "${project.build.directory}/jpacktool/templates", required = true, readonly = true)
 	protected File outputDirectoyTemplates;
 
 	protected TemplateGenerator templateGenerator;
