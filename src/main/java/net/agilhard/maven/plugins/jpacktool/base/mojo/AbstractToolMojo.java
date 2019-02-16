@@ -65,7 +65,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}/jpacktool", required = true, readonly = true)
 	protected File outputDirectoryJPacktool;
 
-	@Parameter(defaultValue = "${project.build.directory}/jpacktool/jar-automatic", required = true, readonly = true)
+	@Parameter(defaultValue = "${project.build.directory}/jpacktool/jar_auto", required = true, readonly = true)
 	protected File outputDirectoryAutomaticJars;
 
 	@Parameter(defaultValue = "${project.build.directory}/jpacktool/jar", required = true, readonly = true)

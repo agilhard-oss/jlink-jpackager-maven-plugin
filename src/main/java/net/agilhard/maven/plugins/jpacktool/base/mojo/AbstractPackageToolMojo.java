@@ -236,7 +236,7 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	/**
 	 * Name of the automatic-modules folder
 	 */
-	@Parameter(defaultValue = "jar-automatic")
+	@Parameter(defaultValue = "jar_auto")
 	protected String automaticModulesFolderName;
 
 	/**
