@@ -22,11 +22,17 @@ package net.agilhard.maven.plugins.jpacktool.base.mojo;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +63,6 @@ import org.codehaus.plexus.util.cli.Commandline;
  */
 public abstract class AbstractToolMojo extends AbstractMojo {
 
-
-
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	protected File buildDirectory;
 
@@ -71,9 +75,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}/jpacktool/jar", required = true, readonly = true)
 	protected File outputDirectoryClasspathJars;
 
-    @Parameter(
-        defaultValue = "${project.build.directory}/jpacktool/jmods", required = true,
-        readonly = true)
+	@Parameter(defaultValue = "${project.build.directory}/jpacktool/jmods", required = true, readonly = true)
 	protected File outputDirectoryModules;
 
 	@Parameter(defaultValue = "jpacktool", required = true, readonly = true)
@@ -159,13 +161,13 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
-		if ( this.skip ) {
+		if (this.skip) {
 			return;
 		}
 
 		this.checkShouldSkip();
 
-		if ( this.getShouldSkipReason() != null )  {
+		if (this.getShouldSkipReason() != null) {
 			this.getLog().warn("skipped due to: " + this.shouldSkipReason);
 		} else {
 			this.executeToolStart();
@@ -186,10 +188,11 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 
 	public String getPluginVersion() throws MojoFailureException {
 		String v = null;
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("META-INF/maven/net.agilhard.maven.plugins/jpacktool-maven-plugin/pom.properties") ) {
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(
+				"META-INF/maven/net.agilhard.maven.plugins/jpacktool-maven-plugin/pom.properties")) {
 			final Properties props = new Properties();
 			props.load(is);
-			v=props.getProperty("version");
+			v = props.getProperty("version");
 		} catch (final IOException e) {
 			throw new MojoFailureException("i/o error", e);
 		}
@@ -197,13 +200,11 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 		return v;
 	}
 
-
 	public void checkShouldSkip() {
-		if ( this.skip ) {
+		if (this.skip) {
 			this.setShouldSkipReason("skip parameter is true");
 		}
 	}
-
 
 	public String getShouldSkipReason() {
 		return this.shouldSkipReason;
@@ -421,7 +422,7 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 			try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 				String line;
 				while ((line = br.readLine()) != null) {
-					if ( ! "".equals(line) ) {
+					if (!"".equals(line)) {
 						final int i = line.indexOf('@');
 						if (i > 0) {
 							line = line.substring(0, i);
@@ -489,11 +490,58 @@ public abstract class AbstractToolMojo extends AbstractMojo {
 	protected void publishJPacktoolProperties() {
 		final String finalName = this.getFinalName();
 		if (finalName != null) {
-			final File propertiesFile = this.getArtifactFile(this.buildDirectory, finalName, "jpacktool_jdeps", "properties");
+			final File propertiesFile = this.getArtifactFile(this.buildDirectory, finalName, "jpacktool_jdeps",
+					"properties");
 			if (propertiesFile.exists()) {
 				this.mavenProjectHelper.attachArtifact(this.project, "properties", "jpacktool_jdeps", propertiesFile);
 			}
 		}
+	}
+
+	protected static String bytesToHex(byte[] hash) {
+	    StringBuffer hexString = new StringBuffer();
+	    for (int i = 0; i < hash.length; i++) {
+	    String hex = Integer.toHexString(0xff & hash[i]);
+	    if(hex.length() == 1) hexString.append('0');
+	        hexString.append(hex);
+	    }
+	    return hexString.toString();
+	}
+	
+	public void publishSHA256(File file) throws MojoFailureException {
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e1) {
+			throw new MojoFailureException("SHA-256 algorithm not found", e1);
+		}
+		byte[] buffer = new byte[1024];
+		try (InputStream is = Files.newInputStream(file.toPath());
+				DigestInputStream dis = new DigestInputStream(is, md)) {
+			/* Read decorated stream (dis) to EOF as normal... */
+			while (dis.read(buffer) > -1) {
+				//
+			}
+		} catch (IOException e) {
+			throw new MojoFailureException("I/O Error", e);
+		}
+		byte[] digest = md.digest();
+		String hex=bytesToHex(digest);
+		String name=file.getName();
+		int i = name.lastIndexOf('.');
+		if ( i > 0 ) {
+			name = name.substring(0,i);
+		}
+		name = name + ".sha256";
+		File outFile = new File(file.getParent(), name );
+		try ( FileOutputStream fout=new FileOutputStream(outFile); PrintStream pout = new PrintStream(fout) ) {
+			pout.println(hex);
+		} catch (FileNotFoundException e) {
+			throw new MojoFailureException("File not found:" + outFile.getAbsolutePath(), e );
+		} catch (IOException e) {
+			throw new MojoFailureException("I/O Error", e);
+		}
+		this.mavenProjectHelper.attachArtifact(this.project, "sha256", "sha256", outFile);
 	}
 
 	protected File createZipArchiveFromDirectory(final File outputDirectory, final File outputDirectoryToZip)

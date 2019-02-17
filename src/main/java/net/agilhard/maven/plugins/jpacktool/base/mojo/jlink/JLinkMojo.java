@@ -109,13 +109,13 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 	protected String mainJar;
 
 	/**
-	 * Name of the script generated from launcherTemplate for linux
+	 * Name of the script generated from launcherTemplate for windows
 	 */
-	@Parameter(defaultValue = "start.sh")
+	@Parameter(defaultValue = "start.ps1")
 	protected String launcherTemplateScriptWindows;
 
 	/**
-	 * Name of the script generated from launcherTemplate for linux
+	 * Name of the script generated from launcherTemplate for mac
 	 */
 	@Parameter(defaultValue = "start.sh")
 	protected String launcherTemplateScriptMac;
@@ -325,8 +325,10 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 			this.getProject().getArtifact().setFile(createZipArchiveFromDirectory);
 		}
 		
+		publishSHA256(createZipArchiveFromDirectory);
+		
         publishJPacktoolProperties();
-
+        
 	}
 
 	protected void updateModel() throws MojoFailureException {
@@ -563,32 +565,36 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		super.initTemplates();
 		
 		if ("default".equals(launcherTemplate)) {
-			if (SystemUtils.IS_OS_LINUX) {
-				launcherTemplate = "resource:/templates/launcher_linux.ftl";
-			} else if (SystemUtils.IS_OS_WINDOWS) {
-				launcherTemplate = "resource:/templates/launcher_win.ftl";
-			} else if (SystemUtils.IS_OS_MAC) {
-				launcherTemplate = "resource:/templates/launcher_mac.ftl";
+			if (SystemUtils.IS_OS_WINDOWS) {
+				launcherTemplate = "resource:/templates/launcher_ps1.ftl";
+			} else {
+				launcherTemplate = "resource:/templates/launcher_sh.ftl";
 			}
 		}
 		
 		if (((launcher == null) || "".equals(launcher))
 				&& ((launcherTemplateScript == null) || "".equals(launcherTemplateScript))) {
 			// if nothing specified use these defaults
-			if (SystemUtils.IS_OS_LINUX) {
-				launcherTemplateScript = launcherTemplateScriptLinux;
-			} else if (SystemUtils.IS_OS_WINDOWS) {
+			if (SystemUtils.IS_OS_WINDOWS) {
 				launcherTemplateScript = launcherTemplateScriptWindows;
+			} else	if (SystemUtils.IS_OS_LINUX) {
+				launcherTemplateScript = launcherTemplateScriptLinux;
 			} else if (SystemUtils.IS_OS_MAC) {
 				launcherTemplateScript = launcherTemplateScriptMac;
 			}
 		}
 
 		if ((launcherTemplateScript != null) && (!"".equals(launcherTemplateScript))) {
-			launcherTemplate = initTemplate(launcherTemplate, "launcherTemplate.ftl");
+			launcherTemplate = initTemplate(launcherTemplate, "launcher.ftl");
 		} else {
 			launcherTemplate = null;
 		}
+		
+		
+		getLog().debug("LauncherTemplateScript="+launcherTemplateScript);
+		getLog().debug("LauncherTemplate="+launcherTemplate);
+
+		
 	}
 
 	public void generateScript() throws MojoFailureException {
@@ -596,7 +602,7 @@ public class JLinkMojo extends AbstractPackageToolMojo {
 		if ((launcherTemplate != null) && (launcherTemplateScript != null)) {
 			File outputFile = new File(new File(outputDirectoryImage, "bin"), launcherTemplateScript);
 
-			generateFromTemplate("launcherTemplate.ftl", outputFile);
+			generateFromTemplate("launcher.ftl", outputFile);
 		}
 	}
 
