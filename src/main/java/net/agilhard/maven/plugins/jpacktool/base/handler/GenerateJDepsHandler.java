@@ -146,13 +146,13 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 
 	protected Commandline createJDepsCommandLine(File sourceFile) throws MojoFailureException {
 		final Commandline cmd = new Commandline();
-
+/*
 		if (this.classPathElements.size() > 0) {
 			cmd.createArg().setValue("--class-path");
 			String s = this.getPathSeparatedList(this.classPathElements);
 			cmd.createArg().setValue(s);
 		}
-
+*/
 		if ((outputDirectoryAutomaticJars != null) || (outputDirectoryModules != null)) {
 			cmd.createArg().setValue("--module-path");
 			StringBuilder sb = new StringBuilder();
