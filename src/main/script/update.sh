@@ -178,7 +178,7 @@ fi
 
 Launch() {
     cd $Dest
-    bin/java --module-path app/jar_auto -splash:conf/splash.gif ${mainClass} ${launcherArguments}
+    bin/java --module-path app/jar_auto ${mainClass} ${launcherArguments}
 }
 
 Install() {

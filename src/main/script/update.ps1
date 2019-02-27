@@ -182,7 +182,7 @@ function Launch
 {
     cd $($Dest)
 
-    Start-Process -FilePath bin\java -ArgumentList "--module-path app\jar_auto -splash:conf\splash.gif $(mainClass) $($launcherArguments)" -WindowStyle Hidden -PassThru 
+    Start-Process -FilePath bin\java -ArgumentList "--module-path app\jar_auto $(mainClass) $($launcherArguments)" -WindowStyle Hidden -PassThru 
 }
 
 
