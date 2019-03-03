@@ -4,6 +4,20 @@ app="sample"
 icon="sample.ico"
 mainClass="myproject.Sample"
 
+if [ -f "${HOME}/.config/user-dirs.dirs" ]; then
+    source "${HOME}/.config/user-dirs.dirs"
+fi
+if [ "${XDG_DESKTOP_DIR}" == "" ]; then
+    if [ -d "${HOME}/Desktop" ]; then
+	XDG_DESKTOP_DIR="${HOME}/Desktop"
+    elif [ -d "${HOME}/Desktop" ]; then
+	XDG_DESKTOP_DIR="${HOME}/Desktop"
+    else
+	echo "Desktop Directory not found"
+	exit 1
+    fi
+fi
+
 os=`uname`
 if [ "${os}" == "Darwin" ]; then
 os="mac"
@@ -187,7 +201,7 @@ Install() {
     fi
     q=$(quote ${launcherArguments})
 
-    cat <<EOF >"${HOME}/Desktop/${app}.desktop"
+    cat <<EOF >"${XDG_DESKTOP_DIR}/${app}.desktop"
 [Desktop Entry]
     Exec="${ScriptDir}/${ScriptName}" -server "$server" -port "${port}" ${q}
     Encoding=UTF-8
