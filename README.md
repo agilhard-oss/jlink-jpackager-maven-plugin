@@ -19,7 +19,7 @@
 
 Combined maven plugin to call the new jlink and jpackager tools from maven and java library for other packaging maven plugins.
 
-Based on Apache [jlink-jpackager-maven-plugin](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin)
+Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugin.git)
 
 [Apache License](http://www.apache.org/licenses/LICENSE-2.0)
 
