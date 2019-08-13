@@ -51,19 +51,13 @@ try
             System.err.println( "first-1.2.3-1.x86_64.rpm file is missing or is a directory." );
             return false;
         }
-        artifact  = new File( out, "first-1.2.3.deb" );
-        if ( !artifact.exists() || artifact.isDirectory() )
-        {
-            System.err.println( "first-1.2.3.deb file is missing or is a directory." );
-            return false;
-        }
     } 
     else if ( Os.isName( "Windows" ) )
     {
-        artifact  = new File( out, "first-1.2.3.msi" );
+        artifact  = new File( out, "first-1.2.3.exe" );
         if ( !artifact.exists() || artifact.isDirectory() )
         {
-            System.err.println( "first-1.2.3.msi file is missing or is a directory." );
+            System.err.println( "first-1.2.3.exe file is missing or is a directory." );
             return false;
         }
     }

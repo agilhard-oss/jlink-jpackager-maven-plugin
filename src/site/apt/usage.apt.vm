@@ -22,7 +22,7 @@ Usage
 
   The <<JLink-JPackager Maven Plugin>> is intended to create {{{http://openjdk.java.net/jeps/220}Modular Java Run-Time Images}}
   via {{{http://openjdk.java.net/jeps/282}jlink}} with <<JDK 9>> and above 
-  or native installable packages via {{{http://openjdk.java.net/jeps/343}jpackage}} with <<JDK 12>> and above.
+  or native installable packages via {{{http://openjdk.java.net/jeps/343}jpackage}} with <<JDK 14>> and above.
 
   Although the <<jlink>> and <<jpackage>> tools have some limitations in regards to using non module jars
   and automatic module jars the <<JLink-JPackager Maven Plugin>> can create ZIP files
@@ -82,17 +82,17 @@ Usage
 * Requirements
 
   Based on the foundation of the plugin it is required to have at least JDK 9
-  installed to use the jlink goal and at least JDK11/12 installed to use the
-  jpackager goal.  This means either you have it configured via <<JAVA_HOME>> 
+  installed to use the jlink goal and at least JDK11 or JDK14 must be installed to use the
+  jpackager goal.  This means either you have such JDK configured via <<JAVA_HOME>> 
   which means to run the whole
-  Maven build with JDK 9/12 or via <<Toolchains>>.
+  Maven build with JDK 9/14 or you can use this via Maven <<Toolchains>>.
 
   Howto configure Maven related to Toolchains can be read in the
   {{{https://maven.apache.org/guides/mini/guide-using-toolchains.html}Toolchains documentation}}.
 
-  You need to use the special JDK-12 Early Access build that includes JPackager support to use the <<jpackager>> goal.
+  You need to use the special JDK-14 Early Access build that includes JPackager support to use the <<jpackager>> goal.
 
-  This JPackager JDK-12 Early Access build can be downloaded from 
+  This JPackager JDK-14 Early Access build can be downloaded from 
   {{{https://jdk.java.net/jpackage/}https://jdk.java.net/jpackage/}}.
 
   Alternatively you can also use the JDK-11 backported JPackager tool wich is mentioned in

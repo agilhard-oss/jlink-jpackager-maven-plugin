@@ -51,7 +51,6 @@
         <configuration>
         <verbose>true</verbose>
         <module>first.jar.module.info/myproject.HelloWorld</module>
-        <mode>create-image</mode>
         </configuration>
       </plugin>
     </plugins>

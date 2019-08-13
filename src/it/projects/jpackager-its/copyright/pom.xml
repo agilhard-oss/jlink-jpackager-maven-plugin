@@ -51,7 +51,10 @@
         <configuration>
 			<verbose>true</verbose>
 			<module>first.jar.module.info/myproject.HelloWorld</module>
-			<copyright>(c) 2018 Bernd Eilers</copyright>
+			<copyright>(c) 2018-2019 Bernd Eilers</copyright>
+          <linuxOptions><linuxType>rpm</linuxType></linuxOptions>
+          <windowsOptions><windowsType>exe</windowsType></windowsOptions>
+          <macOptions><macType>dmg</macType></macOptions>
         </configuration>
       </plugin>
     </plugins>

@@ -49,13 +49,16 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-			<verbose>true</verbose>
-			<module>first.jar.module.info/myproject.HelloWorld</module>
-			<inputDirectoryPackage>src/main/jpackager</inputDirectoryPackage>
-			<files>
+          <verbose>true</verbose>
+          <module>first.jar.module.info/myproject.HelloWorld</module>
+          <inputDirectoryPackage>src/main/jpackager</inputDirectoryPackage>
+          <files>
 			  <file>bar.txt</file>
-                          <file>foo.txt</file>
-                        </files>
+              <file>foo.txt</file>
+          </files>
+          <linuxOptions><linuxType>rpm</linuxType></linuxOptions>
+          <windowsOptions><windowsType>exe</windowsType></windowsOptions>
+          <macOptions><macType>dmg</macType></macOptions>
         </configuration>
       </plugin>
     </plugins>

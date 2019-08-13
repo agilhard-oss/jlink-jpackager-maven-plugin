@@ -77,17 +77,6 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 	protected List<String> jvmArgs;
 
 	/**
-	 * JVM options the user may override along and their default values (see
-	 * UserJvmOptionsService API for more details).
-	 *
-	 * <p>
-	 * <code>--user-jvm-args &lt;args&gt;</code>
-	 * </p>
-	 */
-	@Parameter(required = false, readonly = false)
-	protected List<String> userJvmArgs;
-
-	/**
 	 * Command line arguments to pass to the main class if no arguments are
 	 * specified by the launcher.
 	 *
@@ -838,10 +827,6 @@ public abstract class AbstractPackageToolMojo extends AbstractTemplateToolMojo i
 
 	public List<String> getJvmArgs() {
 		return jvmArgs;
-	}
-
-	public List<String> getUserJvmArgs() {
-		return userJvmArgs;
 	}
 
 	public List<String> getArguments() {
