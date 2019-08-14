@@ -1240,6 +1240,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                     argsFile.println( this.linuxOptions.debMaintainer );
                 }
             }
+            if ( this.linuxOptions.menuGroup != null )
+            {
+                argsFile.println( "--linux-menu-group" );
+                argsFile.println( this.linuxOptions.menuGroup );
+            }
         }
 
         if ( SystemUtils.IS_OS_WINDOWS && ( this.windowsOptions != null ) )
