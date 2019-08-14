@@ -836,13 +836,9 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         final PrintStream argsFile = new PrintStream( file );
 
-        if ( this.mode != null )
-        {
-            argsFile.println( this.mode );
-        }
-
         if ( this.type != null )
         {
+            argsFile.println( "--package-type" );
             argsFile.println( this.type );
         }
 
@@ -879,7 +875,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
             }
 
-            argsFile.println( "--build-root" );
+            argsFile.println( "--temp-root" );
             s = this.buildRootPackage.getCanonicalPath();
             if ( s.indexOf( " " ) > -1 )
             {
@@ -1380,7 +1376,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
 
-        argsFile.println( "--force" );
         argsFile.close();
 
         final Commandline cmd = new Commandline();
