@@ -1014,7 +1014,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             for ( final String arg : this.jvmArgs )
             {
-                argsFile.println( "--jvm-args" );
+                argsFile.println( "--java-options" );
                 if ( arg.indexOf( " " ) > -1 )
                 {
                     argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
