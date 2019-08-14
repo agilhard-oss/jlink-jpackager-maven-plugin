@@ -371,6 +371,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     protected String module;
 
     /**
+     * Skip including of modules.
+     */
+    @Parameter( defaultValue = "false", required = false, readonly = false )
+    protected boolean skipModulesInclude;
+
+    /**
      * Linux Options.
      *
      * <p>
@@ -915,7 +921,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             argsFile.println(  this.appVersion.replaceAll( "-SNAPSHOT", "" ).replaceAll( ".SNAPSHOT", "" ) );
         }
 
-        if ( pathsOfModules != null )
+        if ( ! skipModulesInclude && pathsOfModules != null )
         {
             argsFile.println( "--module-path" );
             final String s = this.getPlatformDependSeparateList( pathsOfModules );
@@ -1178,7 +1184,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             argsFile.println( sb );
         }
 
-        if ( !modulesToAdd.isEmpty() )
+        if ( ! skipModulesInclude && !modulesToAdd.isEmpty() )
         {
             argsFile.println( "--add-modules" );
             argsFile.println( this.getCommaSeparatedList( modulesToAdd ) );
