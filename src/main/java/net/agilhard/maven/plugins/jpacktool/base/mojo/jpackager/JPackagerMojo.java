@@ -317,6 +317,13 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     @Parameter( required = false, readonly = false )
     protected String licenseFile;
 
+    /**
+     * This argument defines the path (absolute or relative) to the resource directory which overrides jpackage
+     * resources, including icons, template files or other files.
+     */
+    @Parameter( required = false, readonly = false )
+    protected String resourceDir;
+
 
     /**
      * Copyright for the application.
@@ -1123,6 +1130,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             argsFile.println( "--license-file" );
             argsFile.println(this.licenseFile);
+        }
+
+        if ( this.resourceDir != null )
+        {
+            argsFile.println( "--resource-dir" );
+            argsFile.println( this.resourceDir );
         }
 
         if ( this.copyright != null )
