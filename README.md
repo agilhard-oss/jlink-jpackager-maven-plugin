@@ -28,7 +28,7 @@ Based on Apache [maven-jlink-plugin](https://github.com/apache/maven-jlink-plugi
 ## Introduction
 
   The JLink-JPackager Maven plugin is intended to create [Modular Run-Time Images](http://openjdk.java.net/jeps/220) with **JDK 9**
-  and above or native installable packages via [jpackage](http://openjdk.java.net/jeps/343) with **JDK 12** and above.
+  and above or native installable packages via [jpackage](http://openjdk.java.net/jeps/343) with **JDK 14** and above.
   
   Although the jlink and jpackage tools have some limitations in regards to using non module jars 
   and automatic module jars the JLink-JPackager Maven plugin
@@ -72,9 +72,9 @@ You need at least Java-9 to use this goal.
 The JPackager goal is intended to create a native installer package file based on
 [http://openjdk.java.net/jeps/343](http://openjdk.java.net/jeps/343).
 
-You need to use the special JDK-12 Early Access build that includes JPackager support to use this goal.
+You need to use the special JDK-14 Early Access build that includes JPackager support to use this goal.
 
-This JPackager JDK-12 Early Access build can be downloaded from 
+This JPackager JDK-14 Early Access build can be downloaded from 
 [https://jdk.java.net/jpackage/](https://jdk.java.net/jpackage/)
 
 Alternatively you can also use the JDK-11 backported JPackager tool wich is mentioned in
@@ -91,7 +91,7 @@ Maven Runtime JDK Requirement is JDK-8 or above.
 If you are using JDK-8 as runtime for your maven you must specify your target
 JDK location by using the Maven toolchain feature.
 
-You need to use the special JDK-12 or above Early Access build that includes
+You need to use the special JDK-14 or above Early Access build that includes
 JPackager support to use the plugin with the jpackage(r) Java tool
 as long as the jpackage(r) tool is not officially part of the JDK.
 

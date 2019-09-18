@@ -49,10 +49,13 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-	  <verbose>true</verbose>
-	  <module>first.jar.module.info/myproject.HelloWorld</module>
-	  <inputDirectoryPackage>src/main/jpackager</inputDirectoryPackage>
-	  <licenseFile>LICENSE</licenseFile>
+	      <verbose>true</verbose>
+	      <module>first.jar.module.info/myproject.HelloWorld</module>
+	      <inputDirectoryPackage>src/main/jpackager</inputDirectoryPackage>
+	      <licenseFile>LICENSE</licenseFile>
+          <linuxOptions><linuxType>rpm</linuxType></linuxOptions>
+          <windowsOptions><windowsType>exe</windowsType></windowsOptions>
+          <macOptions><macType>dmg</macType></macOptions>
         </configuration>
       </plugin>
     </plugins>

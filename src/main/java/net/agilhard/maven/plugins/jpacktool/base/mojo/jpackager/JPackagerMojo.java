@@ -75,15 +75,6 @@ import net.agilhard.maven.plugins.jpacktool.base.mojo.AbstractPackageToolMojo;
 // CHECKSTYLE_ON: LineLength
 public class JPackagerMojo extends AbstractPackageToolMojo
 {
-
-
-    /**
-     * Mode of JPackager operation.
-     * One of <code>create-image</code>, <code>create-installer</code>, <code>create-jre-installer</code>.
-     */
-    @Parameter( defaultValue = "create-installer", required = true, readonly = false )
-    protected String mode;
-
     /**
      * Installer type of JPackager operation.
      * <p>
@@ -95,7 +86,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      *  </p>
      */
     @Parameter( property = "jlink-jpackager.package-type", required = false, readonly = false )
-    protected String type;
+    protected String packageType;
 
     /**
      * The output directory for the resulting Application Image or Package.
@@ -217,41 +208,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     protected File icon;
 
     /**
-     * Prevents multiple instances of the application from launching
-     * (see SingleInstanceService API for more details).
-     *
-     * <p>
-     * <code>--singleton</code>
-     * </p>
-     */
-    @Parameter( required = false, readonly = false )
-    protected boolean singleton;
-
-    /**
      * Machine readable identifier of the application. The format
      * must be a DNS name in reverse order, such as com.example.myapplication.
-     * The identifier is used for composing Single Instance unique id and
-     * calculating preferences node to search for User JVM Options
-     * (the format is a slash delimited version of the main package name,
-     * such as "com/example/myapplication"), see UserJvmOptionsService API
-     * for more details.
      * <p>
      * <code>--identifier &lt;identifier&gt;</code>
      * </p>
      */
     @Parameter( defaultValue = "${project.groupId}.${project.artifactId}", required = false, readonly = false )
     protected String identifier;
-
-    /**
-     * Removes native executables from the custom run-time images.
-     *
-     * <p>
-     * <code>--strip-native-commands</code>
-     * </p>
-     */
-    @Parameter( required = false, readonly = false )
-    protected boolean stripNativeCommands;
-
 
     /**
      * Properties file that contains list of key=value parameters that
@@ -547,7 +511,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         this.executeCommand(cmd);
 
-        if ( "create-image".equals( this.mode ) )
+        if ( ("".equals( this.packageType ) || (packageType==null) ) )
         {
             final File createZipArchiveFromPackage = this.createZipArchiveFromDirectory( this.buildDirectory, this.outputDirectoryPackage );
 
@@ -639,19 +603,18 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     
     protected void maySetPlatformDefaultType()
     {
-        if ( ( ( this.type == null ) || ( "".equals( this.type ) ) )
-        && ( ! "create-image".equals(this.mode)) )
+        if ( ( this.packageType == null ) || ( "".equals( this.packageType) ) )
         {
             if ( SystemUtils.IS_OS_LINUX && ( this.linuxOptions != null ) ) {
-                this.type = this.linuxOptions.linuxType;
+                this.packageType = this.linuxOptions.linuxType;
             }
             else if ( SystemUtils.IS_OS_WINDOWS ) {
-                this.type = ( ( this.windowsOptions == null )  || ( this.windowsOptions.windowsType == null ) ) ? "exe" : this.windowsOptions.windowsType;
+                this.packageType = this.windowsOptions.windowsType;
             }
             else if ( SystemUtils.IS_OS_MAC  ) {
-                this.type = ( ( this.macOptions == null ) || ( this.macOptions.macType == null ) ) ? "dmg" : this.macOptions.macType;
+                this.packageType = this.macOptions.macType;
             }
-        this.getLog().info("<type> is not set using platform default (" + ( this.type == null ? "" : this.type ) + ")" );
+            this.getLog().info("<packageType> is not set using platform default (" + ( this.packageType == null ? "" : this.packageType) + ")" );
         }
     }
 
@@ -676,6 +639,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
     protected File findPackageFile( final String extension )
     {
+        if ( ( this.outputDirectoryPackage == null) || ( ! this.outputDirectoryPackage.exists()) ) {
+            return null;
+        }
+
         final class FindPackageResult
         {
             File file;
@@ -706,7 +673,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                     {
                         if ( result.getFile() != null )
                         {
-                            this.getLog().info( "findPackageFile name=" + name );
+                            this.getLog().debug( "findPackageFile name=" + name );
                         }
                         result.setFile( name.toFile() );
                     } );
@@ -849,10 +816,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         final PrintStream argsFile = new PrintStream( file );
 
-        if ( this.type != null )
+        if ( this.packageType != null )
         {
             argsFile.println( "--package-type" );
-            argsFile.println( this.type );
+            argsFile.println( this.packageType);
         }
 
         if ( this.verbose )
@@ -904,9 +871,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( ! ( ( this.files == null ) || this.files.isEmpty() ) )
         {
-            argsFile.println( "--files" );
-            final String sb = this.getPathSeparatedList( this.files );
-            argsFile.println( sb.toString() );
+            this.getLog().warn("--files is only supported for JDK11 jpackager mode");
         }
 
         if ( this.name != null )
@@ -969,6 +934,23 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             argsFile.println(  this.module );
         }
 
+
+        if ( ! ( ( this.jvmArgs == null ) || this.jvmArgs.isEmpty() ) )
+        {
+            for ( final String arg : this.jvmArgs )
+            {
+                argsFile.println( "--java-options" );
+                if ( arg.indexOf( " " ) > -1 )
+                {
+                    argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
+                }
+                else
+                {
+                    argsFile.println( arg );
+                }
+            }
+        }
+
         if ( ! ( ( this.arguments == null ) || this.arguments.isEmpty() ) )
         {
             for ( final String arg : this.arguments )
@@ -999,12 +981,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
 
-        if ( this.singleton )
-        {
-            argsFile.println( "--singleton" );
-        }
-
-
         if ( this.identifier != null )
         {
             argsFile.println( "--identifier" );
@@ -1016,45 +992,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             {
                 argsFile.println( this.identifier );
             }
-        }
-
-        if ( this.stripNativeCommands )
-        {
-            argsFile.println( "--strip-native-commands" );
-        }
-
-        if ( ! ( ( this.jvmArgs == null ) || this.jvmArgs.isEmpty() ) )
-        {
-            for ( final String arg : this.jvmArgs )
-            {
-                argsFile.println( "--java-options" );
-                if ( arg.indexOf( " " ) > -1 )
-                {
-                    argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
-                }
-                else
-                {
-                    argsFile.println( arg );
-                }
-            }
-
-        }
-
-        if ( ! ( ( this.userJvmArgs == null ) || this.userJvmArgs.isEmpty() ) )
-        {
-            for ( final String arg : this.userJvmArgs )
-            {
-                argsFile.println( "--user-jvm-args" );
-                if ( arg.indexOf( " " ) > -1 )
-                {
-                    argsFile.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).println( "\"" );
-                }
-                else
-                {
-                    argsFile.println( arg );
-                }
-            }
-
         }
 
         if ( this.fileAssociations != null )
@@ -1192,9 +1129,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( this.hasLimitModules() )
         {
-            argsFile.println( "--limit-modules" );
-            final String sb = this.getCommaSeparatedList( this.limitModules );
-            argsFile.println( sb );
+            this.getLog().warn("--limit-modules is only supported for JDK11 jpackager mode");
         }
 
         if ( ! skipModulesInclude && !modulesToAdd.isEmpty() )
@@ -1423,14 +1358,14 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         final Commandline cmd = new Commandline();
 
-        if ( this.mode != null )
+        if ( (this.packageType != null)  && (!"".equals(this.packageType)) )
         {
-            cmd.createArg().setValue( this.mode );
+            cmd.createArg().setValue("create-installer"); // mode arg
+            cmd.createArg().setValue( this.packageType);
         }
-
-        if ( this.type != null )
+        else
         {
-            cmd.createArg().setValue( this.type );
+            cmd.createArg().setValue("create-image");
         }
 
         if ( this.verbose )
@@ -1593,12 +1528,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
 
-        if ( this.singleton )
-        {
-            cmd.createArg().setValue( "--singleton" );
-        }
-
-
         if ( this.identifier != null )
         {
             cmd.createArg().setValue( "--identifier" );
@@ -1612,11 +1541,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             {
                 cmd.createArg().setValue( this.identifier );
             }
-        }
-
-        if ( this.stripNativeCommands )
-        {
-            cmd.createArg().setValue( "--strip-native-commands" );
         }
 
         if ( ! ( ( this.jvmArgs == null ) || this.jvmArgs.isEmpty() ) )
@@ -1636,24 +1560,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                 }
             }
         }
-
-        if ( ! ( ( this.userJvmArgs == null ) || this.userJvmArgs.isEmpty() ) )
-        {
-            for ( final String arg : this.jvmArgs )
-            {
-                cmd.createArg().setValue( "--user-jvm-args" );
-                if ( arg.indexOf( " " ) > -1 )
-                {
-                    final StringBuilder sb = new StringBuilder();
-                    sb.append( "\"" ).append( arg.replace( "\\", "\\\\" ) ).append( "\"" );
-                    cmd.createArg().setValue( sb.toString() );
-                }
-                else
-                {
-                    cmd.createArg().setValue( arg );
-                }
-            }
-    }
 
         if ( this.fileAssociations != null )
         {
@@ -2027,30 +1933,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
 
-        cmd.createArg().setValue( "--force" );
-
         return cmd;
     }
 
     protected void failIfParametersAreNotValid()
             throws MojoFailureException
     {
-        if ( ( this.mode == null ) && ( "".equals( this.mode ) ) )
-        {
-            final String message = "The mode parameter must be set";
-            this.getLog().error( message );
-            throw new MojoFailureException( message );
-        }
-
-        if ( ! ( "create-image".equals( this.mode )
-                || "create-installer".equals( this.mode )
-                || "create-jre-installer".equals( this.mode ) ) )
-        {
-            final String message = "The mode parameter must be one of create-image, create-installer or create-jre-installer";
-            this.getLog().error( message );
-            throw new MojoFailureException( message );
-        }
-
         if ( ( ( this.module == null ) && ( this.mainClass == null )
             && ( this.mainJar == null ) ) && ( this.appImage != null ) )
         {
@@ -2082,18 +1970,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             throw new MojoFailureException( message );
         }
 
-        if ( ( this.type != null ) && ( "create-image".equals( this.mode ) ) )
+        if ( ( this.packageType != null ) && ( ! ( "msi".equals( this.packageType) || "exe".equals( this.packageType)
+                 || "rpm".equals( this.packageType) || "deb".equals( this.packageType)
+                 || "dmg".equals( this.packageType) || "pkg".equals( this.packageType)
+                 || "pkg-app-store".equals( this.packageType) ) ) )
         {
-            final String message = "<type> is not valid if <mode> is \"create-image\".";
-            this.getLog().error( message );
-            throw new MojoFailureException( message );
-        }
-        if ( ( this.type != null ) && ( ! ( "msi".equals( this.type ) || "exe".equals( this.type )
-                 || "rpm".equals( this.type ) || "deb".equals( this.type )
-                 || "dmg".equals( this.type ) || "pkg".equals( this.type )
-                 || "pkg-app-store".equals( this.type ) ) ) )
-        {
-            final String message = "<type> is not valid, only msi, rpm, deb, dmg, pkg, pkg-app-store are allowed.";
+            final String message = "<packageType> is not valid, only msi, rpm, deb, dmg, pkg, pkg-app-store are allowed.";
             this.getLog().error( message );
         }
 

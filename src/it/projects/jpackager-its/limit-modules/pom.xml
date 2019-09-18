@@ -49,12 +49,15 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-		<verbose>true</verbose>
-		<module>first.jar.module.info/myproject.HelloWorld</module>
-		<limitModules>
-		  <limitModule>java.base</limitModule>
-		  <limitModule>first.jar.module.info</limitModule>
-		</limitModules>
+		    <verbose>true</verbose>
+		    <module>first.jar.module.info/myproject.HelloWorld</module>
+		    <limitModules>
+		        <limitModule>java.base</limitModule>
+		        <limitModule>first.jar.module.info</limitModule>
+            </limitModules>
+            <linuxOptions><linuxType>rpm</linuxType></linuxOptions>
+            <windowsOptions><windowsType>exe</windowsType></windowsOptions>
+            <macOptions><macType>dmg</macType></macOptions>
         </configuration>
       </plugin>
     </plugins>

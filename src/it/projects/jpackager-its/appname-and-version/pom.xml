@@ -50,11 +50,14 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-        <verbose>true</verbose>
-		<module>first.jar.module.info/myproject.HelloWorld</module>
-		<name>first</name>
-		<description>The first Application</description>
-		<appVersion>1.2.3</appVersion>
+          <verbose>true</verbose>
+		  <module>first.jar.module.info/myproject.HelloWorld</module>
+		  <name>first</name>
+		  <description>The first Application</description>
+		  <appVersion>1.2.3</appVersion>
+          <linuxOptions><linuxType>rpm</linuxType></linuxOptions>
+          <windowsOptions><windowsType>exe</windowsType></windowsOptions>
+          <macOptions><macType>dmg</macType></macOptions>
         </configuration>
       </plugin>
     </plugins>

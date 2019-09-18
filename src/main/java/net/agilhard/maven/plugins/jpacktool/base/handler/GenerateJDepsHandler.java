@@ -153,6 +153,8 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 			cmd.createArg().setValue(s);
 		}
 */
+		cmd.createArg().setValue("\"");
+
 		if ((outputDirectoryAutomaticJars != null) || (outputDirectoryModules != null)) {
 			cmd.createArg().setValue("--module-path");
 			StringBuilder sb = new StringBuilder();
@@ -193,6 +195,9 @@ public class GenerateJDepsHandler extends AbstractEndVisitDependencyHandler {
 		} catch (IOException e) {
 			throw new MojoFailureException("error getting path");
 		}
+
+
+		cmd.createArg().setValue("\"");
 
 		return cmd;
 	}

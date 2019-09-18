@@ -51,19 +51,13 @@ try
             System.err.println( "jpackager-its-add-modules-99.0-1.x86_64.rpm file is missing or is a directory." );
             return false;
         }
-        artifact  = new File( out, "jpackager-its-add-modules-99.0.deb" );
-        if ( !artifact.exists() || artifact.isDirectory() )
-        {
-            System.err.println( "jpackager-its-add-modules-99.0.deb file is missing or is a directory." );
-            return false;
-        }
     } 
     else if ( Os.isName( "Windows" ) )
     {
-        artifact  = new File( out, "jpackager-its-add-modules-99.0.msi" );
+        artifact  = new File( out, "jpackager-its-add-modules-99.0.exe" );
         if ( !artifact.exists() || artifact.isDirectory() )
         {
-            System.err.println( "jpackager-its-add-modules-99.0.msi file is missing or is a directory." );
+            System.err.println( "jpackager-its-add-modules-99.0.exe file is missing or is a directory." );
             return false;
         }
     }
