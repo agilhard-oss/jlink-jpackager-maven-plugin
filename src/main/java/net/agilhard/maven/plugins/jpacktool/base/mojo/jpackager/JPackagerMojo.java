@@ -94,7 +94,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      *  &lt;linuxType&gt;, &lt;windowsType&gt; or &lt;macType&gt; is being used.
      *  </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter( property = "jlink-jpackager.package-type", required = false, readonly = false )
     protected String type;
 
     /**
