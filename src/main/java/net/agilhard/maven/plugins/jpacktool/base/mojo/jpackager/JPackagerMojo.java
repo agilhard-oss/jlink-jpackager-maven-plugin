@@ -1237,7 +1237,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.bundleName != null )
             {
-                argsFile.println( "--mac-bundle-name" );
+                argsFile.println( "--mac-package-name" );
                 if ( this.macOptions.bundleName.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" ).append( this.macOptions.bundleName.replace( "\\", "\\\\" ) ).println( "\"" );
@@ -1249,7 +1249,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.bundleIdentifier != null )
             {
-                argsFile.println( "--mac-bundle-identifier" );
+                argsFile.println( "--mac-package-identifier" );
                 if ( this.macOptions.bundleIdentifier.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" ).append( this.macOptions.bundleIdentifier.replace( "\\", "\\\\" ) ).println( "\"" );
@@ -1286,7 +1286,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.bundleSigningPrefix != null )
             {
-                argsFile.println( "--mac-bundle-signing-prefix" );
+                argsFile.println( "--mac-package-signing-prefix" );
                 if ( this.macOptions.bundleSigningPrefix.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" )
@@ -1300,7 +1300,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.signingKeyUserName != null )
             {
-                argsFile.println( "--mac-signing-key-username" );
+                argsFile.println( "--mac-signing-key-user-name" );
                 if ( this.macOptions.signingKeyUserName.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" )
