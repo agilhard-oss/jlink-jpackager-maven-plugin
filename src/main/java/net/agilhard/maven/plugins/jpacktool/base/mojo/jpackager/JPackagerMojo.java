@@ -981,19 +981,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
 
-        if ( this.identifier != null )
-        {
-            argsFile.println( "--identifier" );
-            if ( this.identifier.indexOf( " " ) > -1 )
-            {
-              argsFile.append( "\"" ).append( this.identifier.replace( "\\", "\\\\" ) ).println( "\"" );
-            }
-            else
-            {
-                argsFile.println( this.identifier );
-            }
-        }
-
         if ( this.fileAssociations != null )
         {
             argsFile.println( "--file-associations" );
