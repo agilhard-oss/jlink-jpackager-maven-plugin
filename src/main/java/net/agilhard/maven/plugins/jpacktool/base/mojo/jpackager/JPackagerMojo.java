@@ -1129,7 +1129,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             if ( this.linuxOptions.bundleName != null )
             {
-                argsFile.println( "--linux-bundle-name" );
+                argsFile.println( "--linux-package-name" );
                 if ( this.linuxOptions.bundleName.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" ).append( this.linuxOptions.bundleName.replace( "\\", "\\\\" ) ).println( "\"" );
