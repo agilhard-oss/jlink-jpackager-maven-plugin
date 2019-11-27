@@ -829,7 +829,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( this.buildDirectory != null )
         {
-            argsFile.println( "--output" );
+            argsFile.println( "--dest" );
             String s = this.outputDirectoryPackage.getCanonicalPath();
             if ( s.indexOf( " " ) > -1 )
             {
