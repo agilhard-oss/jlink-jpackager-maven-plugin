@@ -818,7 +818,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( this.packageType != null )
         {
-            argsFile.println( "--package-type" );
+            argsFile.println( "--type" );
             argsFile.println( this.packageType);
         }
 
