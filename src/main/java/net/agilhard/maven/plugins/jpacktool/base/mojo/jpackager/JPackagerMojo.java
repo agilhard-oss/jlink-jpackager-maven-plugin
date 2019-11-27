@@ -855,7 +855,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
             }
 
-            argsFile.println( "--temp-root" );
+            argsFile.println( "--temp" );
             s = this.buildRootPackage.getCanonicalPath();
             if ( s.indexOf( " " ) > -1 )
             {
