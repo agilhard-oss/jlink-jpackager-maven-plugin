@@ -1213,6 +1213,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                     argsFile.println( this.windowsOptions.registryName );
                 }
             }
+            if ( this.windowsOptions.upgradeUUID != null )
+            {
+                argsFile.println( "--win-upgrade-uuid" );
+                argsFile.println( this.windowsOptions.upgradeUUID );
+            }
             if ( this.windowsOptions.shortcut )
             {
                 argsFile.println( "--win-shortcut" );
