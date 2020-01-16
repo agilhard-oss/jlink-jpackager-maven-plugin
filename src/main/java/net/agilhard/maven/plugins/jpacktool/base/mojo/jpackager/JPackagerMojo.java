@@ -85,7 +85,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      *  &lt;linuxType&gt;, &lt;windowsType&gt; or &lt;macType&gt; is being used.
      *  </p>
      */
-    @Parameter( required = false, readonly = false )
+    @Parameter( property = "jlink-jpackager.package-type", required = false, readonly = false )
     protected String packageType;
 
     /**
@@ -281,6 +281,13 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     @Parameter( required = false, readonly = false )
     protected String licenseFile;
 
+    /**
+     * This argument defines the path (absolute or relative) to the resource directory which overrides jpackage
+     * resources, including icons, template files or other files.
+     */
+    @Parameter( required = false, readonly = false )
+    protected String resourceDir;
+
 
     /**
      * Copyright for the application.
@@ -333,6 +340,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      */
     @Parameter( required = false, readonly = false )
     protected String module;
+
+    /**
+     * Skip including of modules.
+     */
+    @Parameter( defaultValue = "false", required = false, readonly = false )
+    protected boolean skipModulesInclude;
 
     /**
      * Linux Options.
@@ -805,7 +818,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( this.packageType != null )
         {
-            argsFile.println( "--package-type" );
+            argsFile.println( "--type" );
             argsFile.println( this.packageType);
         }
 
@@ -816,7 +829,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( this.buildDirectory != null )
         {
-            argsFile.println( "--output" );
+            argsFile.println( "--dest" );
             String s = this.outputDirectoryPackage.getCanonicalPath();
             if ( s.indexOf( " " ) > -1 )
             {
@@ -842,7 +855,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
             }
 
-            argsFile.println( "--temp-root" );
+            argsFile.println( "--temp" );
             s = this.buildRootPackage.getCanonicalPath();
             if ( s.indexOf( " " ) > -1 )
             {
@@ -880,7 +893,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             argsFile.println(  this.appVersion.replaceAll( "-SNAPSHOT", "" ).replaceAll( ".SNAPSHOT", "" ) );
         }
 
-        if ( pathsOfModules != null )
+        if ( ! skipModulesInclude && pathsOfModules != null )
         {
             argsFile.println( "--module-path" );
             final String s = this.getPlatformDependSeparateList( pathsOfModules );
@@ -968,19 +981,6 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
         }
 
-        if ( this.identifier != null )
-        {
-            argsFile.println( "--identifier" );
-            if ( this.identifier.indexOf( " " ) > -1 )
-            {
-              argsFile.append( "\"" ).append( this.identifier.replace( "\\", "\\\\" ) ).println( "\"" );
-            }
-            else
-            {
-                argsFile.println( this.identifier );
-            }
-        }
-
         if ( this.fileAssociations != null )
         {
             argsFile.println( "--file-associations" );
@@ -1056,6 +1056,12 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             argsFile.println(this.licenseFile);
         }
 
+        if ( this.resourceDir != null )
+        {
+            argsFile.println( "--resource-dir" );
+            argsFile.println( this.resourceDir );
+        }
+
         if ( this.copyright != null )
         {
             argsFile.println( "--copyright" );
@@ -1113,7 +1119,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             this.getLog().warn("--limit-modules is only supported for JDK11 jpackager mode");
         }
 
-        if ( !modulesToAdd.isEmpty() )
+        if ( ! skipModulesInclude && !modulesToAdd.isEmpty() )
         {
             argsFile.println( "--add-modules" );
             argsFile.println( this.getCommaSeparatedList( modulesToAdd ) );
@@ -1123,7 +1129,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         {
             if ( this.linuxOptions.bundleName != null )
             {
-                argsFile.println( "--linux-bundle-name" );
+                argsFile.println( "--linux-package-name" );
                 if ( this.linuxOptions.bundleName.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" ).append( this.linuxOptions.bundleName.replace( "\\", "\\\\" ) ).println( "\"" );
@@ -1169,6 +1175,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                     argsFile.println( this.linuxOptions.debMaintainer );
                 }
             }
+            if ( this.linuxOptions.menuGroup != null )
+            {
+                argsFile.println( "--linux-menu-group" );
+                argsFile.println( this.linuxOptions.menuGroup );
+            }
         }
 
         if ( SystemUtils.IS_OS_WINDOWS && ( this.windowsOptions != null ) )
@@ -1202,6 +1213,11 @@ public class JPackagerMojo extends AbstractPackageToolMojo
                     argsFile.println( this.windowsOptions.registryName );
                 }
             }
+            if ( this.windowsOptions.upgradeUUID != null )
+            {
+                argsFile.println( "--win-upgrade-uuid" );
+                argsFile.println( this.windowsOptions.upgradeUUID );
+            }
             if ( this.windowsOptions.shortcut )
             {
                 argsFile.println( "--win-shortcut" );
@@ -1221,7 +1237,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.bundleName != null )
             {
-                argsFile.println( "--mac-bundle-name" );
+                argsFile.println( "--mac-package-name" );
                 if ( this.macOptions.bundleName.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" ).append( this.macOptions.bundleName.replace( "\\", "\\\\" ) ).println( "\"" );
@@ -1233,7 +1249,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.bundleIdentifier != null )
             {
-                argsFile.println( "--mac-bundle-identifier" );
+                argsFile.println( "--mac-package-identifier" );
                 if ( this.macOptions.bundleIdentifier.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" ).append( this.macOptions.bundleIdentifier.replace( "\\", "\\\\" ) ).println( "\"" );
@@ -1270,7 +1286,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.bundleSigningPrefix != null )
             {
-                argsFile.println( "--mac-bundle-signing-prefix" );
+                argsFile.println( "--mac-package-signing-prefix" );
                 if ( this.macOptions.bundleSigningPrefix.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" )
@@ -1284,7 +1300,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             }
             if ( this.macOptions.signingKeyUserName != null )
             {
-                argsFile.println( "--mac-signing-key-username" );
+                argsFile.println( "--mac-signing-key-user-name" );
                 if ( this.macOptions.signingKeyUserName.indexOf( " " ) > -1 )
                 {
                   argsFile.append( "\"" )

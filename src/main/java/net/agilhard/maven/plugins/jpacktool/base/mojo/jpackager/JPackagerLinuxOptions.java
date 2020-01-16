@@ -80,4 +80,14 @@ public class JPackagerLinuxOptions {
     @Parameter(required = false, readonly = false, defaultValue="rpm")
     public String linuxType;
 
+    /**
+     * This config parameter defines the menu group the application is placed in.
+     *
+     * <p>
+     * <code>--linux-menu-group &lt;menu group&gt;</code>
+     * </p>
+     */
+    @Parameter(required = false, readonly = false)
+    public String menuGroup;
+
 }

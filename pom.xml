@@ -48,7 +48,7 @@
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
     <mavenPluginToolsVersion>3.5.2</mavenPluginToolsVersion>
-    <version.orgApacheMavenPlugins.mavenJavadocPlugin>3.0.0-M1</version.orgApacheMavenPlugins.mavenJavadocPlugin>
+    <version.orgApacheMavenPlugins.mavenJavadocPlugin>3.1.1</version.orgApacheMavenPlugins.mavenJavadocPlugin>
 
   </properties>
 
