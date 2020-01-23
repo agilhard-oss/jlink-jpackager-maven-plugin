@@ -49,6 +49,7 @@
     <maven.compiler.target>8</maven.compiler.target>
     <mavenPluginToolsVersion>3.5.2</mavenPluginToolsVersion>
     <version.orgApacheMavenPlugins.mavenJavadocPlugin>3.1.1</version.orgApacheMavenPlugins.mavenJavadocPlugin>
+    <version.comGithubSpotbugs.spotbugsMavenPlugin>3.1.12.2</version.comGithubSpotbugs.spotbugsMavenPlugin>
 
   </properties>
 
@@ -141,6 +142,22 @@
 	  <artifactId>maven-site-plugin</artifactId>
 	  <version>3.7.1</version>
 	</plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${version.comGithubSpotbugs.spotbugsMavenPlugin}</version>
+	  <dependencies>
+	    <dependency>
+	      <groupId>com.github.spotbugs</groupId>
+	      <artifactId>spotbugs</artifactId>
+	      <version>4.0.0-RC1</version>
+	    </dependency>
+	  </dependencies>
+          <configuration>
+            <skip>${spotbugs.skip}</skip>
+            <xmlOutput>true</xmlOutput>
+          </configuration>
+        </plugin>
 	<plugin>
 	  <groupId>org.apache.maven.plugins</groupId>
 	  <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -246,6 +263,7 @@
 	 <artifactId>maven-javadoc-plugin</artifactId>
 	 <version>${version.orgApacheMavenPlugins.mavenJavadocPlugin}</version>
 	 <configuration>
+	   <source>8</source>
            <stylesheetfile>${project.basedir}/src/site/resources/css/apidocs.css</stylesheetfile>
 	 </configuration>
 	 <executions>
@@ -316,6 +334,25 @@
       </plugin>
 
       <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <configuration>
+          <skip>${spotbugs.skip}</skip>
+          <xmlOutput>true</xmlOutput>
+          <effort>Max</effort>
+          <!-- Reports all bugs (other values are medium and max) -->
+          <threshold>Low</threshold>
+          <includeTests>true</includeTests>
+          <fork>true</fork>
+          <failOnError>false</failOnError>
+          <!-- <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile> -->
+          <!-- <includeFilterFile>findbugs-include.xml</includeFilterFile> -->
+          <!-- Usually findbugs needs a lot of memory, change these values if needed. -->
+	  <maxHeap>1024</maxHeap>
+        </configuration>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
         <version>${mavenPluginToolsVersion}</version>
@@ -331,6 +368,7 @@
 	<artifactId>maven-javadoc-plugin</artifactId>
 	<version>${version.orgApacheMavenPlugins.mavenJavadocPlugin}</version>
 	<configuration>
+          <source>8</source>
           <stylesheetfile>${project.basedir}/src/site/resources/css/apidocs.css</stylesheetfile>
 	</configuration>
       </plugin>
