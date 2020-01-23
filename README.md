@@ -80,8 +80,6 @@ This JPackager JDK-14 Early Access build can be downloaded from
 Alternatively you can also use the JDK-11 backported JPackager tool wich is mentioned in
 [Filling the Packager gap - OpenJDK mailing list - Java.net](http://mail.openjdk.java.net/pipermail/openjfx-dev/2018-September/022500.html)
 
-Note: This is just a first SNAPSHOT not all jpackager goal Configuration Options are fully working yet.
-
 ## Prerequisites
 
 - [JDK](http://jdk.java.net/)
