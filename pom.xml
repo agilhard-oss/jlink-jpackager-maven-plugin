@@ -341,7 +341,7 @@
           <xmlOutput>true</xmlOutput>
           <effort>Max</effort>
           <!-- Reports all bugs (other values are medium and max) -->
-          <threshold>Low</threshold>
+          <threshold>Medium</threshold>
           <includeTests>true</includeTests>
           <fork>true</fork>
           <failOnError>false</failOnError>
