@@ -1931,21 +1931,16 @@ public class JPackagerMojo extends AbstractPackageToolMojo
     protected void failIfParametersAreNotValid()
             throws MojoFailureException
     {
-        if ( ( ( this.module == null ) && ( this.mainClass == null )
-            && ( this.mainJar == null ) ) && ( this.appImage != null ) )
+        if ( ( ( this.module == null ) && ( this.mainJar == null ) ) && ( this.appImage != null ) )
         {
 // CHECKSTYLE_OFF: LineLength
-            final String message = "At least one of <module>, <mainClass> or <mainJar> must be specified if <appImage> is not present.";
+            final String message = "At least one of <module>, <mainJar> must be specified if <appImage> is not present.";
 // CHECKSTYLE_ON: LineLength
             this.getLog().error( message );
             throw new MojoFailureException( message );
         }
         int c = 0;
         if ( this.module != null )
-        {
-            c++;
-        }
-        if ( this.mainClass != null )
         {
             c++;
         }
@@ -1956,11 +1951,20 @@ public class JPackagerMojo extends AbstractPackageToolMojo
         if ( c > 1 )
         {
             // CHECKSTYLE_OFF: LineLength
-            final String message = "The parameters <module>, <mainClass> or <mainJar> \nare mutually exclusive, only one of them can be specified.";
+            final String message = "The parameters <module>, <mainJar> \nare mutually exclusive, only one of them can be specified.";
             // CHECKSTYLE_ON: LineLength
             this.getLog().error( message );
             throw new MojoFailureException( message );
         }
+		
+		if (this.mainClass != null && this.mainJar == null)
+		{
+            // CHECKSTYLE_OFF: LineLength
+            final String message = "The parameter <mainClass> can only be used if <mainJar> is used.";
+            // CHECKSTYLE_ON: LineLength
+            this.getLog().error( message );
+            throw new MojoFailureException( message );
+		}
 
         if ( ( this.packageType != null ) && ( ! ( "msi".equals( this.packageType) || "exe".equals( this.packageType)
                  || "rpm".equals( this.packageType) || "deb".equals( this.packageType)
