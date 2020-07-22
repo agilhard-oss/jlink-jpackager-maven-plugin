@@ -177,7 +177,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
      * Qualified name of the application class to execute.
      *
      * <p>
-     * <code>-class &lt;className&gt;</code>
+     * <code>--main-class &lt;className&gt;</code>
      * </p>
      */
     @Parameter( required = false, readonly = false )
@@ -911,7 +911,7 @@ public class JPackagerMojo extends AbstractPackageToolMojo
 
         if ( this.mainClass != null )
         {
-            argsFile.println( "--class" );
+            argsFile.println( "--main-class" );
             argsFile.println(  this.mainClass );
         }
 
