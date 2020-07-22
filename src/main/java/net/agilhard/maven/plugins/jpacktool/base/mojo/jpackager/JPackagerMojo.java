@@ -608,10 +608,10 @@ public class JPackagerMojo extends AbstractPackageToolMojo
             if ( SystemUtils.IS_OS_LINUX && ( this.linuxOptions != null ) ) {
                 this.packageType = this.linuxOptions.linuxType;
             }
-            else if ( SystemUtils.IS_OS_WINDOWS ) {
+            else if ( SystemUtils.IS_OS_WINDOWS && ( this.windowsOptions != null ) ) {
                 this.packageType = this.windowsOptions.windowsType;
             }
-            else if ( SystemUtils.IS_OS_MAC  ) {
+            else if ( SystemUtils.IS_OS_MAC && ( this.macOptions != null ) ) {
                 this.packageType = this.macOptions.macType;
             }
             this.getLog().info("<packageType> is not set using platform default (" + ( this.packageType == null ? "" : this.packageType) + ")" );
